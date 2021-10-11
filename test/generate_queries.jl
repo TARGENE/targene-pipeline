@@ -37,6 +37,8 @@ end
 @testset "Test generate_queries" begin
     outdir = joinpath("data", "queries")
 
+    mkdir(outdir)
+
     parsed_args = Dict(
         "mode" => "frequency",
         "out" => outdir,
@@ -83,7 +85,6 @@ end
 
     # Cleanup
     rm(outdir; recursive=true)
-    mkdir(outdir)
 end
 
 end;
