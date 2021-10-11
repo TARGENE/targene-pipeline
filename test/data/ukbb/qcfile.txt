@@ -1,0 +1,10 @@
+rs_id array Batch_b001_qc Batch_b002_qc chromosome allele1_ref allele2_alt
+rs6336442 0 1 1 12 A C
+CEL-X_155542834 1 1 1 13 C G
+rs13484105 2 0 1 3 A G
+rs6198069 2 1 1 1 C A
+rs3659303 2 1 1 2 G T
+rs3659303 2 1 1 2 C T
+rs13484034 1 1 0 1 C G
+rs13476318 2 1 1 2 G C
+rs13476950 2 1 1 3 G A

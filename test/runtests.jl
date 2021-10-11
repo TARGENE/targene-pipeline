@@ -1,6 +1,5 @@
-using UKBBEpistasisPipeline
-using Test
 
-@testset "UKBBEpistasisPipeline.jl" begin
-    # Write your tests here.
-end
+
+include("filter_asb.jl")
+include("generate_queries.jl")
+include("confounders_preparation.jl")

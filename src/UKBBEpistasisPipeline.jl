@@ -1,5 +1,24 @@
 module UKBBEpistasisPipeline
 
-# Write your package code here.
+using DataFrames
+using CSV
+using TOML
+using BGEN
+using SnpArrays
+
+# INCLUDES
+#####################################################################
+
+include("asb_snps.jl")
+include("queries_generation.jl")
+include("confounders_preparation.jl")
+
+
+# EXPORTS
+#####################################################################
+
+export generate_queries
+export filter_asb
+export filter_chromosome, merge_beds
 
 end
