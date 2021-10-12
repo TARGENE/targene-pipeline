@@ -1,4 +1,6 @@
 process filterBED{
+    label 'bigmem'
+
     container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
 
     input:
