@@ -43,7 +43,7 @@ workflow {
     trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
 
     bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
-    bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_DIR/ukb_*.{bed,bim,fam}", size: 3, checkIfExists: true)
+    bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true)
 
     qc_file = Channel.value(file("$params.QC_FILE"))
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
