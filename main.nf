@@ -1,7 +1,6 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-println(params)
 
 process filterASB {
     container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
