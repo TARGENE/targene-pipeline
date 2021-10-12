@@ -57,7 +57,7 @@ process buildPCs {
         path bedfile
     
     output:
-        "pcs.txt"
+        path "pcs.txt"
     
     script:
         prefix = bedfiles[0].toString().minus('.bed')
