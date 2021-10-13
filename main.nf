@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+params.SNPS_EXCLUSION_LIST = "NO_FILE"
 
 process filterASB {
     container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
@@ -23,15 +24,17 @@ process generateQueries {
         path filtered_asb_snps
         path trans_actors
         path chr_files
+        path excluded_snps
 
     output:
         path "queries/*.toml", emit: queries
 
     script:
         bgen_sample = chr_files.find { it.toString().endsWith("bgen") }
+        def exclude = excluded_snps.name != 'NO_FILE' ? "--exclude $excluded_snps" : ''
         """
         mkdir -p queries
-        julia --project=$projectDir --startup-file=no $projectDir/bin/generate_queries.jl $filtered_asb_snps $trans_actors -o queries -s $bgen_sample -t $params.THRESHOLD
+        julia --project=$projectDir --startup-file=no $projectDir/bin/generate_queries.jl $filtered_asb_snps $trans_actors -o queries -s $bgen_sample -t $params.THRESHOLD -e $exclude
         """
 }
 
@@ -41,6 +44,7 @@ include { generateCovariates } from './modules/covariates.nf'
 workflow {
     asb_snp_ch = Channel.fromPath("$params.ASB_FILES", checkIfExists: true)
     trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
+    excluded_snps = Channel.fromPath(file("$params.SNPS_EXCLUSION_LIST"))
 
     bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
     bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true)
@@ -53,7 +57,7 @@ workflow {
     filterASB(asb_snp_ch.collect())
 
     // Generate queries
-    generateQueries(filterASB.out.filtered_asb_snps, trans_actors, bgen_files_ch.toList())
+    generateQueries(filterASB.out.filtered_asb_snps, trans_actors, bgen_files_ch.toList(), excluded_snps)
 
     // filterBED
     generateCovariates(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file)

@@ -26,6 +26,10 @@ function parse_commandline()
             arg_type = Float64
             help = "The threshold that will be used to hard call genotypes based on their probabilities"
             default = 0.9
+        "--exclude", "-e"
+            arg_type = String
+            help = "The threshold that will be used to hard call genotypes based on their probabilities"
+            required = false
         "asb-file"
             arg_type = String
             help = "Path to filtered allelic-specific binding SNPS"
