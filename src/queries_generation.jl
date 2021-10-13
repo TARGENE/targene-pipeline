@@ -5,18 +5,26 @@ function get_minor_major(parsed_args)
     # Load SNPS
     trans_actors = CSV.File(parsed_args["trans-actors-file"], select=[:ID,:CHROM]) |> DataFrame
     asbs = CSV.File(parsed_args["asb-file"], select=[:ID,:CHROM]) |> DataFrame
+    
     # Get base file name
     basedir, chrfile = splitdir(parsed_args["sample-chrom-file"])
     re = r"chr[1-9]+"
     
     extra_info = DataFrame(ID = String[], MAJOR = String[], MINOR = String[], CHROMPATH = String[])
+    
+    allsnps = vcat(trans_actors, asbs)
+    # Remove potentially unwanted snps
+    if haskey(parsed_args, "exclude")
+        snps_to_remove = collect(CSV.File(parsed_args["exclude"], header=["SNPS_TO_REMOVE"]).SNPS_TO_REMOVE)
+        filter!(:ID => x -> x ∉ snps_to_remove, allsnps)
+    end
+
     # Load by chromosome file
-    chrom_groups = groupby(vcat(trans_actors, asbs), :CHROM)
+    chrom_groups = groupby(allsnps, :CHROM)
     for (chr, group) in pairs(chrom_groups)
         chrompath = joinpath(basedir, replace(chrfile, re => chr.CHROM))
         b = BGEN.Bgen(chrompath)
         for (rsid, _) in eachrow(group)
-            chrompath = joinpath(basedir, replace(chrfile, re => chr.CHROM))
 
             v = variant_by_rsid(b, rsid)
             minor_allele_dosage!(b, v)

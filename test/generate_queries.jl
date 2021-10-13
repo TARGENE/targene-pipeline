@@ -12,7 +12,8 @@ chrpath(x) = joinpath("data", "ukbb", "imputed" ,"ukbb_chr$x.bgen")
     parsed_args = Dict(
         "sample-chrom-file" => chrpath(8),
         "trans-actors-file" => joinpath("data", "trans_actors_fake.csv"),
-        "asb-file" => joinpath("data", "filtered_asb_fake.csv")
+        "asb-file" => joinpath("data", "filtered_asb_fake.csv"),
+        "exclude" => joinpath("data", "pb_snps.csv")
         )
     trans_actors, asbs = UKBBEpistasisPipeline.get_minor_major(parsed_args)
 
@@ -45,7 +46,8 @@ end
         "threshold" => 0.8,
         "sample-chrom-file" => chrpath(8),
         "trans-actors-file" => joinpath("data", "trans_actors_fake.csv"),
-        "asb-file" => joinpath("data", "filtered_asb_fake.csv")
+        "asb-file" => joinpath("data", "filtered_asb_fake.csv"),
+        "exclude" => joinpath("data", "pb_snps.csv")
         )
 
     generate_queries(parsed_args)
