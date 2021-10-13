@@ -19,7 +19,8 @@ process filterBED{
 
 
 process thinByLD{
-    container "docker://brodyj/plink2:latest"
+    label 'bigmem'
+    container "docker://olivierlabayle/plink2:0.1.0"
 
     input:
         path flashpca_excl_reg
@@ -32,12 +33,14 @@ process thinByLD{
         prefix = bedfiles[0].toString().minus('.bed')
         """
         plink2 --bfile $prefix --indep-pairwise 1000 50 0.05 --exclude range $flashpca_excl_reg
-        plink2 --bfile $prefix --extract plink.prune.in --make-bed --out LDpruned.$prefix
+        plink2 --bfile $prefix --extract plink2.prune.in --make-bed --out LDpruned.$prefix
         """
 }
 
 
 process mergeBEDS{
+    label 'bigmem'
+
     container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
     
     input:
@@ -56,14 +59,14 @@ process buildPCs {
     container "docker://ktetleycampbell/flashpca:latest"
 
     input:
-        path bedfile
+        path bedfiles
     
     output:
         path "pcs.txt"
     
     script:
         prefix = bedfiles[0].toString().minus('.bed')
-        "flashpca --bfile $prefix --ndim $params.NB_PCS --numthreads $task.cpus"
+        "/home/flashpca-user/flashpca/flashpca --bfile $prefix --ndim $params.NB_PCS --numthreads $task.cpus"
 }
 
 
