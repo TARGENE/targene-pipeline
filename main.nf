@@ -18,6 +18,7 @@ process filterASB {
 
 
 process generateQueries {
+
     container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
 
     input:
@@ -42,13 +43,13 @@ process generatePhenotypes {
     input:
         path encr_file
         path encoding
-        path phenotypes_list
+        path fields_list
     
     output:
         path "phenotypes.csv"
     
     script:
-        "$projectDir/bin/ukbconv $encr_file csv -i$phenotypes_list -ophenotypes.csv -e$encoding"
+        "$projectDir/bin/ukbconv $encr_file csv -i$fields_list -ophenotypes -e$encoding"
 }
 
 process TMLE {
@@ -91,9 +92,11 @@ workflow {
     generateCovariates(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file)
 
     // generate phenotypes
-    phenotypes_list = Channel.value(file("$params.PHENOTYPE_LIST"))
+    phenotypes_list = Channel.value(file("$params.FIELDS_LIST"))
     encoding = Channel.value(file("$params.UKBB_ENCODING"))
     encr_file = Channel.value(file("$params.UKBB_ENCR_FILE"))
 
     generatePhenotypes(encr_file, encoding, phenotypes_list)
+
+    // compute TMLE estimates
 }
