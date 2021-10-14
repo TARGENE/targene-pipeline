@@ -12,6 +12,7 @@ using SnpArrays
 include("asb_snps.jl")
 include("queries_generation.jl")
 include("confounders_preparation.jl")
+include("phenotypes.jl")
 
 
 # EXPORTS
