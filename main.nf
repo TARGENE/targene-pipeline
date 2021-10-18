@@ -53,7 +53,7 @@ process generatePhenotypes {
         path "phenotypes.csv"
     
     script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/process_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list"
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list"
 }
 
 
