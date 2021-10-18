@@ -7,22 +7,21 @@ function parse_commandline()
                                      "https://github.com/olivierlabayle/GenesInteraction.jl/")
 
     @add_arg_table s begin
-        "input"
+        "binary-phenotypes"
             arg_type = String
-            help = "Path to the output of ukbconv containing data-fields"
-            required = true
+            help = "Path to the GeneAtlas binary phenotypes file"
+        "continuous-phenotypes"
+            arg_type = String
+            help = "Path to the GeneAtlas continuous phenotypes file"
+        "bridge"
+            arg_type = String
+            help = "Path to the bridge file between our UKBB project and the GeneAtlas."
         "output"
             arg_type = String
-            help = "Path where phenotypes will be saved with one column per phenotype."
-            required = true
-        "--save-cols", "-s"
+            help = "Path where all phenotypes will be saved"
+        "--withdrawal-list"
             arg_type = String
-            help = "Path where all extracted phenotypes names will be saved."
-            required = false
-        "--patterns", "-p"
-            arg_type = String
-            help = "A coma-separated list of patterns to match phenotypes with encoding "
-                   "starting with any of the pattern."
+            help = "Path to participants withdrawal list"
             required = false
     end
 
