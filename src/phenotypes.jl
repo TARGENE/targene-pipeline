@@ -20,7 +20,5 @@ function from_geneatlas(parsed_args)
 end
 
 function prepare_phenotypes(parsed_args)
-    if parsed_args["mode"] == "from-geneatlas"
-        from_geneatlas(parsed_args)
-    end
+    from_geneatlas(parsed_args)
 end

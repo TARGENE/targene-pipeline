@@ -11,7 +11,6 @@ using DataFrames
         "binary-phenotypes" => joinpath("data", "ukbb", "binary_phenotypes.csv"),
         "continuous-phenotypes" => joinpath("data", "ukbb", "quantitative_phenotypes.csv"),
         "bridge" => joinpath("data", "ukbb", "bridge.csv"),
-        "mode" => "from-geneatlas",
         "withdrawal-list" => joinpath("data", "ukbb", "withdrawal_list.csv"),
         "output" => "full_phenotypes.csv"
     )
