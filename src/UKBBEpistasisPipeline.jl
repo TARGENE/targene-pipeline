@@ -21,5 +21,6 @@ include("phenotypes.jl")
 export generate_queries
 export filter_asb
 export filter_chromosome, merge_beds
+export prepare_phenotypes
 
 end
