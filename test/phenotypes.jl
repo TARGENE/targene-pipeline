@@ -2,6 +2,8 @@ module TestPhenotypes
 
 using Test
 using UKBBEpistasisPipeline
+using CSV
+using DataFrames
 
 
 @testset "Test prepare_phenotypes" begin
