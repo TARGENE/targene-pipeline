@@ -13,7 +13,7 @@ process filterASB {
         path "filtered_asb_snps.csv", emit: filtered_asb_snps
 
     script:
-        "julia --project --startup-file=no bin/filter_asb.jl --out filtered_asb_snps.csv ${asb_snp_files.join(" ")}"
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/filter_asb.jl --out filtered_asb_snps.csv ${asb_snp_files.join(" ")}"
 }
 
 
@@ -35,7 +35,7 @@ process generateQueries {
         def exclude = excluded_snps.name != 'NO_FILE' ? "--exclude $excluded_snps" : ''
         """
         mkdir -p queries
-        julia --project --startup-file=no bin/generate_queries.jl $filtered_asb_snps $trans_actors -o queries -s $bgen_sample -t $params.THRESHOLD $exclude
+        julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/generate_queries.jl $filtered_asb_snps $trans_actors -o queries -s $bgen_sample -t $params.THRESHOLD $exclude
         """
 }
 
@@ -53,7 +53,7 @@ process generatePhenotypes {
         path "phenotypes.csv"
     
     script:
-        "julia --project --startup-file=no bin/process_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list"
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/process_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list"
 }
 
 
