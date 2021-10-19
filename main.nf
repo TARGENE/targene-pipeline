@@ -120,7 +120,7 @@ workflow {
                         .combine(Channel.fromPath("$params.CONTINUOUS_ESTIMATORFILE", checkIfExists: true))
     
     phenotypes_estimators_queries = binary_est_phen.concat(continuous_est_phen)
-                                        .combine(generateQueries.out)
+                                        .combine(generateQueries.out.flatten())
 
     TMLE(generatePhenotypes.out.first(), generateCovariates.out.first(), phenotypes_estimators_queries)
 }
