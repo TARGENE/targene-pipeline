@@ -57,7 +57,7 @@ process generatePhenotypes {
 }
 
 
-workflow TMLE {
+process TMLE {
     container "olivierlabayle/tmle-epistasis:0.1.3"
 
     input:
