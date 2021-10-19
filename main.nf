@@ -59,6 +59,8 @@ process generatePhenotypes {
 
 process TMLE {
     container "olivierlabayle/tmle-epistasis:0.1.3"
+    label "bigmem"
+    publishDir "$params.OUTDIR", mode: 'symlink'
 
     input:
         path phenotypefile
@@ -67,10 +69,11 @@ process TMLE {
         tuple val(phenotype), file(estimatorfile)
     
     output:
-        path "estimates.csv"
+        path "estimates*"
     
     script:
-        "julia --project=/GenesInteraction.jl --startup-file=no /GenesInteraction.jl/ukbb_epistasis.jl $phenotypefile $confoundersfile $queryfile $estimatorfile estimates.csv --phenotype $phenotype"
+        outfile = "estimates_" + queryfile.baseName + "_" + phenotype + ".csv"
+        "julia --project=/GenesInteraction.jl --startup-file=no /GenesInteraction.jl/ukbb_epistasis.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $outfile --phenotype $phenotype"
     
 }
 
