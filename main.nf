@@ -65,8 +65,7 @@ process TMLE {
     input:
         path phenotypefile
         path confoundersfile
-        path queryfile
-        tuple val(phenotype), file(estimatorfile)
+        tuple val(phenotype), file(estimatorfile), file(queryfile)
     
     output:
         path "estimates*"
@@ -120,6 +119,8 @@ workflow {
                         .filter { it != "FID" & it != "IID"}
                         .combine(Channel.fromPath("$params.CONTINUOUS_ESTIMATORFILE", checkIfExists: true))
     
-    estimator_phenotypes = binary_est_phen.concat(continuous_est_phen)
-    TMLE(generatePhenotypes.out, generateCovariates.out, generateQueries.out, estimator_phenotypes)
+    phenotypes_estimators_queries = binary_est_phen.concat(continuous_est_phen)
+                                        .combine(generateQueries.out)
+
+    TMLE(generatePhenotypes.out.first(), generateCovariates.out.first(), phenotypes_estimators_queries)
 }
