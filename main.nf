@@ -135,5 +135,5 @@ workflow {
                                         .combine(generateQueries.out.flatten())
 
     // compute TMLE estimates
-    TMLE(bgen_files_ch.collect(), generatePhenotypes.out.first(), generateCovariates.out.first(), phenotypes_estimators_queries)
+    TMLE(bgen_files_ch.collect(), generatePhenotypes.out, generateCovariates.out, phenotypes_estimators_queries)
 }
