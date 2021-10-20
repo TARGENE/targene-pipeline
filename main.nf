@@ -55,8 +55,7 @@ process generatePhenotypes {
         path "phenotypes.csv"
     
     script:
-        def phen_list = params.PHENOTYPES_LIST != "NONE" ? "--phenotypes-list $params.PHENOTYPES_LIST" : ''
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list $phen_list"
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list"
 }
 
 
@@ -110,20 +109,30 @@ workflow {
 
     generatePhenotypes(binary_phenotypes, continuous_phenotypes, bridge, withdrawal_list)
 
-    // compute TMLE estimates
-    binary_est_phen = Channel.value(file("$params.BINARY_PHENOTYPES"))
+    // generate TMLE arguments tuples
+    // Binary phenotypes:
+    binary_phen = Channel.value(file("$params.BINARY_PHENOTYPES", checkIfExists: true))
                         .splitCsv(sep: "\s", limit: 1)
                         .flatten()
                         .filter { it != "FID" & it != "IID"}
-                        .combine(Channel.fromPath("$params.BINARY_ESTIMATORFILE", checkIfExists: true))
-    continuous_est_phen = Channel.value(file("$params.CONTINUOUS_PHENOTYPES"))
+    if (params.PHENOTYPES_LIST != "NONE") { 
+        binary_phen = binary_phen.filter(params.PHENOTYPES_LIST)
+    }
+    binary_est_phen = binary_phen.combine(Channel.fromPath("$params.BINARY_ESTIMATORFILE", checkIfExists: true))
+
+    // Binary phenotypes:
+    continuous_phen = Channel.value(file("$params.CONTINUOUS_PHENOTYPES"))
                         .splitCsv(sep: "\s", limit: 1)
                         .flatten()
                         .filter { it != "FID" & it != "IID"}
-                        .combine(Channel.fromPath("$params.CONTINUOUS_ESTIMATORFILE", checkIfExists: true))
-    
+    if (params.PHENOTYPES_LIST != "NONE") { 
+        continuous_phen = continuous_phen.filter(params.PHENOTYPES_LIST)
+    }
+    continuous_est_phen = continuous_phen.combine(Channel.fromPath("$params.CONTINUOUS_ESTIMATORFILE", checkIfExists: true))
+    // Full argument queue
     phenotypes_estimators_queries = binary_est_phen.concat(continuous_est_phen)
                                         .combine(generateQueries.out.flatten())
 
+    // compute TMLE estimates
     TMLE(generatePhenotypes.out.first(), generateCovariates.out.first(), phenotypes_estimators_queries)
 }
