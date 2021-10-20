@@ -23,6 +23,10 @@ function parse_commandline()
             arg_type = String
             help = "Path to participants withdrawal list"
             required = false
+        "--phenotypes-list"
+            arg_type = String
+            help = "Coma separated list"
+            required = false
     end
 
     return parse_args(s)

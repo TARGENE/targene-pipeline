@@ -2,6 +2,8 @@
 nextflow.enable.dsl = 2
 
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
+params.PHENOTYPES_LIST = "NONE"
+
 
 process filterASB {
     container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
@@ -53,7 +55,8 @@ process generatePhenotypes {
         path "phenotypes.csv"
     
     script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list"
+        def phen_list = params.PHENOTYPES_LIST != "NONE" ? "--phenotypes-list $params.PHENOTYPES_LIST" : ''
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list $phen_list"
 }
 
 
