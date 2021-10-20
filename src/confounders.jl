@@ -89,7 +89,7 @@ end
 
 function adapt_flashpca(parsed_args)
     # I think FID and IID are just duplicates
-    pcs = CSV.File(parsed_args["input"], drop=["IID"], delim=' ', ignorerepeated=true) |> DataFrame
+    pcs = CSV.File(parsed_args["input"], drop=["IID"]) |> DataFrame
     rename!(pcs, :FID => :SAMPLE_ID)
     CSV.write(parsed_args["output"], pcs)
 end

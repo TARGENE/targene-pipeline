@@ -87,8 +87,8 @@ end
                             "PC4",
                             "PC5",
                             "PC6"]
-    @test size(output) == (7, 7)
-    
+    @test size(output) == (2, 7)
+
     rm(parsed_args["output"])
 end
 
