@@ -14,7 +14,7 @@ function get_minor_major(parsed_args)
     
     allsnps = vcat(trans_actors, asbs)
     # Remove potentially unwanted snps
-    if haskey(parsed_args, "exclude")
+    if ~(parsed_args["exclude"] isa Nothing)
         snps_to_remove = collect(CSV.File(parsed_args["exclude"], header=["SNPS_TO_REMOVE"]).SNPS_TO_REMOVE)
         filter!(:ID => x -> x ∉ snps_to_remove, allsnps)
     end

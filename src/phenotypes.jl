@@ -13,12 +13,12 @@ function from_geneatlas(parsed_args)
                         continuous_phenotypes,
                         on= :geneatlas_id => :FID)
     
-    if haskey(parsed_args, "phenotypes-list")
+    if ~(parsed_args["phenotypes-list"] isa Nothing)
         phen_list = split(parsed_args["phenotypes-list"], ",")
         merged = merged[!, vcat(["eid", "geneatlas_id"], phen_list)]
     end
 
-    if haskey(parsed_args, "withdrawal-list")
+    if ~(parsed_args["withdrawal-list"] isa Nothing)
         withdrawn = CSV.File(parsed_args["withdrawal-list"], header=["eid"]) |> DataFrame
         merged = filter(:eid => ∉(withdrawn.eid), merged)
     end
