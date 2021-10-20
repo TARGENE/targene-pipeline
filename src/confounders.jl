@@ -1,4 +1,4 @@
-# MERGING AND FILTERING PRIOR TO PCA
+# ADAPTING, MERGING AND FILTERING PRIOR TO PCA
 #####################################################################
 
 
@@ -84,4 +84,12 @@ function filter_chromosome(parsed_args)
     
     rsids = Set(final.snpid)
     SnpArrays.filter(parsed_args["input"]; des=parsed_args["output"], f_snp = x -> x[:snpid] ∈ rsids)
+end
+
+
+function adapt_flashpca(parsed_args)
+    # I think FID and IID are just duplicates
+    pcs = CSV.File(parsed_args["input"], drop=["IID"], delim=' ', ignorerepeated=true) |> DataFrame
+    rename!(pcs, :FID => :SAMPLE_ID)
+    CSV.write(parsed_args["output"], pcs)
 end

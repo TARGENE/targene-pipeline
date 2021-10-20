@@ -4,6 +4,7 @@ using Test
 using SnpArrays
 using UKBBEpistasisPipeline
 using DataFrames
+using CSV
 
 @testset "Various functions" begin
     # Test issnp
@@ -68,6 +69,29 @@ end
     end
 
 end
+
+
+@testset "Test adapt_flashpca" begin
+    parsed_args = Dict(
+        "input" => joinpath("data", "flashpca_output.txt"),
+        "output" => "flashpca_after_adapt.csv",
+    )
+    adapt_flashpca(parsed_args)
+
+    output = CSV.File(parsed_args["output"]) |> DataFrame
+
+    @test names(output) == ["SAMPLE_ID",
+                            "PC1",
+                            "PC2",
+                            "PC3",
+                            "PC4",
+                            "PC5",
+                            "PC6"]
+    @test size(output) == (7, 7)
+    
+    rm(parsed_args["output"])
+end
+
 
 end;
 
