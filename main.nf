@@ -65,6 +65,7 @@ process TMLE {
     publishDir "$params.OUTDIR", mode: 'symlink'
 
     input:
+        path bgenfiles
         path phenotypefile
         path confoundersfile
         tuple val(phenotype), file(estimatorfile), file(queryfile)
@@ -134,5 +135,5 @@ workflow {
                                         .combine(generateQueries.out.flatten())
 
     // compute TMLE estimates
-    TMLE(generatePhenotypes.out.first(), generateCovariates.out.first(), phenotypes_estimators_queries)
+    TMLE(bgen_files_ch.collect(), generatePhenotypes.out.first(), generateCovariates.out.first(), phenotypes_estimators_queries)
 }
