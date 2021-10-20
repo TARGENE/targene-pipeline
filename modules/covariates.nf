@@ -70,6 +70,8 @@ process buildPCs {
 }
 
 process adapt_flashpca {
+    container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
+    
     input:
         path flashpca_out
     
