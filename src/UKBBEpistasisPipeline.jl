@@ -11,7 +11,7 @@ using SnpArrays
 
 include("asb_snps.jl")
 include("queries_generation.jl")
-include("confounders_preparation.jl")
+include("confounders.jl")
 include("phenotypes.jl")
 
 
@@ -20,7 +20,7 @@ include("phenotypes.jl")
 
 export generate_queries
 export filter_asb
-export filter_chromosome, merge_beds
+export filter_chromosome, merge_beds, adapt_flashpca
 export prepare_phenotypes
 
 end

@@ -69,6 +69,17 @@ process buildPCs {
         "/home/flashpca-user/flashpca/flashpca --bfile $prefix --ndim $params.NB_PCS --numthreads $task.cpus"
 }
 
+process adapt_flashpca {
+    input:
+        path flashpca_out
+    
+    output:
+        path "confounders.csv"
+    
+    script:
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_confounders.jl --input $flashpca_out --output confounders.csv adapt"
+}
+
 
 workflow generateCovariates{
     take:
@@ -80,7 +91,8 @@ workflow generateCovariates{
         filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks)
         ld_pruned = thinByLD(flashpca_excl_reg, filtered_bedfiles)
         merged = mergeBEDS(ld_pruned.collect())
-        buildPCs(merged)
+        pcs = buildPCs(merged)
+        adapt_flashpca(pcs)
     emit:
-        buildPCs.out
+        adapt_flashpca.out
 }

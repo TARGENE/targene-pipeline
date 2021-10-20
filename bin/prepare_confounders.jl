@@ -34,6 +34,9 @@ function parse_commandline()
         "merge"
             help = "Merge multiple PLINK .bed files together"
             action = :command
+        "adapt"
+            help = "Adapts the csv output of flashpca to what is expected by the TMLE step"
+            action = :command
 
     end
 
@@ -47,4 +50,6 @@ if haskey(parsed_args, "merge") == true
     merge_beds(parsed_args)
 elseif haskey(parsed_args, "filter") == true
     filter_chromosome(parsed_args)
+elseif haskey(parsed_args, "adapt")
+    adapt_flashpca(parsed_args)
 end
