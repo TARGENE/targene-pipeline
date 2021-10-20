@@ -13,7 +13,8 @@ using DataFrames
         "continuous-phenotypes" => joinpath("data", "ukbb", "quantitative_phenotypes.csv"),
         "bridge" => joinpath("data", "ukbb", "bridge.csv"),
         "withdrawal-list" => joinpath("data", "ukbb", "withdrawal_list.csv"),
-        "output" => "full_phenotypes.csv"
+        "output" => "full_phenotypes.csv",
+        "phenotypes-list" => nothing
     )
     UKBBEpistasisPipeline.prepare_phenotypes(parsed_args)
     
@@ -40,6 +41,7 @@ using DataFrames
         "continuous-phenotypes" => joinpath("data", "ukbb", "quantitative_phenotypes.csv"),
         "bridge" => joinpath("data", "ukbb", "bridge.csv"),
         "output" => "full_phenotypes.csv",
+        "withdrawal-list" => nothing,
         "phenotypes-list" => "clinical_c_G25,clinical_c_G20,1408-0.0"
     )
     UKBBEpistasisPipeline.prepare_phenotypes(parsed_args)
