@@ -5,12 +5,19 @@ function from_geneatlas(parsed_args)
     # Loading in pure datafame objects seems to be fine with 16GB of memory
     binary_phenotypes  = CSV.File(parsed_args["binary-phenotypes"], drop=[:IID]) |> DataFrame
     continuous_phenotypes  = CSV.File(parsed_args["continuous-phenotypes"], drop=[:IID]) |> DataFrame
+
     merged = innerjoin(bridge, 
                         binary_phenotypes, 
                         on = :geneatlas_id => :FID)
     merged = innerjoin(merged,
                         continuous_phenotypes,
-                        on=:geneatlas_id=> :FID)
+                        on= :geneatlas_id => :FID)
+    
+    if haskey(parsed_args, "phenotypes-list")
+        phen_list = split(parsed_args["phenotypes-list"], ",")
+        merged = merged[!, vcat(["eid", "geneatlas_id"], phen_list)]
+    end
+
     if haskey(parsed_args, "withdrawal-list")
         withdrawn = CSV.File(parsed_args["withdrawal-list"], header=["eid"]) |> DataFrame
         merged = filter(:eid => ∉(withdrawn.eid), merged)
