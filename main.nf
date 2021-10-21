@@ -60,7 +60,7 @@ process generatePhenotypes {
 
 
 process TMLE {
-    container "olivierlabayle/tmle-epistasis:0.1.3"
+    container "olivierlabayle/tmle-epistasis:0.1.4"
     label "bigmem"
     publishDir "$params.OUTDIR", mode: 'symlink'
 
