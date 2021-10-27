@@ -56,7 +56,7 @@ process mergeBEDS{
 
 process buildPCs {
     cpus 8
-    container "docker://ktetleycampbell/flashpca:latest"
+    container "docker://ktetleycampbell/flashpca:1.0"
 
     input:
         path bedfiles
