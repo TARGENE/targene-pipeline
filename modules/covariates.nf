@@ -1,7 +1,7 @@
 process filterBED{
     label 'bigmem'
 
-    container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.1.0"
 
     input:
         tuple val(chr_id), file(bedfiles)
@@ -20,7 +20,7 @@ process filterBED{
 
 process thinByLD{
     label 'bigmem'
-    container "docker://olivierlabayle/plink2:0.1.0"
+    container "olivierlabayle/plink2:0.1.0"
 
     input:
         path flashpca_excl_reg
@@ -41,7 +41,7 @@ process thinByLD{
 process mergeBEDS{
     label 'bigmem'
 
-    container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.1.0"
     
     input:
         path files
@@ -56,7 +56,7 @@ process mergeBEDS{
 
 process buildPCs {
     cpus 8
-    container "docker://ktetleycampbell/flashpca:1.0"
+    container "ktetleycampbell/flashpca:1.0"
 
     input:
         path bedfiles
@@ -70,7 +70,7 @@ process buildPCs {
 }
 
 process adapt_flashpca {
-    container "docker://olivierlabayle/ukbb-estimation-pipeline:0.1.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.1.0"
     
     input:
         path flashpca_out
