@@ -46,8 +46,10 @@ jobs:
         run: |
           wget -qO- https://get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
-      - name: Test Pipeline
+      - name: Test Dummy queries
         run: nextflow run main.nf -entry generateQueries -profile ci -c conf/ci_jobs/generate_dummy_queries.config
+      - name: Test ABS queries
+        run: nextflow run main.nf -entry generateQueries -profile ci -c conf/ci_jobs/generate_asb_queries.config
   docs:
     name: Documentation
     runs-on: ubuntu-latest
