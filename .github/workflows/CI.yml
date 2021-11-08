@@ -39,15 +39,15 @@ jobs:
           file: lcov.info
   testpipeline:
     name: Pipeline CI
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v2
-          - name: Install Nextflow
-          run: |
-          wget -qO- https://get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/
-          - name: Test Pipeline
-          run: nextflow run main.nf -entry generateQueries -profile ci -c conf/ci_jobs/generate_dummy_queries.config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Nextflow
+      run: |
+      wget -qO- https://get.nextflow.io | bash
+      sudo mv nextflow /usr/local/bin/
+      - name: Test Pipeline
+      run: nextflow run main.nf -entry generateQueries -profile ci -c conf/ci_jobs/generate_dummy_queries.config
   docs:
     name: Documentation
     runs-on: ubuntu-latest
