@@ -4,6 +4,7 @@ nextflow.enable.dsl = 2
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
 params.PHENOTYPES_LIST = "NONE"
 params.QUERIES_MODE = "given"
+params.THRESHOLD = 0.9
 
 include { generateCovariates } from './modules/covariates.nf'
 
