@@ -31,21 +31,15 @@ workflow generateQueries{
 
 }
 
-process generatePhenotypes {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.1.0"
-    label "bigmem"
+workflow generatePhenotypes {
+    include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
 
-    input:
-        path binary_phenotypes
-        path continuous_phenotypes
-        path bridge
-        path withdrawal_list
-    
-    output:
-        path "phenotypes.csv"
-    
-    script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_phenotypes.jl $binary_phenotypes $continuous_phenotypes $bridge phenotypes.csv --withdrawal-list $withdrawal_list"
+    binary_phenotypes = Channel.value(file("$params.BINARY_PHENOTYPES"))
+    continuous_phenotypes = Channel.value(file("$params.CONTINUOUS_PHENOTYPES"))
+    bridge = Channel.value(file("$params.GENEATLAS_BRIDGE"))
+    withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
+
+    phenotypesFromGeneAtlas(binary_phenotypes, continuous_phenotypes, bridge, withdrawal_list)
 }
 
 
@@ -83,13 +77,7 @@ workflow {
     generateCovariates(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file)
 
     // generate phenotypes
-    binary_phenotypes = Channel.value(file("$params.BINARY_PHENOTYPES"))
-    continuous_phenotypes = Channel.value(file("$params.CONTINUOUS_PHENOTYPES"))
-    bridge = Channel.value(file("$params.GENEATLAS_BRIDGE"))
-    withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
-
-
-    generatePhenotypes(binary_phenotypes, continuous_phenotypes, bridge, withdrawal_list)
+    generatePhenotypes()
 
     // generate TMLE arguments tuples
     // Binary phenotypes:
@@ -102,7 +90,7 @@ workflow {
     }
     binary_est_phen = binary_phen.combine(Channel.fromPath("$params.BINARY_ESTIMATORFILE", checkIfExists: true))
 
-    // Binary phenotypes:
+    // Continuous phenotypes:
     continuous_phen = Channel.value(file("$params.CONTINUOUS_PHENOTYPES"))
                         .splitCsv(sep: "\s", limit: 1)
                         .flatten()
