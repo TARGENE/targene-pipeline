@@ -40,6 +40,9 @@ workflow generatePhenotypes {
     withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
 
     phenotypesFromGeneAtlas(binary_phenotypes, continuous_phenotypes, bridge, withdrawal_list)
+    
+    emit:
+        phenotypesFromGeneAtlas.out
 }
 
 
