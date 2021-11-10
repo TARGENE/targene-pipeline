@@ -92,6 +92,7 @@ workflow {
     generatePhenotypes()
 
     // generate TMLE arguments tuples
+    bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
     // Binary phenotypes:
     binary_phen = Channel.value(file("$params.BINARY_PHENOTYPES", checkIfExists: true))
                         .splitCsv(sep: "\s", limit: 1)
@@ -116,5 +117,5 @@ workflow {
                                         .combine(generateQueries.out.flatten())
 
     // compute TMLE estimates
-    TMLE(bgen_files_ch.collect(), generatePhenotypes.out, generateCovariates.out, phenotypes_estimators_queries)
+    TMLE(bgen_files_ch.collect(), generatePhenotypes.out, generateConfounders.out, phenotypes_estimators_queries)
 }
