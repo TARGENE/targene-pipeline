@@ -6,7 +6,21 @@ params.PHENOTYPES_LIST = "NONE"
 params.QUERIES_MODE = "given"
 params.THRESHOLD = 0.9
 
-include { generateCovariates } from './modules/covariates.nf'
+
+workflow generateConfounders {
+    include { generatePCs } from './modules/confounders.nf'
+
+    qc_file = Channel.value(file("$params.QC_FILE"))
+    flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
+    ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
+    bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+    
+    generatePCs(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file)
+
+    emit:
+        generatePCs.out
+}
+
 
 
 workflow generateQueries{
@@ -71,13 +85,8 @@ workflow {
     // Generate queries
     generateQueries()
     
-    // generate covariates
-    qc_file = Channel.value(file("$params.QC_FILE"))
-    flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
-    ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
-    bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
-
-    generateCovariates(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file)
+    // generate confounders
+    generateConfounders()
 
     // generate phenotypes
     generatePhenotypes()
