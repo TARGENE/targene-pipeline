@@ -5,3 +5,4 @@
 .nextflow*
 work/
 test.nf
+publish_dir

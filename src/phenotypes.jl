@@ -13,9 +13,11 @@ function from_geneatlas(parsed_args)
                         continuous_phenotypes,
                         on= :geneatlas_id => :FID)
     
+    select!(merged, Not(:geneatlas_id))
+
     if ~(parsed_args["phenotypes-list"] isa Nothing)
         phen_list = split(parsed_args["phenotypes-list"], ",")
-        merged = merged[!, vcat(["eid", "geneatlas_id"], phen_list)]
+        merged = merged[!, vcat(["eid"], phen_list)]
     end
 
     if ~(parsed_args["withdrawal-list"] isa Nothing)
