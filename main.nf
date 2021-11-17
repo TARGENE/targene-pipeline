@@ -4,6 +4,7 @@ nextflow.enable.dsl = 2
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
 params.PHENOTYPES_LIST = "NONE"
 params.QUERIES_MODE = "given"
+params.PHENOTYPES_IN_PARALLEL = false
 params.THRESHOLD = 0.9
 
 
@@ -20,7 +21,6 @@ workflow generateConfounders {
     emit:
         generatePCs.out
 }
-
 
 
 workflow generateQueries{
@@ -45,6 +45,7 @@ workflow generateQueries{
 
 }
 
+
 workflow generatePhenotypes {
     include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
 
@@ -60,24 +61,44 @@ workflow generatePhenotypes {
 }
 
 
-process TMLE {
-    container "olivierlabayle/tmle-epistasis:0.1.5"
-    label "bigmem"
-    publishDir "$params.OUTDIR", mode: 'symlink'
+workflow generateEstimates {
+    include { TMLE } from './modules/tmle.nf'
 
-    input:
-        path bgenfiles
-        path phenotypefile
-        path confoundersfile
-        tuple val(phenotype), file(estimatorfile), file(queryfile)
-    
-    output:
-        path "estimates*"
-    
-    script:
-        outfile = "estimates_" + queryfile.baseName + "_" + phenotype + ".csv"
-        "julia --project=/GenesInteraction.jl --startup-file=no /GenesInteraction.jl/ukbb_epistasis.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $outfile --phenotype $phenotype"
-    
+    take:
+        phenotypes_file
+        queries_files
+        confounders_file
+
+    main:
+        bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
+        estimator_file = Channel.fromPath("$params.ESTIMATORFILE", checkIfExists: true)
+
+        if (params.PHENOTYPES_LIST != "NONE" & params.PHENOTYPES_IN_PARALLEL == true){
+            phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST", checkIfExists: true)
+                                    .splitText(file: true)
+        }
+        else if (params.PHENOTYPES_LIST != "NONE" & params.PHENOTYPES_IN_PARALLEL == false) {
+            phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST", checkIfExists: true)
+        }
+        else if (params.PHENOTYPES_LIST == "NONE") {
+            phenotypes_list = phenotypes_file.splitCsv(sep: ",", limit: 1)
+                                    .flatten()
+                                    .filter { it != "eid"}
+
+            if (params.PHENOTYPES_IN_PARALLEL == false) {
+                phenotypes_list = phenotypes_list.collectFile(name: 'phenotypes_list.txt', newLine: true)
+            }
+            else {
+                phenotypes_list = phenotypes_list
+                .collectFile(){ item -> [ "${item}.txt", item]}
+            }
+        }
+
+        phen_list_to_queries = queries_files.combine(phenotypes_list)
+
+        // compute TMLE estimates
+        TMLE(bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phenotypes_estimators_queries)
+
 }
 
 
@@ -91,31 +112,7 @@ workflow {
     // generate phenotypes
     generatePhenotypes()
 
-    // generate TMLE arguments tuples
-    bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
-    // Binary phenotypes:
-    binary_phen = Channel.value(file("$params.BINARY_PHENOTYPES", checkIfExists: true))
-                        .splitCsv(sep: "\s", limit: 1)
-                        .flatten()
-                        .filter { it != "FID" & it != "IID"}
-    if (params.PHENOTYPES_LIST != "NONE") { 
-        binary_phen = binary_phen.filter(params.PHENOTYPES_LIST)
-    }
-    binary_est_phen = binary_phen.combine(Channel.fromPath("$params.BINARY_ESTIMATORFILE", checkIfExists: true))
-
-    // Continuous phenotypes:
-    continuous_phen = Channel.value(file("$params.CONTINUOUS_PHENOTYPES"))
-                        .splitCsv(sep: "\s", limit: 1)
-                        .flatten()
-                        .filter { it != "FID" & it != "IID"}
-    if (params.PHENOTYPES_LIST != "NONE") { 
-        continuous_phen = continuous_phen.filter(params.PHENOTYPES_LIST)
-    }
-    continuous_est_phen = continuous_phen.combine(Channel.fromPath("$params.CONTINUOUS_ESTIMATORFILE", checkIfExists: true))
-    // Full argument queue
-    phenotypes_estimators_queries = binary_est_phen.concat(continuous_est_phen)
-                                        .combine(generateQueries.out.flatten())
-
-    // compute TMLE estimates
-    TMLE(bgen_files_ch.collect(), generatePhenotypes.out, generateConfounders.out, phenotypes_estimators_queries)
+    // generate estimates
+    generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
+    
 }
