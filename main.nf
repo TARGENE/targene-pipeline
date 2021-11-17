@@ -62,14 +62,13 @@ workflow generatePhenotypes {
 
 
 workflow generateEstimates {
-    include { TMLE } from './modules/tmle.nf'
-
     take:
         phenotypes_file
         queries_files
         confounders_file
 
     main:
+        include { TMLE } from './modules/tmle.nf'
         bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
         estimator_file = Channel.fromPath("$params.ESTIMATORFILE", checkIfExists: true)
 
