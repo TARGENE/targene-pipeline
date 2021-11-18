@@ -1,5 +1,5 @@
 process TMLE {
-    container "olivierlabayle/tmle-epistasis:0.2.0"
+    container "olivierlabayle/tmle-epistasis:0.2"
     label "bigmem"
     publishDir "$params.OUTDIR", mode: 'symlink'
 
