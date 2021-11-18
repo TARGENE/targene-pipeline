@@ -88,8 +88,9 @@ workflow generateEstimates {
                 phenotypes_list = phenotypes_list.collectFile(name: 'phenotypes_list.txt', newLine: true)
             }
             else {
+                count = 0
                 phenotypes_list = phenotypes_list
-                .collectFile(){ item -> [ "${item}.txt", item]}
+                        .collectFile(){ item -> [ "phenotypes_${count++}.txt", item]}
             }
         }
 
