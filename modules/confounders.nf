@@ -1,7 +1,7 @@
 process filterBED{
     label 'bigmem'
 
-    container "olivierlabayle/ukbb-estimation-pipeline:0.1.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.2.0"
 
     input:
         tuple val(chr_id), file(bedfiles)
@@ -41,7 +41,7 @@ process thinByLD{
 process mergeBEDS{
     label 'bigmem'
 
-    container "olivierlabayle/ukbb-estimation-pipeline:0.1.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.2.0"
     
     input:
         path files
@@ -70,7 +70,7 @@ process buildPCs {
 }
 
 process adapt_flashpca {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.1.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.2.0"
     
     input:
         path flashpca_out

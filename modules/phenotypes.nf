@@ -1,5 +1,5 @@
 process phenotypesFromGeneAtlas {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.1.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.2.0"
     label "bigmem"
 
     input:
