@@ -8,7 +8,7 @@ process TMLE {
         path phenotypefile
         path confoundersfile
         path estimatorfile
-        tuple file(phenotypelist_file), file(queryfile)
+        tuple file(queryfile), file(phenotypelist_file)
     
     output:
         path "estimates.csv"
