@@ -95,7 +95,7 @@ workflow generateEstimates {
         }
 
         phen_list_to_queries = queries_files.combine(phenotypes_list)
-        phen_list_to_queries.count.view()
+        phen_list_to_queries.count().view()
         // compute TMLE estimates
         //TMLE(bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
 
