@@ -70,7 +70,7 @@ workflow generateEstimates {
     main:
         include { TMLE } from './modules/tmle.nf'
         bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
-        estimator_file = Channel.fromPath("$params.ESTIMATORFILE", checkIfExists: true)
+        estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
 
         if (params.PHENOTYPES_LIST != "NONE" & params.PHENOTYPES_IN_PARALLEL == true){
             phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST", checkIfExists: true)
@@ -95,9 +95,9 @@ workflow generateEstimates {
         }
 
         phen_list_to_queries = queries_files.combine(phenotypes_list)
-
+        phen_list_to_queries.count.view()
         // compute TMLE estimates
-        TMLE(bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
+        //TMLE(bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
 
 }
 
