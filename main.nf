@@ -96,7 +96,14 @@ workflow generateEstimates {
         // compute TMLE estimates
         TMLE(bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
 
-        TMLE.out.collectFile(name:"estimates.csv", keepHeader:true, storeDir: params.OUTDIR)
+        // Aggregate results
+        file("$launchDir/tempdir_collect").mkdir()
+        TMLE.out.collectFile({ line -> ["estimates.csv", line.join(",")] }, 
+                    seed: "PHENOTYPE,QUERYNAME,QUERYSTRING,ESTIMATE,PVALUE,LOWER_BOUND,UPPER_BOUND,STD_ERROR",
+                    newLine:true,
+                    skip: 1,
+                    storeDir: params.OUTDIR, 
+                    tempDir:"$launchDir/tempdir_collect")
 
 }
 
