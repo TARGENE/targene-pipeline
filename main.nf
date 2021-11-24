@@ -100,7 +100,7 @@ workflow generateEstimates {
         TMLE.out.collectFile(name:"estimates.csv",
                             keepHeader: true,
                             skip: 1,
-                            storeDir: "$launchDir/results")
+                            storeDir: "$params.OUTDIR")
 
 }
 
