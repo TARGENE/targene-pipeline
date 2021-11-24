@@ -98,7 +98,6 @@ workflow generateEstimates {
 
         // Aggregate results
         TMLE.out.collectFile(name:"estimates.csv",
-                            seed: "PHENOTYPE,QUERYNAME,QUERYSTRING,ESTIMATE,PVALUE,LOWER_BOUND,UPPER_BOUND,STD_ERROR",
                             keepHeader: true,
                             skip: 1,
                             storeDir: "$launchDir/results")
