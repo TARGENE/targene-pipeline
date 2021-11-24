@@ -102,7 +102,7 @@ workflow generateEstimates {
                     seed: "PHENOTYPE,QUERYNAME,QUERYSTRING,ESTIMATE,PVALUE,LOWER_BOUND,UPPER_BOUND,STD_ERROR",
                     newLine:true,
                     skip: 1,
-                    storeDir: params.OUTDIR, 
+                    storeDir: "$launchDir/results", 
                     tempDir:"$launchDir/tempdir_collect")
 
 }
