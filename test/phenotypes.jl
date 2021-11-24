@@ -21,7 +21,6 @@ using DataFrames
     phenotypes = CSV.File(parsed_args["output"]) |> DataFrame
 
     @test names(phenotypes) == ["eid",
-                                "geneatlas_id",
                                 "clinical_c_Block_J40-J47",
                                 "clinical_c_G25",
                                 "clinical_c_G20",
@@ -30,7 +29,6 @@ using DataFrames
                                 "1727-0.0",
                                 "1548-0.0"]
     @test phenotypes.eid == [1000023, 1000030]
-    @test phenotypes.geneatlas_id == [1048581, 5242887]
 
     rm(parsed_args["output"])
 
@@ -49,12 +47,10 @@ using DataFrames
     phenotypes = CSV.File(parsed_args["output"]) |> DataFrame
 
     @test names(phenotypes) == ["eid",
-                                "geneatlas_id",
                                 "clinical_c_G25",
                                 "clinical_c_G20",
                                 "1408-0.0"]
     @test phenotypes.eid == [1000014, 1000023, 1000030]
-    @test phenotypes.geneatlas_id == [2097158, 1048581, 5242887]
 
     rm(parsed_args["output"])
 
