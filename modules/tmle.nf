@@ -1,5 +1,5 @@
 process TMLE {
-    container "olivierlabayle/tmle-epistasis:0.2.0"
+    container "olivierlabayle/tmle-epistasis:0.21.0"
     label "bigmem"
 
     input:
