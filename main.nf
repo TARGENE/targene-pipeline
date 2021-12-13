@@ -97,7 +97,7 @@ workflow generateEstimates {
         // compute TMLE estimates
         estimates = VariantRun("epistasis", bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
         // Aggregate results
-        estimates.out.collectFile(name:"epistasis_estimates.csv",
+        estimates.collectFile(name:"epistasis_estimates.csv",
                             keepHeader: true,
                             skip: 1,
                             storeDir: "$params.OUTDIR")
@@ -105,7 +105,7 @@ workflow generateEstimates {
         if (params.CROSSVAL == true) {
             crossval_results = VariantRun("crossval", bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
             // Aggregate results
-            crossval_results.out.collectFile(name:"crossval_estimates.csv",
+            crossval_results.collectFile(name:"crossval_estimates.csv",
                                 keepHeader: true,
                                 skip: 1,
                                 storeDir: "$params.OUTDIR")
