@@ -11,7 +11,7 @@ params.CROSSVAL = false
 include { generatePCs } from './modules/confounders.nf'
 include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
-include { VariantRun } from './modules/tmle.nf'
+include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
 
 
 workflow generateConfounders {
@@ -95,17 +95,17 @@ workflow generateEstimates {
 
         phen_list_to_queries = queries_files.combine(phenotypes_list)
         // compute TMLE estimates
-        estimates = VariantRun("epistasis", bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
+        TMLE("epistasis", bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
         // Aggregate results
-        estimates.collectFile(name:"epistasis_estimates.csv",
+        TMLE.out.collectFile(name:"epistasis_estimates.csv",
                             keepHeader: true,
                             skip: 1,
                             storeDir: "$params.OUTDIR")
         
         if (params.CROSSVAL == true) {
-            crossval_results = VariantRun("crossval", bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
+            CrossVal("crossval", bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
             // Aggregate results
-            crossval_results.collectFile(name:"crossval_estimates.csv",
+            CrossVal.out.collectFile(name:"crossval_estimates.csv",
                                 keepHeader: true,
                                 skip: 1,
                                 storeDir: "$params.OUTDIR")
