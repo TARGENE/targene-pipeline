@@ -1,8 +1,9 @@
-process TMLE {
-    container "olivierlabayle/tmle-epistasis:0.21.1"
+process VariantRun {
+    container "olivierlabayle/tmle-epistasis:0.22.0"
     label "bigmem"
 
     input:
+        val mode
         path bgenfiles
         path phenotypefile
         path confoundersfile
@@ -10,9 +11,9 @@ process TMLE {
         tuple file(queryfile), file(phenotypelist_file)
     
     output:
-        path "estimates.csv"
+        path "${mode}_estimates.csv"
     
     script:
-        "julia --project=/GenesInteraction.jl --startup-file=no /GenesInteraction.jl/ukbb_epistasis.jl $phenotypefile $confoundersfile $queryfile $estimatorfile estimates.csv --phenotypes-list $phenotypelist_file"
+        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile ${mode}_estimates.csv --phenotypes-list $phenotypelist_file $mode"
     
 }
