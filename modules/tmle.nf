@@ -1,5 +1,5 @@
 process VariantRun {
-    container "olivierlabayle/tmle-epistasis:0.22.0"
+    container "olivierlabayle/tmle-epistasis:0.23.0"
     label "bigmem"
 
     input:
