@@ -1,5 +1,5 @@
 process GRM {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.2.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.2.1"
     label "verybigmem"
 
     input:
