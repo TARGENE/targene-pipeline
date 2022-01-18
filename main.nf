@@ -12,6 +12,12 @@ include { generatePCs } from './modules/confounders.nf'
 include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
 include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
+include { GRM } from './modules/grm.nf'
+
+workflow generateGRM {
+    bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+    GRM(bed_files_ch.collect())
+}
 
 
 workflow generateConfounders {
