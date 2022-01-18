@@ -19,6 +19,7 @@ function computeGRM(parsed_args)
     nbSNPs = 0
     mkdir(outdir)
     for (fileid, bedfile) in enumerate(bedfiles)
+        println("Aggregating GRM from file: $bedfile")
         snparray = SnpArray(bedfile)
         n, p = size(snparray)
         # Update total amount of SNPs for normalization
