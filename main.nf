@@ -16,7 +16,7 @@ include { GRM } from './modules/grm.nf'
 
 workflow generateGRM {
     bed_files_ch = Channel.fromPath("$params.UKBB_BED_FILES", checkIfExists: true)
-    GRM(bed_files_ch.collect())
+    GRM(bed_files_ch.toList())
     emit:
         GRM.out
 }
