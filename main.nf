@@ -16,7 +16,7 @@ include { GRM } from './modules/grm.nf'
 
 workflow generateGRM {
     bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
-    GRM(bed_files_ch.flatten())
+    GRM(bed_files_ch.collect())
     emit:
         GRM.out
 }
