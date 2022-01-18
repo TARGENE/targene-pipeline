@@ -12,7 +12,9 @@ function update(outdir, i, grmᵢ, nbSNPs, finalize)
 end
 
 
-function computeGRM(outdir, bedfiles)
+function computeGRM(parsed_args)
+    outdir = parsed_args["outdir"]
+    bedfiles = parsed_args["bed-files"]
     nfiles = length(bedfiles)
     nbSNPs = 0
     mkdir(outdir)
