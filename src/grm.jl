@@ -1,6 +1,3 @@
-
-using Serialization 
-
 function update(outdir, i, grmᵢ, nbSNPs, finalize)
     filepath = joinpath(outdir, "grm_$i.jls")
     if isfile(filepath)
