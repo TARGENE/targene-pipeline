@@ -1,5 +1,5 @@
 process filterASB {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.2.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.2.1"
 
     input:
         path asb_snp_files
