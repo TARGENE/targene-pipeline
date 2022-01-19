@@ -1,7 +1,7 @@
 process filterBED{
     label 'bigmem'
 
-    container "olivierlabayle/ukbb-estimation-pipeline:0.2.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.2.1"
 
     input:
         tuple val(chr_id), file(bedfiles)
