@@ -1,24 +1,19 @@
-function update(outdir, i, grmᵢ, nbSNPs, finalize)
-    filepath = joinpath(outdir, "grm_$i.jls")
-    if isfile(filepath)
-        old_grmᵢ = deserialize(filepath)
-        grmᵢ = grmᵢ + old_grmᵢ
-    end
-    grmᵢ = finalize ? grmᵢ / (2*(nbSNPs-1)) : grmᵢ
-    serialize(filepath, grmᵢ)
-end
-
 
 function computeGRM(parsed_args)
-    outdir = parsed_args["outdir"]
     bedfiles = parsed_args["bed-files"]
     nfiles = length(bedfiles)
+
     nbSNPs = 0
-    mkdir(outdir)
+    file = h5open(parsed_args["outfile"], "w")
+    GRM = nothing
+
     for (fileid, bedfile) in enumerate(bedfiles)
         println("Aggregating GRM from file: $bedfile")
         snparray = SnpArray(bedfile)
         n, p = size(snparray)
+        if GRM === nothing
+            GRM = create_dataset(file, "GRM", datatype(Float32), dataspace(n, n), chunk=(n, 1), blosc=3)
+        end
         # Update total amount of SNPs for normalization
         nbSNPs += p
 
@@ -26,10 +21,16 @@ function computeGRM(parsed_args)
         G = Matrix{Float32}(undef, n, p)
         Base.copyto!(G, snparray, model=ADDITIVE_MODEL, impute=true, center=true, scale=true)
         
-        # Update individual GRMᵢ in multithreading mode
-        Threads.@threads for i in 1:n
-            grmᵢ = G*G[i, :]
-            update(outdir, i, grmᵢ, nbSNPs, fileid==nfiles)
+        # Update individual GRMᵢ
+        for i in 1:n
+            GRM[:, i] += G*G[i, :]
+            # Normalize after last file
+            if (fileid == nfiles)
+                GRM[:, i] /= (2*(nbSNPs-1))
+            end
         end
     end
+    close(file)
 end
+
+

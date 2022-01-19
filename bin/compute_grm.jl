@@ -6,8 +6,8 @@ function parse_commandline()
     s = ArgParseSettings(description="Computes the GRM given a list of bed files")
 
     @add_arg_table s begin
-        "outdir"
-            help = "A directory will be created and each line of the GRM will be represented as a file"
+        "outfile"
+            help = "Path to store the GRM"
             required = true
         "bed-files"
             nargs = '+'

@@ -5,7 +5,7 @@ using CSV
 using TOML
 using BGEN
 using SnpArrays
-using Serialization
+using HDF5
 
 # INCLUDES
 #####################################################################

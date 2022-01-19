@@ -3,14 +3,15 @@ module TestGRM
 using Test
 using UKBBEpistasisPipeline
 using SnpArrays
-using Serialization
+using HDF5
+
 
 @testset "Test computeGRM" begin
     # As I use multiple times the same file, the GRM constructed from those files should 
     # be the same as the GRM computed from only 1 file
-    outdir = "grmmatrix"
+    outfile = "grmmatrix.hdf5"
     parsed_args = Dict(
-        "outdir" => outdir,
+        "outfile" => outfile,
         "bed-files" => [SnpArrays.datadir("mouse.bed"), SnpArrays.datadir("mouse.bed")]
     )
 
@@ -21,13 +22,11 @@ using Serialization
 
     computeGRM(parsed_args)
     # Check proper amount of lines are written
-    @test length(readdir(outdir)) == 1940
-    # Check a few lines at random
-    for i in (1, 20, 365, 1856)
-        grm_line = deserialize(joinpath(outdir, "grm_$i.jls"))
-        @test grm_line ≈ basegrm[i, :]
-    end
-    rm(outdir, recursive=true)
+    file = h5open(outfile)
+
+    @test file["GRM"][:,:] ≈ basegrm
+
+    rm(outfile)
 end
 
 end
