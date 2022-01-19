@@ -6,9 +6,9 @@ process GRM {
         path bedfiles
     
     output:
-        path "grmmatrix"
+        path "grm.hdf5"
     
     script:
         only_bedfiles = bedfiles.findAll { it.getName().endsWith(".bed") }
-        "julia --threads=${task.cpus} --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/compute_grm.jl grmmatrix ${only_bedfiles.join(" ")}"
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/compute_grm.jl grm.hdf5 ${only_bedfiles.join(" ")}"
 }
