@@ -1,36 +1,38 @@
 
-function computeGRM(parsed_args)
-    bedfiles = parsed_args["bed-files"]
-    nfiles = length(bedfiles)
+function grm_from_bedfile(bedfile)
+    println("Computing partial GRM from file: $bedfile")
+    snparray = SnpArray(bedfile)
+    n, p = size(snparray)
+    grm(snparray), (n, p)
+end
 
-    nbSNPs = 0
-    file = h5open(parsed_args["outfile"], "w")
-    GRM = nothing
+updateGRM!(grm, partial_grm, p) = grm[:, :] += partial_grm*p
 
-    for (fileid, bedfile) in enumerate(bedfiles)
-        println("Aggregating GRM from file: $bedfile")
-        snparray = SnpArray(bedfile)
-        n, p = size(snparray)
-        if GRM === nothing
-            GRM = create_dataset(file, "GRM", datatype(Float32), dataspace(n, n), chunk=(n, 1), blosc=3)
-        end
-        # Update total amount of SNPs for normalization
-        nbSNPs += p
+function initialize_grm(grmfile, bedfile)
+    initial_grm, (n, p) = grm_from_bedfile(bedfile)
+    
+    grm = create_dataset(grmfile, "GRM", datatype(Float32), dataspace(n, n), chunk=(n, 1), blosc=3)
+    updateGRM!(grm, initial_grm, p)
 
-        # Compute centered/normalized genotype counts
-        G = Matrix{Float32}(undef, n, p)
-        Base.copyto!(G, snparray, model=ADDITIVE_MODEL, impute=true, center=true, scale=true)
-        
-        # Update individual GRMᵢ
-        for i in 1:n
-            GRM[:, i] += G*G[i, :]
-            # Normalize after last file
-            if (fileid == nfiles)
-                GRM[:, i] /= (2*(nbSNPs-1))
-            end
-        end
-    end
-    close(file)
+    return grm, p
 end
 
 
+function computeGRM(parsed_args)
+    outfile = h5open(parsed_args["outfile"], "w")
+    bedfiles = parsed_args["bed-files"]
+
+    # Initialize the GRM from the first bedfile
+    grm, nbSNPs = initialize_grm(outfile, bedfiles[1])
+
+    for bedfile in bedfiles[2:end]
+        partial_grm, (n, p) = grm_from_bedfile(bedfile)
+        updateGRM!(grm, partial_grm, p)
+        # Update total amount of SNPs for later normalization
+        nbSNPs += p
+    end
+    # Normalization
+    grm[:, :] /= nbSNPs
+
+    close(outfile)
+end
