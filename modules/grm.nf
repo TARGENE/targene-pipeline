@@ -1,14 +1,27 @@
-process GRM {
+process GRMPart {
     container "olivierlabayle/ukbb-estimation-pipeline:0.2.1"
-    label "verybigmem"
+    label "bigmem"
 
     input:
-        path bedfiles
-    
+        path bedfile
+        val nparts
+        val part_id
+
     output:
-        path "grm.hdf5"
+        path "UKKK.*.grm.*"
     
     script:
-        only_bedfiles = bedfiles.findAll { it.getName().endsWith(".bed") }
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/compute_grm.jl grm.hdf5 ${only_bedfiles.join(" ")}"
+        "gcta64 --bfile $bedfile --make-grm-part $nparts $part_id --thread-num ${task.cpus} --out UKKK"
+}
+
+process AggregateGRMFiles {
+    input:
+        path ukbb_grm_files
+        val extension
+
+    output:
+        path "UKBB$extension"
+
+    script:
+        "cat UKBB*$extension > UKBB$extension"
 }
