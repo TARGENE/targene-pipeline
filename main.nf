@@ -8,27 +8,65 @@ params.PHENOTYPES_IN_PARALLEL = false
 params.THRESHOLD = 0.9
 params.CROSSVAL = false
 
+include { IIDGenotypes } from './modules/genotypes.nf'
 include { generatePCs } from './modules/confounders.nf'
 include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
 include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
-include { GRM } from './modules/grm.nf'
-
-workflow generateGRM {
-    bed_files_ch = Channel.fromPath("$params.UKBB_BED_FILES", checkIfExists: true)
-    GRM(bed_files_ch.toList())
-    emit:
-        GRM.out
-}
+include { GRM; AggregateGRMFiles } from './modules/grm.nf'
 
 
-workflow generateConfounders {
+
+workflow generateIIDGenotypes {
+    publishDir "$params.OUTDIR/iid_genotypes", mode: 'symlink'
+
     qc_file = Channel.value(file("$params.QC_FILE"))
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
     ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
     bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
-    
-    generatePCs(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file)
+
+    IIDGenotypes(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file)
+
+    emit:
+        IIDGenotypes.out
+}
+
+workflow generateGRM {
+    publishDir "$params.OUTDIR/GRM", mode: 'symlink'
+
+    take:
+        iid_genotypes
+
+    main:
+        grm_parts = Channel.from( 0..params.GRM_NSPLITS )
+        GRM(iid_genotypes, params.GRM_NSPLITS, grm_parts)
+        // Split .id, .bin, .N.bin
+        GRM.flatten().branch {
+            id: it.getName().endsWith(".grm.id")
+            bin: it.getName().endsWith(".grm.bin")
+            n_bin: it.getName().endsWith(".grm.N.bin")
+        }
+        .set { result }
+        // Aggregate files
+        id_file = AggregateGRMFiles(result.id, ".grm.id")
+        bin_file = AggregateGRMFiles(result.bin, ".grm.bin")
+        n_bin_file = AggregateGRMFiles(result.n_bin, ".grm.N.bin")
+
+    emit:
+        id_file.out
+        bin_file.out
+        n_bin_file.out
+}
+
+
+workflow generateConfounders {
+    publishDir "$params.OUTDIR/confounders", mode: 'symlink'
+
+    take:
+        iid_genotypes
+
+    main:
+        generatePCs(iid_genotypes)
 
     emit:
         generatePCs.out
@@ -36,6 +74,8 @@ workflow generateConfounders {
 
 
 workflow generateQueries{
+    publishDir "$params.OUTDIR/queries", mode: 'symlink'
+
     if (params.QUERIES_MODE == "ASBxTransActors") {
         asb_snp_ch = Channel.fromPath("$params.ASB_FILES", checkIfExists: true)
         trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
@@ -124,14 +164,17 @@ workflow generateEstimates {
 
 
 workflow {
-    // Generate GRM
-    generateGRM()
-
     // Generate queries
     generateQueries()
-    
+
+    // Generate IID Genotypes
+    generateIIDGenotypes()
+
     // generate confounders
-    generateConfounders()
+    generateConfounders(generateIIDGenotypes.out)
+
+    // generate GRM
+    generateGRM(generateIIDGenotypes.out)
 
     // generate phenotypes
     generatePhenotypes()
