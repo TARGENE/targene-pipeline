@@ -35,9 +35,9 @@ workflow generateGRM {
 
     main:
         grm_parts = Channel.from( 0..params.GRM_NSPLITS )
-        GRM(iid_genotypes, params.GRM_NSPLITS, grm_parts)
+        GRMPart(iid_genotypes, params.GRM_NSPLITS, grm_parts)
         // Split .id, .bin, .N.bin
-        GRM.flatten().branch {
+        GRMPart.flatten().branch {
             id: it.getName().endsWith(".grm.id")
             bin: it.getName().endsWith(".grm.bin")
             n_bin: it.getName().endsWith(".grm.N.bin")
@@ -163,15 +163,15 @@ workflow {
     generateIIDGenotypes()
 
     // generate confounders
-    generateConfounders(generateIIDGenotypes.out)
+    // generateConfounders(generateIIDGenotypes.out)
 
     // generate GRM
     generateGRM(generateIIDGenotypes.out)
 
     // generate phenotypes
-    generatePhenotypes()
+    // generatePhenotypes()
 
-    // generate estimates
-    generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
+    // // generate estimates
+    // generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
     
 }
