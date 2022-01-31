@@ -15,6 +15,7 @@ process buildPCs {
 
 process adapt_flashpca {
     container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    publishDir "$params.OUTDIR/confounders", mode: 'symlink'
     
     input:
         path flashpca_out
