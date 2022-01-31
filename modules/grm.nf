@@ -1,5 +1,5 @@
 process GRMPart {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.2.1"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
     label "bigmem"
 
     input:

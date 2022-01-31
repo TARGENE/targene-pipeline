@@ -1,5 +1,3 @@
-
-
 process buildPCs {
     cpus 8
     container "ktetleycampbell/flashpca:1.0"
@@ -16,7 +14,7 @@ process buildPCs {
 }
 
 process adapt_flashpca {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.2.0"
+    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
     
     input:
         path flashpca_out
