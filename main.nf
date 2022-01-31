@@ -13,7 +13,7 @@ include { generatePCs } from './modules/confounders.nf'
 include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
 include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
-include { GRM; AggregateGRMFiles } from './modules/grm.nf'
+include { GRMPart; AggregateGRMFiles } from './modules/grm.nf'
 
 
 
