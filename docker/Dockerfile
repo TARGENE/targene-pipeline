@@ -1,4 +1,4 @@
-FROM julia:1.6.3
+FROM julia:1.7.1
 
 # Install GCTA: for GRM computation
 RUN apt update -y && apt install -y zip
