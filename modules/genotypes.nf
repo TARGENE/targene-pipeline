@@ -40,6 +40,7 @@ process thinByLD{
 process mergeBEDS{
     label 'bigmem'
     container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    publishDir "$params.OUTDIR/iid_genotypes", mode: 'symlink'
     
     input:
         path files

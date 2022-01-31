@@ -14,6 +14,7 @@ process filterASB {
 
 process queriesFromASBxTransActors {
     container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    publishDir "$params.OUTDIR/queries", mode: 'symlink'
 
     input:
         path filtered_asb_snps
@@ -34,6 +35,8 @@ process queriesFromASBxTransActors {
 }
 
 process queriesFromQueryFiles{
+    publishDir "$params.OUTDIR/queries", mode: 'symlink'
+    
     input:
         path query_file
     

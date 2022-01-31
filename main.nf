@@ -18,8 +18,6 @@ include { GRMPart; AggregateGRMFiles } from './modules/grm.nf'
 
 
 workflow generateIIDGenotypes {
-    publishDir "$params.OUTDIR/iid_genotypes", mode: 'symlink'
-
     qc_file = Channel.value(file("$params.QC_FILE"))
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
     ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
@@ -32,8 +30,6 @@ workflow generateIIDGenotypes {
 }
 
 workflow generateGRM {
-    publishDir "$params.OUTDIR/GRM", mode: 'symlink'
-
     take:
         iid_genotypes
 
@@ -60,8 +56,6 @@ workflow generateGRM {
 
 
 workflow generateConfounders {
-    publishDir "$params.OUTDIR/confounders", mode: 'symlink'
-
     take:
         iid_genotypes
 
@@ -74,8 +68,6 @@ workflow generateConfounders {
 
 
 workflow generateQueries{
-    publishDir "$params.OUTDIR/queries", mode: 'symlink'
-
     if (params.QUERIES_MODE == "ASBxTransActors") {
         asb_snp_ch = Channel.fromPath("$params.ASB_FILES", checkIfExists: true)
         trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)

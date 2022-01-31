@@ -15,6 +15,8 @@ process GRMPart {
 }
 
 process AggregateGRMFiles {
+    publishDir "$params.OUTDIR/GRM", mode: 'symlink'
+    
     input:
         path ukbb_grm_files
         val extension
