@@ -65,7 +65,7 @@ workflow generateConfounders {
         iid_genotypes
 
     main:
-        generatePCs(iid_genotypes)
+        generatePCs(iid_genotypes.collect())
 
     emit:
         generatePCs.out
@@ -168,13 +168,13 @@ workflow {
     generateIIDGenotypes()
 
     // generate confounders
-    // generateConfounders(generateIIDGenotypes.out)
+    generateConfounders(generateIIDGenotypes.out)
 
     // generate GRM
     generateGRM(generateIIDGenotypes.out)
 
     // generate phenotypes
-    // generatePhenotypes()
+    generatePhenotypes()
 
     // // generate estimates
     // generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
