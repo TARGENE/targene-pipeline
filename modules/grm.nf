@@ -13,6 +13,7 @@ process GRMPart {
     
     script:
         base = bedfiles.first().getName().split(".")[0]
+        println(base)
         "gcta64 --bfile $base --make-grm-part $nparts $part_id --thread-num ${task.cpus} --out UKBB"
 }
 
