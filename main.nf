@@ -39,7 +39,7 @@ workflow generateGRM {
         iid_genotypes
 
     main:
-        grm_parts = Channel.from( 0..params.GRM_NSPLITS )
+        grm_parts = Channel.from( 1..params.GRM_NSPLITS )
         GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
         // Split .id, .bin, .N.bin
         GRMPart.out
