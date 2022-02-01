@@ -40,7 +40,7 @@ workflow generateGRM {
 
     main:
         grm_parts = Channel.from( 0..params.GRM_NSPLITS )
-        GRMPart(iid_genotypes, params.GRM_NSPLITS, grm_parts)
+        GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
         // Split .id, .bin, .N.bin
         GRMPart.out
             .flatten()
@@ -171,7 +171,7 @@ workflow {
     // generateConfounders(generateIIDGenotypes.out)
 
     // generate GRM
-    // generateGRM(generateIIDGenotypes.out)
+    generateGRM(generateIIDGenotypes.out)
 
     // generate phenotypes
     // generatePhenotypes()
