@@ -63,7 +63,7 @@ workflow IIDGenotypes{
     main:
         filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks)
         ld_pruned = thinByLD(flashpca_excl_reg, filtered_bedfiles)
-        merged = mergeBEDS(ld_pruned.collect())
+        mergeBEDS(ld_pruned.collect())
     emit:
-        merged.out
+        mergeBEDS.out
 }
