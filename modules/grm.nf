@@ -4,7 +4,7 @@ process GRMPart {
     label "multithreaded"
 
     input:
-        path bedfile
+        path bedfiles
         val nparts
         val part_id
 
@@ -12,7 +12,8 @@ process GRMPart {
         path "UKBB*.grm.*"
     
     script:
-        "gcta64 --bfile $bedfile --make-grm-part $nparts $part_id --thread-num ${task.cpus} --out UKBB"
+        base = bedfiles.first().getName().split(".")[0]
+        "gcta64 --bfile $base --make-grm-part $nparts $part_id --thread-num ${task.cpus} --out UKBB"
 }
 
 process AggregateGRMFiles {
