@@ -1,6 +1,7 @@
 process GRMPart {
     container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
     label "bigmem"
+    label "multithreaded"
 
     input:
         path bedfile
@@ -8,22 +9,22 @@ process GRMPart {
         val part_id
 
     output:
-        path "UKKK.*.grm.*"
+        path "UKBB*.grm.*"
     
     script:
-        "gcta64 --bfile $bedfile --make-grm-part $nparts $part_id --thread-num ${task.cpus} --out UKKK"
+        "gcta64 --bfile $bedfile --make-grm-part $nparts $part_id --thread-num ${task.cpus} --out UKBB"
 }
 
 process AggregateGRMFiles {
     publishDir "$params.OUTDIR/GRM", mode: 'symlink'
-    
+
     input:
-        path ukbb_grm_files
-        val extension
+        path grm_files
 
     output:
-        path "UKBB$extension"
+        path "UKBB.Full.grm.*"
 
     script:
-        "cat UKBB*$extension > UKBB$extension"
+        ext = grmfiles.first().getName().split(".grm.")[1]
+        "cat UKBB*.grm.$ext > UKBB.Full.grm.$ext"
 }

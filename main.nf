@@ -16,6 +16,11 @@ include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
 include { GRMPart; AggregateGRMFiles } from './modules/grm.nf'
 
 
+def grm_criteria = branchCriteria {
+                id: it.getName().endsWith(".grm.id")
+                bin: it.getName().endsWith(".grm.bin")
+                n_bin: it.getName().endsWith(".grm.N.bin")
+                }
 
 workflow generateIIDGenotypes {
     qc_file = Channel.value(file("$params.QC_FILE"))
@@ -39,21 +44,19 @@ workflow generateGRM {
         // Split .id, .bin, .N.bin
         GRMPart.out
             .flatten()
-            .branch {
-                id: it.getName().endsWith(".grm.id")
-                bin: it.getName().endsWith(".grm.bin")
-                n_bin: it.getName().endsWith(".grm.N.bin")
-        }
-        .set { result }
-        // Aggregate files
-        id_file = AggregateGRMFiles(result.id, ".grm.id")
-        bin_file = AggregateGRMFiles(result.bin, ".grm.bin")
-        n_bin_file = AggregateGRMFiles(result.n_bin, ".grm.N.bin")
+            .branch(grm_criteria)
+            .set { splitted_grm }
+        // Aggregate files by extension
+        grm_files = splitted_grm.id.collect().concat(splitted_grm.bin.collect(), splitted_grm.n_bin.collect())
+        AggregateGRMFiles(grm_files)
+        // Dispatch Full GRM by extension for reuse
+        AggregateGRMFiles.out.branch(grm_criteria)
+            .set { grm }
 
     emit:
-        id_file.out
-        bin_file.out
-        n_bin_file.out
+        grm_id = grm.id
+        grm_bin = grm.bin
+        grm_nbin = grm.n_bin
 }
 
 
