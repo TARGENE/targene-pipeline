@@ -171,7 +171,7 @@ workflow {
     // generateConfounders(generateIIDGenotypes.out)
 
     // generate GRM
-    generateGRM(generateIIDGenotypes.out)
+    // generateGRM(generateIIDGenotypes.out)
 
     // generate phenotypes
     // generatePhenotypes()
