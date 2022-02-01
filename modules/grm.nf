@@ -20,7 +20,7 @@ process AggregateGRMFiles {
     publishDir "$params.OUTDIR/GRM", mode: 'symlink'
 
     input:
-        path grm_files
+        path grmfiles
 
     output:
         path "UKBB.Full.grm.*"
