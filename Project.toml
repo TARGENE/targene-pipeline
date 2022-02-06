@@ -5,10 +5,10 @@ version = "0.3.0"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+Arrow = "69666777-d1a9-59fb-9406-91d4454c9d45"
 BGEN = "6db4b851-9beb-4b83-9d64-eb1cfb37721d"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
 SnpArrays = "4e780e97-f5bf-4111-9dc4-b70aaf691b06"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
@@ -17,5 +17,4 @@ ArgParse = "1.1"
 BGEN = "0.1"
 CSV = "0.9"
 DataFrames = "1.2"
-HDF5 = "0.15"
 SnpArrays = "0.3"

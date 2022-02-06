@@ -41,17 +41,7 @@ workflow generateGRM {
     main:
         grm_parts = Channel.from( 1..params.GRM_NSPLITS )
         GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
-        // Split .id, .bin, .N.bin
-        GRMPart.out
-            .flatten()
-            .branch(grm_criteria)
-            .set { splitted_grm }
-        // Aggregate files by extension
-        grm_files = splitted_grm.id.collect().concat(splitted_grm.bin.collect(), splitted_grm.n_bin.collect())
-        AggregateGRMFiles(grm_files)
-        // Dispatch Full GRM by extension for reuse
-        AggregateGRMFiles.out.branch(grm_criteria)
-            .set { grm }
+        AggregateGRMFiles(GRMPart.out.collect())
 
     emit:
         grm_id = grm.id
