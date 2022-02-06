@@ -23,9 +23,8 @@ process AggregateGRMFiles {
         path grmfiles
 
     output:
-        path "UKBB.Full.grm.*"
+        path "UKBB.Full*"
 
     script:
-        ext = grmfiles.first().getName().split(".grm.")[1]
-        "cat UKBB*.grm.$ext > UKBB.Full.grm.$ext"
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/aggregate_grm.jl UKBB UKBB_GRM"
 }
