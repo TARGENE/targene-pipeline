@@ -44,9 +44,7 @@ workflow generateGRM {
         AggregateGRMFiles(GRMPart.out.collect())
 
     emit:
-        grm_id = grm.id
-        grm_bin = grm.bin
-        grm_nbin = grm.n_bin
+        AggregateGRMFiles.out
 }
 
 
