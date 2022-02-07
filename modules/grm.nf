@@ -17,6 +17,9 @@ process GRMPart {
 }
 
 process AggregateGRMFiles {
+    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    label "bigmem"
+    label "multithreaded"
     publishDir "$params.OUTDIR/GRM", mode: 'symlink'
 
     input:
@@ -26,5 +29,5 @@ process AggregateGRMFiles {
         path "UKBB.Full*"
 
     script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/aggregate_grm.jl UKBB UKBB_GRM"
+        "julia --project=/EstimationPipeline.jl --startup-file=no --threads ${task.cpus} /EstimationPipeline.jl/bin/aggregate_grm.jl UKBB UKBB_GRM"
 }
