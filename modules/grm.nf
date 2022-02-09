@@ -34,6 +34,7 @@ process AggregateIDFiles {
 process PrependSize {
     container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
     publishDir "$params.OUTDIR/GRM", mode: 'symlink'
+    label "bigmem"
 
     input:
         path grmpart_file
