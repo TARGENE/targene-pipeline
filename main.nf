@@ -36,7 +36,7 @@ workflow generateGRM {
         grm_parts = Channel.from( 1..params.GRM_NSPLITS )
         GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
 
-        GRMPart.branch {
+        GRMPart.out.flatten().branch {
             id: it.getName().endsWith(".grm.id")
             bin: it.getName().endsWith(".grm.bin")
             n_bin: it.getName().endsWith(".grm.N.bin")
