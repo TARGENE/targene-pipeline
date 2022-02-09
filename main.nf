@@ -16,12 +16,6 @@ include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
 include { GRMPart; AggregateIDFiles; PrependSize } from './modules/grm.nf'
 
 
-def grm_criteria = branchCriteria {
-                id: it.getName().endsWith(".grm.id")
-                bin: it.getName().endsWith(".grm.bin")
-                n_bin: it.getName().endsWith(".grm.N.bin")
-                }
-
 workflow generateIIDGenotypes {
     qc_file = Channel.value(file("$params.QC_FILE"))
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
@@ -42,7 +36,7 @@ workflow generateGRM {
         grm_parts = Channel.from( 1..params.GRM_NSPLITS )
         GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
 
-        GRMPart.flatten().branch {
+        GRMPart.branch {
             id: it.getName().endsWith(".grm.id")
             bin: it.getName().endsWith(".grm.bin")
             n_bin: it.getName().endsWith(".grm.N.bin")
@@ -170,13 +164,13 @@ workflow {
     generateIIDGenotypes()
 
     // generate confounders
-    // generateConfounders(generateIIDGenotypes.out)
+    generateConfounders(generateIIDGenotypes.out)
 
     // generate GRM
     generateGRM(generateIIDGenotypes.out)
 
     // generate phenotypes
-    // generatePhenotypes()
+    generatePhenotypes()
 
     // // generate estimates
     // generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
