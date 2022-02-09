@@ -23,6 +23,6 @@ export generate_queries
 export filter_asb
 export filter_chromosome, merge_beds, adapt_flashpca
 export prepare_phenotypes
-export grm_parts_to_arrow
+export prepend_size
 
 end

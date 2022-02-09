@@ -5,39 +5,33 @@ function fillgrmpart!(grmpart, io)
     end
 end
 
-function ReagGRMPart(file)
+function grm_part_from_gcta(file)
     io = open(file)
     grmpart = Float32[]
     fillgrmpart!(grmpart, io)
-    return DataFrame(RELATIONSHIPS=grmpart)
+    return grmpart
 end
 
 
-function grm_parts_to_arrow(parsed_args)
-    inprefix = parsed_args["inprefix"]
-    outprefix = parsed_args["outprefix"]
-    dir, baseprefix = splitdir(inprefix)
+"""
+    prepend_size(parsed_args)
 
-    binfiles = String[]
-    ids = DataFrame()
-
-    dir_ = dir == "" ? "." : dir
-    # The sorting ensures that grm parts are ordered
-    for file in sort(readdir(dir_))
-        # Read files only pertaining to the GRM parts
-        if contains(file, ".part_")
-            if endswith(file, "grm.bin") && contains(file, ".part_")
-                push!(binfiles, joinpath(dir, file))
-            elseif endswith(file, "grm.id") && startswith(file, baseprefix)
-                part_ids = CSV.File(joinpath(dir, file), header=["FAMILY_ID", "ID"]) |> DataFrame
-                ids = vcat(ids, part_ids)
-            end
-        end
+This unfortunate procedure is intended for reading speed. If the size of the 
+array on disk is known in advance then reading is improved by 100 folds.
+"""
+function prepend_size(parsed_args)
+    grmpart = grm_part_from_gcta(parsed_args["in-grmfile"])
+    open(parsed_args["out-grmfile"], "w") do io
+        write(io, size(grmpart, 1))
+        write(io, grmpart)
     end
-    # Write arrow GRM
-    grm_parts = Tables.partitioner(ReagGRMPart, binfiles)
-    Arrow.write(string(outprefix, ".arrow"), grm_parts)
-    # Write ids
-    CSV.write(string(outprefix, ".ids.csv"), ids)
 end
 
+
+function grm_part(grmpart_file)
+    io = open(grmpart_file)
+    grmpart_size = read(io, Int)
+    GRMPart = Vector{Float32}(undef, grmpart_size)
+    read!(io, GRMPart)
+    return GRMPart
+end

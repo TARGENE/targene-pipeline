@@ -1,28 +1,21 @@
 module TestGRM
 using Test
 using UKBBEpistasisPipeline
-using CSV
-using DataFrames
-using Arrow
 
-@testset "Test GRMfromGCTAFile" begin
-    parsed_args = Dict("inprefix"=> "data/grm/test", "outprefix"=>"GRM")
-    arrow_file = "GRM.arrow"
-    ids_file = "GRM.ids.csv"
-    grm_parts_to_arrow(parsed_args)
+@testset "Test prepend_size" begin
+    parsed_args = Dict(
+        "in-grmfile"=> "data/grm/test.part_1000_0001.grm.bin", 
+        "out-grmfile"=>"GRM_1.bin"
+    )
 
-    arrow_grm = Arrow.Table(arrow_file).RELATIONSHIPS
-    ids = CSV.File(ids_file) |> DataFrame
+    prepend_size(parsed_args)
 
-    # This "original" file has been generated using 
-    # the provided R code from the gcta website
-    expected_grm = CSV.File(parsed_args["inprefix"]*".grm.txt", header=false) |> DataFrame
-    expected_ids = CSV.File(parsed_args["inprefix"]*".grm.id", header=[:FAMILY_ID, :ID]) |> DataFrame
-    
-    @test arrow_grm ≈ expected_grm[!, 1]
-    @test ids == expected_ids
-    rm(arrow_file)
-    rm(ids_file)
+    before_prepend = UKBBEpistasisPipeline.grm_part_from_gcta(parsed_args["in-grmfile"])
+    after_prepend = UKBBEpistasisPipeline.grm_part(parsed_args["out-grmfile"])
+
+    @test before_prepend == after_prepend
+
+    rm(parsed_args["out-grmfile"])
 end
 
 
