@@ -1,6 +1,7 @@
 process filterBED{
     label 'bigmem'
     container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    publishDir "$params.OUTDIR/qc_filtered_chromosomes", mode: 'symlink'
 
     input:
         tuple val(chr_id), file(bedfiles)
@@ -20,6 +21,7 @@ process filterBED{
 process thinByLD{
     label 'bigmem'
     container "olivierlabayle/plink2:0.1.0"
+    publishDir "$params.OUTDIR/ld_pruned_chromosomes", mode: 'symlink'
 
     input:
         path flashpca_excl_reg
