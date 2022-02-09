@@ -5,7 +5,6 @@ using CSV
 using TOML
 using BGEN
 using SnpArrays
-using Arrow
 
 # INCLUDES
 #####################################################################
