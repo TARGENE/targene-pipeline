@@ -1,6 +1,7 @@
 process VariantRun {
     container "olivierlabayle/tmle-epistasis:0.3.0"
     label "bigmem"
+    publishDir "$params.OUTDIR/estimates/", mode: 'symlink'
 
     input:
         path bgenfiles
