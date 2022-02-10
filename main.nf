@@ -4,9 +4,9 @@ nextflow.enable.dsl = 2
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
 params.PHENOTYPES_LIST = "NONE"
 params.QUERIES_MODE = "given"
-params.PHENOTYPES_IN_PARALLEL = false
 params.THRESHOLD = 0.9
-params.CROSSVAL = false
+params.ADAPTIVE_CV = true
+params.SAVE_FULL = false
 
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { generatePCs } from './modules/confounders.nf'
@@ -111,48 +111,13 @@ workflow generateEstimates {
     main:
         bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
+        phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST")
 
-        if (params.PHENOTYPES_LIST != "NONE" & params.PHENOTYPES_IN_PARALLEL == true){
-            phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST", checkIfExists: true)
-                                    .splitText(file: true)
-        }
-        else if (params.PHENOTYPES_LIST != "NONE" & params.PHENOTYPES_IN_PARALLEL == false) {
-            phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST", checkIfExists: true)
-        }
-        else if (params.PHENOTYPES_LIST == "NONE") {
-            phenotypes_list = phenotypes_file.splitCsv(sep: ",", limit: 1)
-                                    .flatten()
-                                    .filter { it != "eid"}
-
-            if (params.PHENOTYPES_IN_PARALLEL == false) {
-                phenotypes_list = phenotypes_list.collectFile(name: 'phenotypes_list.txt', newLine: true)
-            }
-            else {
-                count = 0
-                phenotypes_list = phenotypes_list
-                        .collectFile(){ item -> [ "phenotypes_${count++}.txt", item]}
-            }
-        }
-
-        phen_list_to_queries = queries_files.combine(phenotypes_list)
         // compute TMLE estimates
-        TMLE("epistasis", bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
-        // Aggregate results
-        TMLE.out.collectFile(name:"epistasis_estimates.csv",
-                            keepHeader: true,
-                            skip: 1,
-                            storeDir: "$params.OUTDIR")
-        
-        if (params.CROSSVAL == true) {
-            CrossVal("crossval", bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, phen_list_to_queries)
-            // Aggregate results
-            CrossVal.out.collectFile(name:"crossval_estimates.csv",
-                                keepHeader: true,
-                                skip: 1,
-                                storeDir: "$params.OUTDIR")
-        }
-
-
+        TMLE(bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, queries_files, phenotypes_list)
+    
+    emit:
+        TMLE.out
 }
 
 
@@ -173,6 +138,6 @@ workflow {
     generatePhenotypes()
 
     // // generate estimates
-    // generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
+    generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
     
 }

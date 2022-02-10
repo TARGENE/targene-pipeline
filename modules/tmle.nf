@@ -3,17 +3,20 @@ process VariantRun {
     label "bigmem"
 
     input:
-        val mode
         path bgenfiles
         path phenotypefile
         path confoundersfile
         path estimatorfile
-        tuple file(queryfile), file(phenotypelist_file)
+        path queryfile
+        path phenotypelist_file
     
     output:
-        path "${mode}_estimates.csv"
+        path "*.{hdf5, jls}"
     
     script:
-        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile ${mode}_estimates.csv --phenotypes-list $phenotypelist_file $mode"
+        def phenotype_list = phenotypelist_file.getName() != 'NONE' ? "--phenotypes-list $phenotypelist_file" : ''
+        def adaptive_cv = params.ADAPTIVE_CV == true ? '--adaptive-cv' : ''
+        def save_full = params.SAVE_FULL == true ? '--save-full' : ''
+        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $phenotype_list $adaptive_cv $save_full"
     
 }
