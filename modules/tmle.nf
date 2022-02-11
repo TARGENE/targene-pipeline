@@ -1,6 +1,7 @@
 process VariantRun {
     container "olivierlabayle/tmle-epistasis:0.3.0"
     label "bigmem"
+    label "multithreaded"
     publishDir "$params.OUTDIR/estimates/", mode: 'symlink'
 
     input:
