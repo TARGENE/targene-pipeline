@@ -35,3 +35,9 @@ function grm_part(grmpart_file)
     read!(io, GRMPart)
     return GRMPart
 end
+
+
+load_grm_ids(grm_id_file) = 
+    CSV.File(grm_id_file,
+            select=[2],
+            header=["FAMILY_ID", "SAMPLE_ID"]) |> DataFrame
