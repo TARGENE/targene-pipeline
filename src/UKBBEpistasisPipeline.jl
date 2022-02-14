@@ -14,6 +14,7 @@ include("queries_generation.jl")
 include("confounders.jl")
 include("phenotypes.jl")
 include("grm.jl")
+include("sieve_plateau.jl")
 
 # EXPORTS
 #####################################################################
