@@ -37,6 +37,16 @@ function grm_part(grmpart_file)
 end
 
 
+function grm_chunk_sizes(grm_files)
+    chunk_sizes = zeros(Int, size(grm_files, 1))
+    for (i, grm_chunk_file) in enumerate(grm_files)
+        open(grm_chunk_file) do io
+            chunk_sizes[i] = read(io, Int)
+        end
+    end
+    return chunk_sizes
+end
+
 load_grm_ids(grm_id_file) = 
     CSV.File(grm_id_file,
             select=[2],
