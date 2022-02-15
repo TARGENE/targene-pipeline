@@ -9,6 +9,9 @@ using TMLE
 
 
 @testset "Test build_influence_curves" begin
+    expected_inf_curve(queryreports, index) = 
+        convert(Vector{Float32}, vcat(queryreports[index].influence_curve, zeros(5)))
+
     grm_ids = UKBBEpistasisPipeline.load_grm_ids("data/grm/grm_bis.id")
     results_file = jldopen("data/RSID_10_RSID_100.hdf5", "a+")
 
@@ -19,12 +22,12 @@ using TMLE
     # The operation is converting to Float32
     # All missing elements are at the enf of the grm ids
     qrs = results_file["categorical_phenotype"]["queryreports"]
-    @test convert(Vector{Float32}, qrs[1].influence_curve) == collect(skipmissing(inf_curves[:, 1, 1]))
-    @test convert(Vector{Float32}, qrs[2].influence_curve) == collect(skipmissing(inf_curves[:, 1, 2]))
+    @test expected_inf_curve(qrs, 1) == inf_curves[:, 1, 1]
+    @test expected_inf_curve(qrs, 2) == inf_curves[:, 1, 2]
 
     qrs = results_file["continuous_phenotype"]["queryreports"]
-    @test convert(Vector{Float32}, qrs[1].influence_curve) == collect(skipmissing(inf_curves[:, 2, 1]))
-    @test convert(Vector{Float32}, qrs[2].influence_curve) == collect(skipmissing(inf_curves[:, 2, 2]))
+    @test expected_inf_curve(qrs, 1) == inf_curves[:, 2, 1]
+    @test expected_inf_curve(qrs, 2) == inf_curves[:, 2, 2]
 
     close(results_file)
 end
@@ -50,11 +53,11 @@ end
     last_i, last_j = 6, 6
     pairwise_ic = UKBBEpistasisPipeline.chunk_pairwise_inf_curve(inf_curve, first_i, first_j, last_i, last_j)
     @test pairwise_ic == 
-        [6., 9., 4., 8., 12., 16., 5., 10., 15., 20., 25., 6.]
+        [6., 9., 4., 8., 12., 16., 5., 10., 15., 20., 25., 6., 12., 18., 24., 30., 36.]
 
 end
 
-@testset "Test" begin
+@testset "Test bit_distance" begin
     grm_chunk_file = "GRM_1.bin"
     open(grm_chunk_file, "w") do io 
         write(io, 10)
