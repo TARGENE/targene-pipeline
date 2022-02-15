@@ -9,34 +9,11 @@ function align_ic(ic, sample_ids, grm_ids)
     return aligned_ic
 end
 
-
-function update_variances!(variances, chunk_distance, inf_curve; row=1)
-    grm_index = 1
-    while grm_index < size(grm_chunk, 1)
-        row += 1
-        variances[k] += sum(skipmissing(chunk_distance[grm_index:grm_index+row-1] .* inf_curve[row] .* inf_curve[1:row]))
-        grm_index += row
-    end
-    return (variances, row)
-end
-
-
-function grmparts_sizes(grmfiles)
-    nparts = size(grmfiles, 1)
-    grmpart_sizes = zeros(Int, nparts)
-    for i in 1:nparts
-        open(grmfiles[i]) do io
-            grmpart_sizes[i] = read(io, Int)
-        end
-    end
-    return grmpart_sizes
-end
-
 function bit_distance(grm_chunk_file, nτs)
     grmpart = grm_part(grm_chunk_file)
     distances = 1 .-  max.(min.(grmpart, 1), -1)
     τs = reshape([2/i for i in 1:nτs], 1, nτs)
-    return distances .< τs
+    return distances .<= τs
 end
 
 
@@ -55,7 +32,7 @@ function build_influence_curves(results_file, grm_ids)
     phenotypes = keys(results_file)
     any_phenotype = first(phenotypes)
     any_queryreports = results_file[any_phenotype]["queryreports"]
-    influence_curves = zeros(Union{Float32, Missing},
+    influence_curves = zeros(Float32,
         size(grm_ids, 1),
         size(phenotypes, 1),
         size(any_queryreports, 1)
@@ -72,33 +49,80 @@ function fill_influence_curves!(influence_curves, results_file, phenotypes, grm_
         queryreports = results_file[phenotype]["queryreports"]
         for (query_id, queryreport) in enumerate(queryreports)
             inf_curve = align_ic(queryreport.influence_curve, sample_ids, grm_ids)
-            influence_curves[:, phenotype_id, query_id] = inf_curve
+            influence_curves[:, phenotype_id, query_id] = coalesce.(inf_curve, 0)
         end
     end
 end
 
 
-function sieve_plateau_variance(parsed_args)
-    grm_ids = load_grm_ids(parsed_args["grm-ids"])
-    results_file = jldopen(parsed_args["results"], "a+")
+"""
+    compute_variances(influence_curves, nτs, grm_files)
 
-    nτs = parsed_args["nτs"]
-    grmfiles = [joinpath(grmdir, file) for file in readdir(grmdir) if endswith(file, ".bin")]
-    n_phenotypes = length(keys(results_file))
-
-    variances = zeros(Float32, n_phenotypes, nτs)
+Each influence_curve vector is associated with a phenotype query.
+This function compute the variance estimates at each τ for all queries.
+"""
+function compute_variances(influence_curves, nτs, grmfiles)
+    n_phenotypes = size(influence_curves, 2)
+    n_queries = size(influence_curves, 3)
+    variances = zeros(Float32, n_phenotypes, n_queries, nτs)
+    i_j_generator = generate_indices(grm_chunk_sizes(grmfiles), size(influence_curves, 1))
+    first_i, first_j = 1, 1
     for grm_chunk_file in grmfiles
+        last_i, last_j = take!(i_j_generator)
         chunk_distance = bit_distance(grm_chunk_file, nτs)
-        for (phen_id, phenotype) in enumerate(keys(results_file))
-            group = results_file[phenotype]
-            sample_ids = group["sample_ids"]
-            row = 1
-            for queryreport in group["queryreports"]
-                inf_curve = align_ic(queryreport.influence_curve, sample_ids, grm_ids)
-                variances, row = update_variances!(variances, chunk_distance, inf_curve, τs; row=row)
-
+        for phenotype_idx in 1:n_phenotypes
+            for query_idx in 1:n_queries
+                inf_curve = influence_curves[:, phenotype_idx, query_idx]
+                inf_pp = chunk_pairwise_inf_curve(inf_curve, first_i, first_j, last_i, last_j)
+                variances[phenotype_idx, query_idx, :] .+= sum(chunk_distance .* inf_pp, dims=1)[1,:]
             end
-            group["variances"] = variances
+        end
+        if last_i == last_j
+            first_i, first_j = last_i + 1, 1
+        else
+            first_i, first_j = last_i, last_j + 1
+        end
+    end
+    return variances
+end
+
+
+pairwise_product(inf_curve, row; row_init=1, row_end=row) =
+    inf_curve[row] .* inf_curve[row_init:row_end]
+
+function chunk_pairwise_inf_curve(inf_curve, first_i, first_j, last_i, last_j)
+    if first_j != 1
+        pairwise_ic = pairwise_product(inf_curve, first_i, row_init=first_j)
+        first_i += 1
+        first_j = 1
+    else
+        pairwise_ic = Float32[]
+    end
+
+    for i in first_i:last_i-1
+        pairwise_ic = vcat(pairwise_ic, pairwise_product(inf_curve, i))
+    end
+
+    (last_i == last_j) && return vcat(pairwise_ic, pairwise_product(inf_curve, last_i))
+
+    return vcat(pairwise_ic, pairwise_product(inf_curve, last_i; row_end=last_j))
+end
+
+
+function generate_indices(sizes, n_samples)
+    Channel{Tuple{Int, Int}}() do chnl
+        sizes_ = copy(sizes)
+        grm_chunk_size = popfirst!(sizes_)
+        nb_elements = 0
+        for i in 1:n_samples
+            for j in 1:i
+                nb_elements += 1
+                if nb_elements == grm_chunk_size
+                    put!(chnl, (i, j))
+                    grm_chunk_size = popfirst!(sizes_)
+                    nb_elements = 0
+                end
+            end
         end
     end
 end
