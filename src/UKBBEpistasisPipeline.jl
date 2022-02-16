@@ -5,6 +5,7 @@ using CSV
 using TOML
 using BGEN
 using SnpArrays
+using Mmap
 
 # INCLUDES
 #####################################################################
@@ -14,7 +15,7 @@ include("queries_generation.jl")
 include("confounders.jl")
 include("phenotypes.jl")
 include("grm.jl")
-include("sieve_plateau.jl")
+#include("sieve_plateau.jl")
 
 # EXPORTS
 #####################################################################
@@ -23,6 +24,6 @@ export generate_queries
 export filter_asb
 export filter_chromosome, merge_beds, adapt_flashpca
 export prepare_phenotypes
-export prepend_size
+export grm_from_gcta
 
 end
