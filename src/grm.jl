@@ -49,5 +49,56 @@ end
 
 load_grm_ids(grm_id_file) = 
     CSV.File(grm_id_file,
-            select=[2],
-            header=["FAMILY_ID", "SAMPLE_ID"]) |> DataFrame
+            select=[2]) |> DataFrame
+
+
+function grm_from_gcta(parsed_args)
+    inprefix = parsed_args["inprefix"]
+    outprefix = parsed_args["outprefix"]
+    dir, baseprefix = splitdir(inprefix)
+
+    binfiles = String[]
+    ids = DataFrame()
+
+    dir_ = dir == "" ? "." : dir
+    # The sorting ensures that grm parts are ordered
+    for file in sort(readdir(dir_))
+        # Read files only pertaining to the GRM parts
+        if contains(file, ".part_")
+            if endswith(file, "grm.bin") && contains(file, ".part_")
+                push!(binfiles, joinpath(dir, file))
+            elseif endswith(file, "grm.id") && startswith(file, baseprefix)
+                part_ids = CSV.File(joinpath(dir, file), header=["FAMILY_ID", "SAMPLE_ID"]) |> DataFrame
+                ids = vcat(ids, part_ids)
+            end
+        end
+    end
+    # Write unified GRM
+    n = size(ids, 1)
+    index = 1
+    grm_chunk = grm_part_from_gcta(popfirst!(binfiles))
+    GRM = mmap(string(outprefix, ".bin"), Matrix{Float32}, (n, n))
+    for i in 1:n
+        if i + index - 1 <= size(grm_chunk, 1)
+            row_chunk = grm_chunk[index:index + i - 1]
+            index += i
+        else
+            row_chunk = grm_chunk[index:end]
+            index = i - size(row_chunk, 1) + 1
+            grm_chunk = grm_part_from_gcta(popfirst!(binfiles))
+            row_chunk = vcat(row_chunk, grm_chunk[1:i-size(row_chunk, 1)])
+        end
+        GRM[i, 1:i] = row_chunk
+        GRM[1:i, i] = row_chunk
+    end
+    # Write ids
+    CSV.write(string(outprefix, ".ids.csv"), ids)
+
+end
+
+function readGRM(prefix)
+    ids = load_grm_ids(string(prefix, ".ids.csv"))
+    n = size(ids, 1)
+    GRM = mmap(string(prefix, ".bin"), Matrix{Float32}, (n, n))
+    return GRM, ids
+end

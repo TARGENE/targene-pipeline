@@ -1,21 +1,29 @@
 module TestGRM
 using Test
 using UKBBEpistasisPipeline
+using Mmap
+using CSV
+using DataFrames
 
-@testset "Test prepend_size" begin
+@testset "Test grm_from_gcta" begin
     parsed_args = Dict(
-        "in-grmfile"=> "data/grm/test.part_1000_0001.grm.bin", 
-        "out-grmfile"=>"GRM_1.bin"
+        "inprefix"=> "data/grm/test", 
+        "outprefix"=>"GRM"
     )
 
-    prepend_size(parsed_args)
-
-    before_prepend = UKBBEpistasisPipeline.grm_part_from_gcta(parsed_args["in-grmfile"])
-    after_prepend = UKBBEpistasisPipeline.grm_part(parsed_args["out-grmfile"])
-
-    @test before_prepend == after_prepend
-
-    rm(parsed_args["out-grmfile"])
+    grm_from_gcta(parsed_args)
+    grm, ids = UKBBEpistasisPipeline.readGRM("GRM")
+    
+    expected_grm = CSV.File("data/grm/test.grm.txt", header = ["VALUE"]) |> DataFrame
+    index = 1
+    for i in 1:194
+        for j in 1:i
+            @test grm[i, j] == grm[j, i] ≈ expected_grm.VALUE[index]
+            index += 1
+        end
+    end
+    rm("GRM.bin")
+    rm("GRM.ids.csv")
 end
 
 

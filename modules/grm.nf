@@ -13,37 +13,21 @@ process GRMPart {
     
     script:
         base = bedfiles.first().getName().split("\\.")[0]
-        "gcta64 --bfile $base --make-grm-part $nparts $part_id --thread-num ${task.cpus} --out UKBB"
+        "gcta64 --bfile $base --make-grm-part $nparts $part_id --thread-num ${task.cpus} --out GRM"
 }
 
-process AggregateIDFiles {
+process AggregateGRM {
+    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    label "unlimited_vmem"
     publishDir "$params.OUTDIR/GRM", mode: 'symlink'
 
     input:
         path grm_id_files
 
     output:
-        path "UKBB_GRM.ids"
+        path "GRM.ids.csv", emit: grm_ids
+        path "GRM.bin", emit: grm_matrix
 
     script:
-        filenames = grm_id_files.collect { it.getName() }.join(" ")
-        "cat $filenames > UKBB_GRM.ids"
-}
-
-
-process PrependSize {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
-    publishDir "$params.OUTDIR/GRM", mode: 'symlink'
-    label "bigmem"
-
-    input:
-        path grmpart_file
-
-    output:
-        path "GRM_*"
-
-    script:
-        filename = grmpart_file.getName()
-        file_number = filename.split("_")[-1][0..-9]
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepend_grmpart_size.jl $filename GRM_${file_number}.bin"
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/grm_from_gcta.jl GRM GRM"
 }

@@ -13,7 +13,7 @@ include { generatePCs } from './modules/confounders.nf'
 include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
 include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
-include { GRMPart; AggregateIDFiles; PrependSize } from './modules/grm.nf'
+include { GRMPart; AggregateGRM } from './modules/grm.nf'
 
 
 workflow generateIIDGenotypes {
@@ -36,22 +36,12 @@ workflow generateGRM {
         grm_parts = Channel.from( 1..params.GRM_NSPLITS )
         GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
 
-        GRMPart.out.flatten().branch {
-            id: it.getName().endsWith(".grm.id")
-            bin: it.getName().endsWith(".grm.bin")
-            n_bin: it.getName().endsWith(".grm.N.bin")
-        }
-        .set { result }
-
-        // Aggregate ID files
-        AggregateIDFiles(result.id.collect())
-
-        // Prepend size to bin files
-        PrependSize(result.bin)
+        // Aggregate files
+        AggregateGRM(GRMPart.out.collect())
 
     emit:
-        grm_ids = AggregateIDFiles.out
-        grm_bin = PrependSize.out
+        grm_ids = AggregateGRM.out.grm_ids
+        grm_matrix = AggregateGRM.out.grm_matrix
 
 }
 
