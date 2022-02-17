@@ -7,65 +7,61 @@ using CSV
 using JLD2
 using TMLE
 
+function build_result_file(grm_ids;path="results.hdf5")
+    # The queries are not important here
+    query = TMLE.Query(case=(t₁="CG", t₂="TT"), control=(t₁="GG", t₂="TA"), name="MyQuery")
+    jldopen(path, "w") do file
+        # First phenotype
+        cancer = JLD2.Group(file, "cancer")
+        n_samples = size(grm_ids, 1) - 10
+        cancer["sample_ids"] = grm_ids.SAMPLE_ID[1:n_samples]
+        cancer["queryreports"] = [TMLE.QueryReport(query, collect(1:n_samples), 0.1, 0.2),
+                                  TMLE.QueryReport(query, collect(n_samples:2n_samples-1), 0.1, 0.2)]
+        # Second phenotype
+        bmi = JLD2.Group(file, "bmi")
+        n_samples = size(grm_ids, 1) - 20
+        bmi["sample_ids"] = grm_ids.SAMPLE_ID[1:n_samples]
+        bmi["queryreports"] = [TMLE.QueryReport(query, collect(1:n_samples), 0.1, 0.2),
+                                TMLE.QueryReport(query, collect(n_samples:2n_samples-1), 0.1, 0.2)]
+
+    end
+end
+
 
 @testset "Test build_influence_curves" begin
-    expected_inf_curve(queryreports, index) = 
-        convert(Vector{Float32}, vcat(queryreports[index].influence_curve, zeros(5)))
+    expected_inf_curve(queryreports, index, nbzeros) = 
+        convert(Vector{Float32}, vcat(queryreports[index].influence_curve, zeros(nbzeros)))
+    
+    grm_ids = UKBBEpistasisPipeline.load_grm_ids("data/grm/GRM.ids.csv")
 
-    grm_ids = UKBBEpistasisPipeline.load_grm_ids("data/grm/grm_bis.id")
-    results_file = jldopen("data/RSID_10_RSID_100.hdf5", "a+")
+    build_result_file(grm_ids)
+
+    results_file = jldopen("results.hdf5", "a+")
 
     phenotypes, inf_curves = UKBBEpistasisPipeline.build_influence_curves(results_file, grm_ids)
-    @test phenotypes == ["categorical_phenotype", "continuous_phenotype"]
+    @test phenotypes == ["cancer", "bmi"]
     @test size(inf_curves) == (size(grm_ids, 1), 2, 2)
 
     # The operation is converting to Float32
     # All missing elements are at the enf of the grm ids
-    qrs = results_file["categorical_phenotype"]["queryreports"]
-    @test expected_inf_curve(qrs, 1) == inf_curves[:, 1, 1]
-    @test expected_inf_curve(qrs, 2) == inf_curves[:, 1, 2]
+    qrs = results_file["cancer"]["queryreports"]
+    @test expected_inf_curve(qrs, 1, 10) == inf_curves[:, 1, 1]
+    @test expected_inf_curve(qrs, 2, 10) == inf_curves[:, 1, 2]
 
-    qrs = results_file["continuous_phenotype"]["queryreports"]
-    @test expected_inf_curve(qrs, 1) == inf_curves[:, 2, 1]
-    @test expected_inf_curve(qrs, 2) == inf_curves[:, 2, 2]
+    qrs = results_file["bmi"]["queryreports"]
+    @test expected_inf_curve(qrs, 1, 20) == inf_curves[:, 2, 1]
+    @test expected_inf_curve(qrs, 2, 20) == inf_curves[:, 2, 2]
 
     close(results_file)
+    rm("results.hdf5")
 end
 
-@testset "Test generate_indices" begin
-    n_samples = 10
-    chunk_sizes = [14, 22, 19]
-    gen = UKBBEpistasisPipeline.generate_indices(chunk_sizes, n_samples)
-    @test take!(gen) == (5, 4)
-    @test take!(gen) == (8, 8)
-    @test take!(gen) == (10, 10)
-    @test_throws TaskFailedException take!(gen)
-end
-
-@testset "Test chunk_pairwise_inf_curve" begin
-    inf_curve = collect(1:10)
-    first_i, first_j = 1, 1
-    last_i, last_j = 3, 1
-    pairwise_ic = UKBBEpistasisPipeline.chunk_pairwise_inf_curve(inf_curve, first_i, first_j, last_i, last_j)
-    @test pairwise_ic == [1., 2., 4., 3.]
-    
-    first_i, first_j = 3, 2
-    last_i, last_j = 6, 6
-    pairwise_ic = UKBBEpistasisPipeline.chunk_pairwise_inf_curve(inf_curve, first_i, first_j, last_i, last_j)
-    @test pairwise_ic == 
-        [6., 9., 4., 8., 12., 16., 5., 10., 15., 20., 25., 6., 12., 18., 24., 30., 36.]
-
-end
 
 @testset "Test bit_distance" begin
-    grm_chunk_file = "GRM_1.bin"
-    open(grm_chunk_file, "w") do io 
-        write(io, 10)
-        write(io, Float32[-1.1, -0.8, -0.5, -0.3, -0.1, 0.1, 0.3, 0.5, 0.8, 1.1])
-    end
+    grm_sample = Float32[-1.1, -0.8, -0.5, -0.3, -0.1, 0.1, 0.3, 0.5, 0.8, 1.1]
     nτs = 5
     # τs = reshape([2/i for i in 1:nτs], 1, nτs)
-    d = UKBBEpistasisPipeline.bit_distance(grm_chunk_file, nτs)
+    d = UKBBEpistasisPipeline.bit_distances(grm_sample, nτs)
     @test d == [1  0  0  0  0
                 1  0  0  0  0
                 1  0  0  0  0
@@ -76,46 +72,31 @@ end
                 1  1  1  1  0
                 1  1  1  1  1
                 1  1  1  1  1]
-    rm(grm_chunk_file)
 end
 
 
 @testset "Test compute_variances" begin
-    # Sizes
-    n_samples = 10
-    n_queries = 2
-    n_phenotypes = 3
-    # Generate GRM and split
-    grm_size = n_samples*(n_samples+1) ÷ 2
-    h = 2/(grm_size-1)
-    grm = collect(-1:h:1)
-
-    previous = 1
-    for (id, number) in [(1, 14), (2, 22), (3, 19)]
-        open("GRM_$id.bin", "w") do io 
-            write(io, number)
-            write(io, grm[previous:previous+number-1])
-        end
-        previous += number
-    end
-
     # Compute variances
-    grmfiles = ["GRM_1.bin", "GRM_2.bin", "GRM_3.bin"]
+    grm, grm_ids = UKBBEpistasisPipeline.readGRM("data/grm/GRM")
+    n_phenotypes = 2
+    n_queries = 2
+    n_samples = size(grm_ids, 1)
     influence_curves = reshape(collect(1:n_phenotypes*n_samples*n_queries), 
                         n_samples, 
                         n_phenotypes, 
                         n_queries)
+    influence_curves = convert(Array{Float32, 3}, influence_curves)                 
     nτs = 5
-    variances = UKBBEpistasisPipeline.compute_variances(influence_curves, nτs, grmfiles)
+    variances = UKBBEpistasisPipeline.compute_variances(influence_curves, grm, nτs)
     @test size(variances) == (n_phenotypes, n_queries, nτs)
 
     # For the first τ (max distance==2), all elements are taken into account
     for phenotype_idx in 1:n_phenotypes
         for query_idx in 1:n_queries
-            inf_phen_1 = Float32.(influence_curves[:, phenotype_idx, query_idx])    
-            @test variances[phenotype_idx, query_idx, 1] == 
+            inf_phen_1 = influence_curves[:, phenotype_idx, query_idx]  
+            @test variances[phenotype_idx, query_idx, 1] ≈ 
                 sum(inf_phen_1[i]*inf_phen_1[j] 
-                        for i in 1:n_samples for j in 1:i)
+                        for i in 1:n_samples for j in 1:n_samples)
 
         end
     end
@@ -125,18 +106,26 @@ end
         @test all(variances[:, :, nτ] .<= variances[:, :, nτ-1])
     end
 
-    # Clean
-    for id in (1,2,3)
-        rm("GRM_$id.bin")
-    end
 end
 
 @testset "Test compute_variances" begin
+
+    grm_ids = UKBBEpistasisPipeline.load_grm_ids("data/grm/GRM.ids.csv")
+    build_result_file(grm_ids;path="results.hdf5")
     parsed_args = Dict(
-        "grm-ids" => "data/grm/grm_bis.id",
-        "results" => "data/RSID_10_RSID_100.hdf5",
-        "nτs" => 10
+        "grm-prefix" => "data/grm/GRM",
+        "results" => "results.hdf5",
+        "nb-estimators" => 10
     )
+
+    sieve_variance_plateau(parsed_args)
+
+    results_file = jldopen("results.hdf5", "a+")
+
+    @test size(results_file["cancer"]["variances"]) == (2, 10)
+    @test size(results_file["bmi"]["variances"]) == (2, 10)
+
+    rm("results.hdf5")
 end
 
 end
