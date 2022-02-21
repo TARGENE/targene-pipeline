@@ -7,6 +7,7 @@ using BGEN
 using SnpArrays
 using Mmap
 using JLD2
+using TMLE
 
 # INCLUDES
 #####################################################################
