@@ -9,7 +9,7 @@ process GRMPart {
         val part_id
 
     output:
-        path "UKBB*.grm.*"
+        path "GRM*.grm.*"
     
     script:
         base = bedfiles.first().getName().split("\\.")[0]
