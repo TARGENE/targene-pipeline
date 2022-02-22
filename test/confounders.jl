@@ -23,7 +23,7 @@ using CSV
 
     snp_info = DataFrame(chromosome=[1, 1, 2, 3, 3],
                         position=[21, 5, 9, 102, 4])
-                        \
+
     expected_snps = DataFrame(chromosome = [1, 2, 3],
                               position   = [5, 9, 4])
     @test filter(x -> UKBBEpistasisPipeline.notin_ldblocks(x, ldblocks), snp_info) == expected_snps
