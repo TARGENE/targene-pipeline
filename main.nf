@@ -14,6 +14,7 @@ include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from '.
 include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
 include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
+include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 
 
 workflow generateIIDGenotypes {
