@@ -111,6 +111,20 @@ workflow generateEstimates {
 }
 
 
+workflow generateVarianceEstimates {
+    take:
+        estimate_file
+        GRM_ids
+        GRM_matrix
+    
+    main:
+        SieveVarianceEstimation(estimate_file, GRM_ids, GRM_matrix, params.NB_VAR_ESTIMATORS)
+    
+    emit:
+        SieveVarianceEstimation.out
+}
+
+
 workflow {
     // Generate queries
     generateQueries()
@@ -127,7 +141,9 @@ workflow {
     // generate phenotypes
     generatePhenotypes()
 
-    // // generate estimates
+    // generate estimates
     generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
     
+    // generate variance estimates
+    generateVarianceEstimates(generateEstimates.out, generateGRM.out.grm_ids, generateGRM.out.grm_matrix)
 }
