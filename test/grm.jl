@@ -11,7 +11,7 @@ using DataFrames
         "outprefix"=>"GRM"
     )
 
-    grm_from_gcta(parsed_args)
+    @time grm_from_gcta(parsed_args)
     grm, ids = UKBBEpistasisPipeline.readGRM("GRM")
     
     expected_grm = CSV.File("data/grm/test.grm.txt", header = ["VALUE"]) |> DataFrame

@@ -52,6 +52,22 @@ load_grm_ids(grm_id_file) =
             select=[2]) |> DataFrame
 
 
+function update_grm!(GRM, grm_chunk, index, i, binfiles)
+    if i + index - 1 <= length(grm_chunk)
+        row_chunk = grm_chunk[index:index + i - 1]
+        index += i
+    else
+        row_chunk = grm_chunk[index:end]
+        index = i - length(row_chunk) + 1
+        @info string("Loading file: ", binfiles[1])
+        grm_chunk = grm_part_from_gcta(popfirst!(binfiles))
+        index - 1 < length(grm_chunk) || throw(BoundsError("A grm chunk has fewer than expected number of elements"))
+        row_chunk = vcat(row_chunk, grm_chunk[1:index-1])
+    end
+    GRM[1:i, i] = row_chunk
+    return grm_chunk, index
+end
+
 function grm_from_gcta(parsed_args)
     inprefix = parsed_args["inprefix"]
     outprefix = parsed_args["outprefix"]
@@ -76,20 +92,11 @@ function grm_from_gcta(parsed_args)
     # Write unified GRM
     n = size(ids, 1)
     index = 1
+    @info string("Loading file: ", binfiles[1])
     grm_chunk = grm_part_from_gcta(popfirst!(binfiles))
     GRM = mmap(string(outprefix, ".bin"), Matrix{Float32}, (n, n))
-    for i in 1:n
-        if i + index - 1 <= size(grm_chunk, 1)
-            row_chunk = grm_chunk[index:index + i - 1]
-            index += i
-        else
-            row_chunk = grm_chunk[index:end]
-            index = i - size(row_chunk, 1) + 1
-            grm_chunk = grm_part_from_gcta(popfirst!(binfiles))
-            row_chunk = vcat(row_chunk, grm_chunk[1:i-size(row_chunk, 1)])
-        end
-        GRM[i, 1:i] = row_chunk
-        GRM[1:i, i] = row_chunk
+    @inbounds for i in 1:n
+        grm_chunk, index = update_grm!(GRM, grm_chunk, index, i, binfiles)
     end
     # Write ids
     CSV.write(string(outprefix, ".ids.csv"), ids)
@@ -100,5 +107,5 @@ function readGRM(prefix)
     ids = load_grm_ids(string(prefix, ".ids.csv"))
     n = size(ids, 1)
     GRM = mmap(string(prefix, ".bin"), Matrix{Float32}, (n, n))
-    return GRM, ids
+    return Symmetric(GRM), ids
 end

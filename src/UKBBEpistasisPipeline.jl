@@ -8,6 +8,7 @@ using SnpArrays
 using Mmap
 using JLD2
 using TMLE
+using LinearAlgebra
 
 # INCLUDES
 #####################################################################
