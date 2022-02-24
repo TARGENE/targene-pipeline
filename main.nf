@@ -143,8 +143,8 @@ workflow {
     generatePhenotypes()
 
     // generate estimates
-    //generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
+    generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
     
     // generate variance estimates
-    //generateVarianceEstimates(generateEstimates.out, generateGRM.out.grm_ids, generateGRM.out.grm_matrix)
+    generateVarianceEstimates(generateEstimates.out, generateGRM.out.grm_ids, generateGRM.out.grm_matrix)
 }
