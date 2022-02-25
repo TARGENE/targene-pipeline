@@ -1,6 +1,6 @@
 process SieveVarianceEstimation {
     container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
-    label "bigmem"
+    label "unlimited_vmem"
 
     input:
         path estimate_file
