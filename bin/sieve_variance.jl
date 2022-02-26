@@ -17,6 +17,7 @@ function parse_commandline()
             help = "Prefix of the GRM as output by `grm_from_gcta.jl`"
             required = true
         "--nb-estimators", "-n"
+            arg_type = Int
             help = "Number of variance estimators to compute"
             default = 10
         
@@ -27,6 +28,5 @@ end
 
 
 parsed_args = parse_commandline()
-
 
 sieve_variance_plateau(parsed_args)
