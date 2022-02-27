@@ -1,6 +1,7 @@
 process SieveVarianceEstimation {
     container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
     label "unlimited_vmem"
+    label "multithreaded"
 
     input:
         path estimate_file
