@@ -11,10 +11,11 @@ end
 
 function bit_distances(sample_grm, nτs)
     distances = 1 .-  max.(min.(sample_grm, 1), -1)
-    τs = reshape([2/i for i in 1:nτs], 1, nτs)
+    τs = reshape(default_τs(nτs), 1, nτs)
     return distances .<= τs
 end
 
+default_τs(nτs) = [2/i for i in 1:nτs]
 
 """
     build_influence_curves(results_file, grm_ids)
@@ -81,6 +82,31 @@ function update_results_file!(results_file, phenotypes, variances)
     end
 end
 
+"""
+make_monotone_and_smooth(variances)
+
+For each phenotype/query, build monotonically increasing variances estimates and 
+smooth them with radial basis functions.
+
+# Arguments:
+- variances: an Array with shape: (n_phenotypes, n_queries, nτ)
+
+"""
+function make_monotone_and_smooth(variances)
+    n_phenotypes, n_queries, nτ = size(variances)
+    monotone_variances = zeros(n_phenotypes, n_queries, nτ)
+    radial_variances = zeros(n_phenotypes, n_queries, nτ)
+    for query_idx in 1:n_queries
+        for phenotype_idx in 1:n_phenotypes
+            monotone_variances[phenotype_idx, query_idx, :] = 
+                pooled_pava_isotonic_regression(variances[phenotype_idx, query_idx, :])
+            radial_variances[phenotype_idx, query_idx, :] =
+                radial_basis_interpolation(monotone_variances[phenotype_idx, query_idx, :])
+        end
+    end
+    monotone_variances, radial_variances
+end
+
 
 function sieve_variance_plateau(parsed_args)
     results_file = jldopen(parsed_args["results"], "a+")
@@ -89,6 +115,7 @@ function sieve_variance_plateau(parsed_args)
     grm, grm_ids = readGRM(parsed_args["grm-prefix"])
     phenotypes, inf_curves = build_influence_curves(results_file, grm_ids)
     variances = compute_variances(inf_curves, grm, nτs)
+    #monotone_variances, radial_variances = make_monotone_and_smooth(variances)
 
     update_results_file!(results_file, phenotypes, variances)
 
