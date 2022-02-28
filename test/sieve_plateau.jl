@@ -108,7 +108,7 @@ end
 
 end
 
-@testset "Test compute_variances" begin
+@testset "Test sieve_variance_plateau" begin
 
     grm_ids = UKBBEpistasisPipeline.load_grm_ids("data/grm/GRM.ids.csv")
     build_result_file(grm_ids;path="results.hdf5")
