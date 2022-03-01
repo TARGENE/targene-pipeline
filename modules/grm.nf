@@ -17,17 +17,18 @@ process GRMPart {
 }
 
 process AggregateGRM {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
-    label "unlimited_vmem"
     publishDir "$params.OUTDIR/GRM", mode: 'symlink'
 
     input:
-        path grm_id_files
+        path grm_files
 
     output:
-        path "GRM.ids.csv", emit: grm_ids
+        path "GRM.id", emit: grm_ids
         path "GRM.bin", emit: grm_matrix
 
     script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/grm_from_gcta.jl GRM GRM"
+        """
+        cat *.grm.id > GRM.id
+        cat *.grm.bin > GRM.bin
+        """
 }
