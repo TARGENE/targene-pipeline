@@ -57,7 +57,7 @@ end
 function fill_influence_curves!(influence_curves, n_observations, results_file, phenotypes, grm_ids)
     for (phenotype_id, phenotype) in enumerate(phenotypes)
         phenotype_group = results_file[phenotype]
-        sample_ids = phenotype_group["sample_ids"]
+        sample_ids = parse.(Int, phenotype_group["sample_ids"])
         n_observations[phenotype_id] = size(sample_ids, 1)
         queryreports = results_file[phenotype]["queryreports"]
         for (query_id, queryreport) in enumerate(queryreports)
@@ -75,7 +75,7 @@ As the GRM is symetric it is performed as :
     2 times off-diagonal elements with j < i + diagonal term 
 and this for all τs.
 """
-aggregate_variance(D, indicator) =
+aggregate_variances(D, indicator) =
     @views D[end].*(2sum(indicator[1:end-1, :] .* D[1:end-1], dims=1)[1, :] .+ D[end] .* indicator[end, :])
 
 """
@@ -91,6 +91,15 @@ function normalize!(variances, n_observations)
     end
 end
 
+
+function aggregate_variances!(variances, D, indicator, sample, n_queries, n_phenotypes)
+    @sync for query_idx in 1:n_queries
+        for phenotype_idx in 1:n_phenotypes
+            @spawn variances[:, query_idx, phenotype_idx] .+= 
+                aggregate_variances(view(D, 1:sample, query_idx, phenotype_idx), indicator)
+        end
+    end
+end
 
 """
     compute_variances(influence_curves, nτs, grm_files)
@@ -121,14 +130,9 @@ function compute_variances(influence_curves, grm, τs, n_obs)
         # lower diagonal of the GRM are stored in a single vector 
         # that are accessed one row at a time
         end_idx = start_idx + sample - 1
-        sample_grm = view(grm, start_idx:end_idx)
-        indicator = UKBBEpistasisPipeline.bit_distances(sample_grm, τs)
-        @sync for query_idx in 1:n_queries
-            for phenotype_idx in 1:n_phenotypes
-                @spawn variances[:, query_idx, phenotype_idx] .+= 
-                    UKBBEpistasisPipeline.aggregate_variance(view(influence_curves, 1:sample, query_idx, phenotype_idx), indicator)
-            end
-        end
+        sample_grm = grm[start_idx:end_idx]
+        indicator = bit_distances(sample_grm, τs)
+        aggregate_variances!(variances, influence_curves, indicator, sample, n_queries, n_phenotypes)
         start_idx = end_idx + 1
     end
     normalize!(variances, n_obs)
