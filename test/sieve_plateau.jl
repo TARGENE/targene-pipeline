@@ -97,7 +97,7 @@ end
     influence_curves[:, 2, 3] = [0.1, 0., 0.1, 0.3, 0.2]
                   
     
-    @enter variances = UKBBEpistasisPipeline.compute_variances(influence_curves, grm, τs, n_obs)
+    variances = UKBBEpistasisPipeline.compute_variances(influence_curves, grm, τs, n_obs)
     @test size(variances) == (nτs, n_queries, n_phenotypes)
 
     # when τ=2, all elements are used
@@ -119,10 +119,10 @@ end
 
 @testset "Test sieve_variance_plateau" begin
 
-    grm_ids = UKBBEpistasisPipeline.load_grm_ids("data/grm/GRM.ids.csv")
+    grm_ids = UKBBEpistasisPipeline.GRMIDs("data/grm/test.grm.id")
     build_result_file(grm_ids;path="results.hdf5")
     parsed_args = Dict(
-        "grm-prefix" => "data/grm/GRM",
+        "grm-prefix" => "data/grm/test.grm",
         "results" => "results.hdf5",
         "nb-estimators" => 10
     )
@@ -131,8 +131,8 @@ end
 
     results_file = jldopen("results.hdf5", "a+")
 
-    @test size(results_file["cancer"]["variances"]) == (2, 10)
-    @test size(results_file["bmi"]["variances"]) == (2, 10)
+    @test size(results_file["cancer"]["variances"]) == (10, 2)
+    @test size(results_file["bmi"]["variances"]) == (10, 2)
 
     rm("results.hdf5")
 end

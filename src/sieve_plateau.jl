@@ -137,7 +137,7 @@ end
 
 function update_results_file!(results_file, phenotypes, variances)
     for (phenotype_idx, phenotype) in enumerate(phenotypes)
-        results_file[phenotype]["variances"] = variances[phenotype_idx, :, :]
+        results_file[phenotype]["variances"] = variances[:, :, phenotype_idx]
     end
 end
 
