@@ -25,3 +25,4 @@ SnpArrays = "0.3"
 MKL = "0.5"
 TMLE = "0.4.1"
 JLD2 = "0.4"
+
