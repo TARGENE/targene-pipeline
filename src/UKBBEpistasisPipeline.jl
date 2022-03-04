@@ -1,5 +1,6 @@
 module UKBBEpistasisPipeline
 
+using MKL
 using DataFrames
 using CSV
 using TOML
@@ -8,7 +9,6 @@ using SnpArrays
 using Mmap
 using JLD2
 using TMLE
-using Base.Threads
 
 # INCLUDES
 #####################################################################
