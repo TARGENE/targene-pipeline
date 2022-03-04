@@ -6,7 +6,7 @@ function align_ic(ic, sample_ids, grm_ids)
     )
     aligned_ic = grm_ids.IC
     select!(grm_ids, Not(:IC))
-    return aligned_ic
+    return coalesce.(aligned_ic, 0)
 end
 
 """
@@ -23,60 +23,29 @@ The process is thus as follows:
 """
 function bit_distances(sample_grm, τs)
     distances = 1 .-  max.(min.(2sample_grm, 1), -1)
-    return convert(Matrix{Float32}, distances .<= τs)
+    return convert(Matrix{Float32}, permutedims(distances) .<= τs)
 end
 
-default_τs(nτs) = reshape([2/i for i in 1:nτs], 1, nτs)
+default_τs(nτs) = [2/i for i in 1:nτs]
 
-"""
-    build_influence_curves(results_file, grm_ids)
-
-Load and build an influence curves 3-dimensional array with sizes:
-    - N samples 
-    - N queries
-    - N phenotypes 
-    
-The ordering of the samples in the built influence_curves 
-matrix will match the GRM sample_ids.
-"""
-function build_influence_curves(results_file, grm_ids)
-    phenotypes = keys(results_file)
-    any_phenotype = first(phenotypes)
-    any_queryreports = results_file[any_phenotype]["queryreports"]
-    n_observations = zeros(Int, length(phenotypes))
-    influence_curves = zeros(Float32,
-        size(grm_ids, 1),
-        size(any_queryreports, 1),
-        size(phenotypes, 1),
-        )
-    fill_influence_curves!(influence_curves, n_observations, results_file, phenotypes, grm_ids)
-    return phenotypes, influence_curves, n_observations
-end
-
-
-function fill_influence_curves!(influence_curves, n_observations, results_file, phenotypes, grm_ids)
-    for (phenotype_id, phenotype) in enumerate(phenotypes)
-        phenotype_group = results_file[phenotype]
-        sample_ids = parse.(Int, phenotype_group["sample_ids"])
-        n_observations[phenotype_id] = size(sample_ids, 1)
-        queryreports = results_file[phenotype]["queryreports"]
-        for (query_id, queryreport) in enumerate(queryreports)
-            inf_curve = align_ic(queryreport.influence_curve, sample_ids, grm_ids)
-            influence_curves[:, query_id, phenotype_id] = coalesce.(inf_curve, 0)
+function build_work_list(results_file, grm_ids; pval=0.05)
+    influence_curves = Vector{Float32}[]
+    n_obs = Int[]
+    phenotype_query_pairs = Pair{String, Int}[]
+    for phenotype in keys(results_file)
+        for (query_idx, queryreport) in enumerate(results_file[phenotype]["queryreports"])
+            if pvalue(ztest(queryreport)) <= pval
+                sample_ids = parse.(Int, results_file[phenotype]["sample_ids"])
+                push!(influence_curves, align_ic(queryreport.influence_curve, sample_ids, grm_ids))
+                push!(n_obs, size(sample_ids, 1))
+                push!(phenotype_query_pairs, phenotype=>query_idx)
+            end
         end
     end
+    return reduce(vcat, transpose(influence_curves)), n_obs, phenotype_query_pairs
 end
 
-"""
-    aggregate_variance(D, indicator, i)
 
-This function computes the sum for a single index i, see also `compute_variances`.
-As the GRM is symetric it is performed as : 
-    2 times off-diagonal elements with j < i + diagonal term 
-and this for all τs.
-"""
-aggregate_variances(D, indicator) =
-    @views D[end].*(2sum(indicator[1:end-1, :] .* D[1:end-1], dims=1)[1, :] .+ D[end] .* indicator[end, :])
 
 """
     normalize(variances, n_observations)
@@ -84,21 +53,22 @@ aggregate_variances(D, indicator) =
 Divides the variance estimates by the effective number of observations 
 used for each phenotype at estimation time.
 """
-function normalize!(variances, n_observations)
-    n_phenotypes = size(variances, 3)
-    for i in 1:n_phenotypes
-        variances[:, :, i] ./= n_observations[i]
-    end
-end
+normalize!(variances, n_observations) = 
+    variances ./= permutedims(n_observations)
 
 
-function aggregate_variances!(variances, D, indicator, sample, n_queries, n_phenotypes)
-    @sync for query_idx in 1:n_queries
-        for phenotype_idx in 1:n_phenotypes
-            @spawn variances[:, query_idx, phenotype_idx] .+= 
-                aggregate_variances(view(D, 1:sample, query_idx, phenotype_idx), indicator)
-        end
-    end
+"""
+    aggregate_variances(influence_curves, indicator, sample)
+
+This function computes the sum for a single index i, see also `compute_variances`.
+As the GRM is symetric it is performed as : 
+    2 times off-diagonal elements with j < i + diagonal term 
+and this for all τs.
+"""
+function aggregate_variances(influence_curves, indicator, sample)
+    D_off_diag = transpose(influence_curves[:, 1:sample-1])
+    D_diag = transpose(influence_curves[:, sample])
+    return D_diag .* (2indicator[:, 1:sample-1] * D_off_diag .+ D_diag.* indicator[:, sample])
 end
 
 """
@@ -123,26 +93,46 @@ observations used during estimation
 - variances: An Array of size (nτs, n_queries, n_phenotypes)
 """
 function compute_variances(influence_curves, grm, τs, n_obs)
-    n_samples, n_queries, n_phenotypes = size(influence_curves)
-    variances = zeros(Float32, length(τs), n_queries, n_phenotypes)
+    n_curves, n_samples = size(influence_curves)
+    variances = zeros(Float32, length(τs), n_curves)
     start_idx = 1
-    @inbounds for sample in 1:n_samples
+    for sample in 1:n_samples
         # lower diagonal of the GRM are stored in a single vector 
         # that are accessed one row at a time
         end_idx = start_idx + sample - 1
-        sample_grm = grm[start_idx:end_idx]
+        sample_grm = view(grm, start_idx:end_idx)
         indicator = bit_distances(sample_grm, τs)
-        aggregate_variances!(variances, influence_curves, indicator, sample, n_queries, n_phenotypes)
+        res = aggregate_variances(influence_curves, indicator, sample)
+        variances .+= res
         start_idx = end_idx + 1
     end
     normalize!(variances, n_obs)
     return variances
 end
 
-function update_results_file!(results_file, phenotypes, variances)
-    for (phenotype_idx, phenotype) in enumerate(phenotypes)
-        results_file[phenotype]["variances"] = variances[:, :, phenotype_idx]
+function update_results_file!(results_file, variances, phenotype_query_pairs)
+    for (curve_id, (phenotype, query_idx)) in enumerate(phenotype_query_pairs)
+        if !haskey(results_file[phenotype], "sieve_variances")
+            sieve_group = JLD2.Group(results_file[phenotype], "sieve_variances")
+        else
+            sieve_group = results_file[phenotype]["sieve_variances"]
+        end
+        sieve_group[string(query_idx)] = variances[:, curve_id]
     end
+end
+
+function sieve_variance_plateau(parsed_args)
+    results_file = jldopen(parsed_args["results"], "a+")
+
+    τs = default_τs(parsed_args["nb-estimators"])
+    grm, grm_ids = readGRM(parsed_args["grm-prefix"])
+    influence_curves, n_obs, phenotype_query_pairs = build_work_list(results_file, grm_ids; pval=0.05)
+    variances = compute_variances(influence_curves, grm, τs, n_obs)
+    #monotone_variances, radial_variances = make_monotone_and_smooth(variances)
+
+    update_results_file!(results_file, variances, phenotype_query_pairs)
+
+    close(results_file)
 end
 
 """
@@ -170,18 +160,4 @@ function make_monotone_and_smooth(variances)
     monotone_variances, radial_variances
 end
 
-
-function sieve_variance_plateau(parsed_args)
-    results_file = jldopen(parsed_args["results"], "a+")
-
-    τs = default_τs(parsed_args["nb-estimators"])
-    grm, grm_ids = readGRM(parsed_args["grm-prefix"])
-    phenotypes, inf_curves, n_obs = build_influence_curves(results_file, grm_ids)
-    variances = compute_variances(inf_curves, grm, τs, n_obs)
-    #monotone_variances, radial_variances = make_monotone_and_smooth(variances)
-
-    update_results_file!(results_file, phenotypes, variances)
-
-    close(results_file)
-end
 
