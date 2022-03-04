@@ -9,13 +9,15 @@ using TMLE
 using CategoricalArrays
 using MLJLinearModels
 using MLJBase
+using Random
 
 function build_result_file(grm_ids; path="results_test.hdf5")
+    rng = Xoshiro(0)
     n = size(grm_ids, 1)
-    T = (t₁=categorical(rand([0, 1], n)),)
-    W = (w₁=rand(n), w₂=rand(n))
-    y₁ = rand(n)
-    y₂ = 2convert(Vector{Float64}, T.t₁) + 0.2rand(n)
+    T = (t₁=categorical(rand(rng, [0, 1], n)),)
+    W = (w₁=rand(rng, n), w₂=rand(rng, n))
+    y₁ = rand(rng, n)
+    y₂ = 2convert(Vector{Float64}, T.t₁) + 0.2rand(rng, n)
     query_1 = Query(case=(t₁=1,), control=(t₁=0,))
     query_2 = Query(case=(t₁=0,), control=(t₁=1,))
     tmle = TMLEstimator(
