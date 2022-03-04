@@ -66,9 +66,11 @@ As the GRM is symetric it is performed as :
 and this for all τs.
 """
 function aggregate_variances(influence_curves, indicator, sample)
-    D_off_diag = transpose(influence_curves[:, 1:sample-1])
-    D_diag = transpose(influence_curves[:, sample])
-    return D_diag .* (2indicator[:, 1:sample-1] * D_off_diag .+ D_diag.* indicator[:, sample])
+    @views begin
+        D_off_diag = transpose(influence_curves[:, 1:sample-1])
+        D_diag = transpose(influence_curves[:, sample])
+        return D_diag .* (2indicator[:, 1:sample-1] * D_off_diag .+ D_diag.* indicator[:, sample])
+    end
 end
 
 """
