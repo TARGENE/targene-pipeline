@@ -58,13 +58,13 @@ end
     sample_grm = Float32[-0.6, -0.4, -0.25, -0.3, -0.1, 0.1, 0.3, 0.5, 0.2, 0.6]
     nτs = 5
     τs = UKBBEpistasisPipeline.default_τs(nτs)
-    @test τs ≈ Float32[2.0, 1.0,  0.666667,  0.5,  0.4]
+    @test τs ≈ Float32[0.4, 0.8, 1.2, 1.6, 2.0]
     d = UKBBEpistasisPipeline.bit_distances(sample_grm, τs)
-    @test d == [1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0
-                0.0  0.0  0.0  0.0  0.0  1.0  1.0  1.0  1.0  1.0
+    @test d == [0.0  0.0  0.0  0.0  0.0  0.0  1.0  1.0  0.0  1.0
                 0.0  0.0  0.0  0.0  0.0  0.0  1.0  1.0  1.0  1.0
-                0.0  0.0  0.0  0.0  0.0  0.0  1.0  1.0  0.0  1.0
-                0.0  0.0  0.0  0.0  0.0  0.0  1.0  1.0  0.0  1.0]
+                0.0  0.0  0.0  0.0  0.0  1.0  1.0  1.0  1.0  1.0
+                0.0  0.0  1.0  0.0  1.0  1.0  1.0  1.0  1.0  1.0
+                1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0]
 end
 
 @testset "Test aggregate_variances" begin
@@ -113,12 +113,12 @@ end
     for curve_id in 1:n_curves
         s = sum(influence_curves[curve_id, :])
         var = sum(s*influence_curves[curve_id, i] for i in 1:n_samples)/n_obs[curve_id]
-        @test variances[1, curve_id] ≈ var
+        @test variances[end, curve_id] ≈ var
     end
 
     # Decreasing variances with τ as all inf curves are positives
-    for nτ in 2:nτs
-        @test all(variances[nτ, :] .<= variances[nτ-1, :])
+    for nτ in 1:nτs-1
+        @test all(variances[nτ, :] .<= variances[nτ+1, :])
     end
 
 end
@@ -143,7 +143,6 @@ end
 
     rm(path)
 end
-
 
 @testset "Test grm_rows_bounds" begin
     n_samples = 5

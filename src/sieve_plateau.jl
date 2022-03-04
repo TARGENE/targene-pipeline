@@ -26,7 +26,7 @@ function bit_distances(sample_grm, τs)
     return convert(Matrix{Float32}, permutedims(distances) .<= τs)
 end
 
-default_τs(nτs) = [2/i for i in 1:nτs]
+default_τs(nτs) = [2i/nτs for i in 1:nτs]
 
 function build_work_list(results_file, grm_ids; pval=0.05)
     influence_curves = Vector{Float32}[]
