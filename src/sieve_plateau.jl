@@ -104,12 +104,24 @@ function compute_variances(influence_curves, grm, τs, n_obs)
         end_idx = start_idx + sample - 1
         sample_grm = view(grm, start_idx:end_idx)
         indicator = bit_distances(sample_grm, τs)
-        res = aggregate_variances(influence_curves, indicator, sample)
-        variances .+= res
+        variances .+= aggregate_variances(influence_curves, indicator, sample)
         start_idx = end_idx + 1
     end
     normalize!(variances, n_obs)
     return variances
+end
+
+function grm_rows_bounds(n_samples)
+    bounds = Pair{Int, Int}[]
+    start_idx = 1
+    for sample in 1:n_samples
+        # lower diagonal of the GRM are stored in a single vector 
+        # that are accessed one row at a time
+        end_idx = start_idx + sample - 1
+        push!(bounds, start_idx => end_idx)
+        start_idx = end_idx + 1
+    end
+    return bounds
 end
 
 function update_results_file!(results_file, variances, phenotype_query_pairs)

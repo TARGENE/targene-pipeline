@@ -368,6 +368,12 @@ git-tree-sha1 = "8d70835a3759cdd75881426fced1508bb7b7e1b6"
 uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
 version = "1.1.1"
 
+[[deps.IntelOpenMP_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "d979e54b71da82f3a65b62553da4fc3d18c9004c"
+uuid = "1d5cc7b8-4909-519e-a0f8-d0f5ad9712d0"
+version = "2018.0.3+2"
+
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
@@ -410,6 +416,10 @@ deps = ["ArrayInterface", "LinearAlgebra", "ManualMemory", "SIMDTypes", "Static"
 git-tree-sha1 = "83b56449c39342a47f3fcdb3bc782bd6d66e1d97"
 uuid = "10f19ff3-798f-405d-979b-55457f8fc047"
 version = "0.1.4"
+
+[[deps.LazyArtifacts]]
+deps = ["Artifacts", "Pkg"]
+uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
 
 [[deps.LearnBase]]
 git-tree-sha1 = "a0d90569edd490b82fdc4dc078ea54a5a800d30a"
@@ -465,6 +475,18 @@ deps = ["InteractiveUtils", "LearnBase", "Markdown", "RecipesBase", "StatsBase"]
 git-tree-sha1 = "0f057f6ea90a84e73a8ef6eebb4dc7b5c330020f"
 uuid = "30fc2ffe-d236-52d8-8643-a9d8f7c094a7"
 version = "0.7.2"
+
+[[deps.MKL]]
+deps = ["Artifacts", "Libdl", "LinearAlgebra", "MKL_jll"]
+git-tree-sha1 = "e1ad60943045f666863e9112701bc77fd19d946b"
+uuid = "33e6dc65-8f57-5167-99aa-e5a354878fb2"
+version = "0.5.0"
+
+[[deps.MKL_jll]]
+deps = ["Artifacts", "IntelOpenMP_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "Pkg"]
+git-tree-sha1 = "e595b205efd49508358f7dc670a940c790204629"
+uuid = "856f044c-d86e-5d09-b602-aeab76dc8ba7"
+version = "2022.0.0+0"
 
 [[deps.MLJBase]]
 deps = ["CategoricalArrays", "CategoricalDistributions", "ComputationalResources", "Dates", "DelimitedFiles", "Distributed", "Distributions", "InteractiveUtils", "InvertedIndices", "LinearAlgebra", "LossFunctions", "MLJModelInterface", "Missings", "OrderedCollections", "Parameters", "PrettyTables", "ProgressMeter", "Random", "ScientificTypes", "StatisticalTraits", "Statistics", "StatsBase", "Tables"]

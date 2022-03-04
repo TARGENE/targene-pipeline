@@ -142,16 +142,27 @@ end
     rm(path)
 end
 
+
+@testset "Test grm_rows_bounds" begin
+    n_samples = 5
+    grm_bounds = UKBBEpistasisPipeline.grm_rows_bounds(n_samples)
+    @test grm_bounds == [1 => 1
+                         2 => 3
+                         4 => 6
+                         7 => 10
+                         11 => 15]
+end
+
 # @testset "Test perf" begin
-#     n = 100_000
-#     nτs = 10
+#     sample = 200_000
+#     n_curves = 100
+#     nτs = 100
 #     τs = UKBBEpistasisPipeline.default_τs(nτs)
-#     sample_grm = rand(Float32, n)
+#     sample_grm = rand(Float32, sample)
 #     indicator = UKBBEpistasisPipeline.bit_distances(sample_grm, τs)
-#     D = rand(Float32, n)
-#     @btime UKBBEpistasisPipeline.aggregate_variances(D, indicator, n)
-#     indicator = permutedims(indicator)
-#     @btime UKBBEpistasisPipeline.aggregate_variances_(D, indicator_, n)
+#     D = rand(Float32, n_curves, 2sample)
+#     @btime UKBBEpistasisPipeline.aggregate_variances(D, indicator, sample)
+
 # end
 
 end
