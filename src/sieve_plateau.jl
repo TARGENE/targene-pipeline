@@ -14,19 +14,18 @@ end
 
 Returns a matrix of shape (n_samples,nτs) where n_samples is the 
 size of sample_grm.
-The sample_grm comes from the gcta software which is in fact GRM/2. 
-The process is thus as follows:
-- Multiply by 2 to get back to the GRM
+The sample_grm comes from the gcta software. 
+The process is as follows:
 - Round between -1 and 1 as some elements may be beyond that limit
-- Take 1 - this value to covnert this quantity to a distance
+- Take 1 - this value to convert this quantity to a distance
 - For each τ return if the distance between individuals is less or equal than τ
 """
 function bit_distances(sample_grm, τs)
-    distances = 1 .-  max.(min.(2sample_grm, 1), -1)
+    distances = 1 .-  max.(min.(sample_grm, 1), -1)
     return convert(Matrix{Float32}, permutedims(distances) .<= τs)
 end
 
-default_τs(nτs) = [2i/nτs for i in 1:nτs]
+default_τs(nτs) = Float32[2(i-1)/(nτs-1) for i in 1:nτs]
 
 function build_work_list(results_file, grm_ids; pval=0.05)
     influence_curves = Vector{Float32}[]
