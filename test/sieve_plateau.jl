@@ -124,10 +124,10 @@ end
     τs = UKBBEpistasisPipeline.default_τs(nτs)
     # The GRM has 15 lower triangular elements
     grm = Float32[0.4, 0.1, 0.5, 0.2, -0.2, 0.6, 0.3, -0.6, 
-            0.4, 0.3, 0.6, 0.3, 0.7, 0.3, 0.1]
+                  0.4, 0.3, 0.6, 0.3, 0.7, 0.3, 0.1]
     influence_curves = Float32[0.1 0. 0.1 0.3 0.
-                        0.1 0.2 0.1 0.0 0.2
-                        0.0 0. 0.1 0.3 0.2]
+                               0.1 0.2 0.1 0.0 0.2
+                               0.0 0. 0.1 0.3 0.2]
                   
     
     variances = UKBBEpistasisPipeline.compute_variances(influence_curves, grm, τs, n_obs)
@@ -156,6 +156,10 @@ end
             @test variances[τ_id, curve_id] ≈ var_
         end
     end
+
+    # Check by hand for a single τ=0.5
+    @test variances[2, :] ≈ Float32[0.0033333336, 0.03250000000000001, 0.012500000000000002]
+
 end
 
 @testset "Test sieve_variance_plateau" begin
@@ -190,32 +194,6 @@ end
 end
 
 
-# @testset "Test with normally distributed inf curve" begin
-#     using Distributions, Plots
-#     n = 10000
-#     rng = Xoshiro(0)
-#     grm = rand(rng, Uniform(0, 1), n*(n+1)÷2)
-#     for i in 1:n
-#         grm[sum(1:i)] = 1
-#     end
-#     influence_curves = permutedims(rand(rng, Normal(0, 5), n))
-#     τs = UKBBEpistasisPipeline.default_τs(100)
-#     variances = UKBBEpistasisPipeline.compute_variances(influence_curves, grm, τs, [n])
-#     plot(τs, variances[:, 1])
 
-
-# end
-
-# @testset "Test perf" begin
-#     sample = 200_000
-#     n_curves = 100
-#     nτs = 100
-#     τs = UKBBEpistasisPipeline.default_τs(nτs)
-#     sample_grm = rand(Float32, sample)
-#     indicator = UKBBEpistasisPipeline.bit_distances(sample_grm, τs)
-#     D = rand(Float32, n_curves, 2sample)
-#     @btime UKBBEpistasisPipeline.aggregate_variances(D, indicator, sample)
-
-# end
 
 end
