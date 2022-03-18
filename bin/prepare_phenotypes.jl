@@ -7,12 +7,9 @@ function parse_commandline()
                                      "https://github.com/olivierlabayle/GenesInteraction.jl/")
 
     @add_arg_table s begin
-        "binary-phenotypes"
+        "phenotypes-file"
             arg_type = String
-            help = "Path to the GeneAtlas binary phenotypes file"
-        "continuous-phenotypes"
-            arg_type = String
-            help = "Path to the GeneAtlas continuous phenotypes file"
+            help = "Path to a GeneAtlas phenotypes file"
         "bridge"
             arg_type = String
             help = "Path to the bridge file between our UKBB project and the GeneAtlas."
@@ -25,7 +22,7 @@ function parse_commandline()
             required = false
         "--phenotypes-list"
             arg_type = String
-            help = "Coma separated list"
+            help = "A path to a file containing a list of phenotypes of interest. One per line."
             required = false
     end
 
