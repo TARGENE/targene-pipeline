@@ -81,14 +81,15 @@ workflow generateQueries{
 
 
 workflow generatePhenotypes {
-    binary_phenotypes = Channel.value(file("$params.BINARY_PHENOTYPES"))
-    continuous_phenotypes = Channel.value(file("$params.CONTINUOUS_PHENOTYPES"))
-    bridge = Channel.value(file("$params.GENEATLAS_BRIDGE"))
-    withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
+    binary_phenotypes = Channel.fromPath("$params.BINARY_PHENOTYPES")
+    continuous_phenotypes = Channel.fromPath("$params.CONTINUOUS_PHENOTYPES")
+    bridge = Channel.fromPath("$params.GENEATLAS_BRIDGE")
+    withdrawal_list = Channel.fromPath("$params.WITHDRAWAL_LIST")
+    phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST")
 
-    BridgeContinuous(continuous_phenotypes, bridge, withdrawal_list, params.PHENOTYPES_LIST, "continuous_phenotypes.csv")
+    BridgeContinuous(continuous_phenotypes, bridge, withdrawal_list, phenotypes_list, "continuous_phenotypes.csv")
 
-    BridgeBinary(binary_phenotypes, bridge, withdrawal_list, params.PHENOTYPES_LIST, "binary_phenotypes.csv")
+    BridgeBinary(binary_phenotypes, bridge, withdrawal_list, phenotypes_list, "binary_phenotypes.csv")
     
     emit:
         continuous = BridgeContinuous.out
