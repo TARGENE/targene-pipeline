@@ -2,7 +2,7 @@
 nextflow.enable.dsl = 2
 
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
-params.PHENOTYPES_LIST = "NONE"
+params.PHENOTYPES_LIST = "NO_FILE"
 params.QUERIES_MODE = "given"
 params.THRESHOLD = 0.9
 params.ADAPTIVE_CV = true
@@ -11,7 +11,7 @@ params.SAVE_FULL = false
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { generatePCs } from './modules/confounders.nf'
 include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
-include { phenotypesFromGeneAtlas } from './modules/phenotypes.nf'
+include { phenotypesFromGeneAtlas as BridgeContinuous; phenotypesFromGeneAtlas as BridgeBinary } from './modules/phenotypes.nf'
 include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
@@ -86,16 +86,20 @@ workflow generatePhenotypes {
     bridge = Channel.value(file("$params.GENEATLAS_BRIDGE"))
     withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
 
-    phenotypesFromGeneAtlas(binary_phenotypes, continuous_phenotypes, bridge, withdrawal_list)
+    BridgeContinuous(continuous_phenotypes, bridge, withdrawal_list, params.PHENOTYPES_LIST, "continuous_phenotypes.csv")
+
+    BridgeBinary(binary_phenotypes, bridge, withdrawal_list, params.PHENOTYPES_LIST, "binary_phenotypes.csv")
     
     emit:
-        phenotypesFromGeneAtlas.out
+        continuous = BridgeContinuous.out
+        binary = BridgeBinary.out
 }
 
 
 workflow generateEstimates {
     take:
-        phenotypes_file
+        binary_phenotypes_file
+        continuous_phenotypes_file
         queries_files
         confounders_file
 
