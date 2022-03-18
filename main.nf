@@ -149,8 +149,8 @@ workflow {
 
     // generate estimates
     generateEstimates(
-        generatePhenotypes.continuous.out,
-        generatePhenotypes.binary.out,
+        generatePhenotypes.out.continuous,
+        generatePhenotypes.out.binary,
         generateQueries.out.flatten(), 
         generateConfounders.out
     )
