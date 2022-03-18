@@ -1,7 +1,17 @@
+authors = ["olivierlabayle"]
 name = "UKBBEpistasisPipeline"
 uuid = "3aa9512e-42c2-4133-bfaa-ba71048d3391"
-authors = ["olivierlabayle"]
 version = "0.3.0"
+
+[compat]
+ArgParse = "1.1"
+BGEN = "0.1"
+CSV = "0.9"
+DataFrames = "1.3"
+JLD2 = "0.4"
+MKL = "0.5"
+SnpArrays = "0.3"
+TMLE = ">=0.6.1"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
@@ -16,13 +26,5 @@ SnpArrays = "4e780e97-f5bf-4111-9dc4-b70aaf691b06"
 TMLE = "8afdd2fb-6e73-43df-8b62-b1650cd9c8cf"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
-[compat]
-ArgParse = "1.1"
-BGEN = "0.1"
-CSV = "0.9"
-DataFrames = "1.3"
-SnpArrays = "0.3"
-MKL = "0.5"
-TMLE = "0.4.1"
-JLD2 = "0.4"
-
+[extras]
+CPUSummary = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"

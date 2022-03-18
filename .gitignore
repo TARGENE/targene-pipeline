@@ -7,3 +7,5 @@ work/
 test.nf
 publish_dir
 test/grmmatrix
+LocalPreferences.toml
+test/sandbox.jl

@@ -1,8 +1,7 @@
-process VariantRun {
+process TMLE {
     container "olivierlabayle/tmle-epistasis:0.3.0"
     label "bigmem"
     label "multithreaded"
-    publishDir "$params.OUTDIR/estimates/", mode: 'symlink'
 
     input:
         path bgenfiles
@@ -10,15 +9,14 @@ process VariantRun {
         path confoundersfile
         path estimatorfile
         path queryfile
-        path phenotypelist_file
+        val target_type
     
     output:
-        path "*.{hdf5, jls}"
+        path "*.hdf5"
     
     script:
-        def phenotype_list = phenotypelist_file.getName() != 'NONE' ? "--phenotypes-list $phenotypelist_file" : ''
         def adaptive_cv = params.ADAPTIVE_CV == true ? '--adaptive-cv' : ''
         def save_full = params.SAVE_FULL == true ? '--save-full' : ''
-        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $phenotype_list $adaptive_cv $save_full"
+        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile --target-type $target_type $adaptive_cv $save_full"
     
 }

@@ -33,11 +33,11 @@ function build_result_file(grm_ids; path="results_test.hdf5")
 
     jldopen(path, "w") do io
         cancer = JLD2.Group(io, "cancer")
-        cancer["queryreports"] = getqueryreports(mach₁)
+        cancer["queryreports"] = queryreports(mach₁)
         cancer["sample_ids"] = string.(grm_ids.SAMPLE_ID)
 
         bmi = JLD2.Group(io, "bmi")
-        bmi["queryreports"] = getqueryreports(mach₂)
+        bmi["queryreports"] = queryreports(mach₂)
         bmi["sample_ids"] = string.(grm_ids.SAMPLE_ID)
     end
 end
