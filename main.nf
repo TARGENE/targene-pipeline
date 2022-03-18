@@ -12,7 +12,7 @@ include { IIDGenotypes } from './modules/genotypes.nf'
 include { generatePCs } from './modules/confounders.nf'
 include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas as BridgeContinuous; phenotypesFromGeneAtlas as BridgeBinary } from './modules/phenotypes.nf'
-include { VariantRun as TMLE; VariantRun as CrossVal} from './modules/tmle.nf'
+include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 
@@ -98,21 +98,22 @@ workflow generatePhenotypes {
 
 workflow generateEstimates {
     take:
-        binary_phenotypes_file
         continuous_phenotypes_file
+        binary_phenotypes_file
         queries_files
         confounders_file
 
     main:
         bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
-        phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST")
 
         // compute TMLE estimates
-        TMLE(bgen_files_ch.collect(), phenotypes_file, confounders_file, estimator_file, queries_files, phenotypes_list)
-    
+        TMLEContinuous(bgen_files_ch.collect(), continuous_phenotypes_file, confounders_file, estimator_file, queries_files, "Real")
+        TMLEBinary(bgen_files_ch.collect(), binary_phenotypes_file, confounders_file, estimator_file, queries_files, "Bool")
+
     emit:
-        TMLE.out
+        continuous = TMLEContinuous.out
+        binary = TMLEBinary.out
 }
 
 
@@ -147,7 +148,12 @@ workflow {
     generatePhenotypes()
 
     // generate estimates
-    generateEstimates(generatePhenotypes.out, generateQueries.out.flatten(), generateConfounders.out)
+    generateEstimates(
+        generatePhenotypes.continuous.out,
+        generatePhenotypes.binary.out,
+        generateQueries.out.flatten(), 
+        generateConfounders.out
+    )
     
     // generate variance estimates
     //generateVarianceEstimates(generateEstimates.out, generateGRM.out.grm_ids, generateGRM.out.grm_matrix)
