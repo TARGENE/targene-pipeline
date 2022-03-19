@@ -131,7 +131,7 @@ workflow generateEstimates {
                         .groupTuple()
 
     emit:
-        hdf5_files.out
+        hdf5_files
 }
 
 
