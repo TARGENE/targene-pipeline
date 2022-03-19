@@ -3,6 +3,7 @@ def String build_outfilename(queryfile, phenotypes_batch, target_type) {
     println queryfile
     println phenotypes_batch
     allLines = queryfile.readLines()
+    println "AFTER READLINES"
     SNPSection = false
     outfilename = ""
     for (line : allLines) {
