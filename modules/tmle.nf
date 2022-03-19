@@ -6,6 +6,7 @@ def String build_outfilename(queryfile, phenotypes_batch, target_type) {
     SNPSection = false
     outfilename = ""
     for (line : allLines) {
+        println line
         if (line == "[SNPS]") {
             SNPSection = true
         }
@@ -20,7 +21,7 @@ def String build_outfilename(queryfile, phenotypes_batch, target_type) {
     }
     println "IN FUNCTION BEFORE FINAL"
     outfilename += "batch_" + phenotypes_batch.getName()[17..-5] + "_" + target_type + ".hdf5"
-
+    println "IN FUNCTION AFTER FINAL"
     return outfilename
 }
 
@@ -44,7 +45,7 @@ process TMLE {
     script:
         adaptive_cv = params.ADAPTIVE_CV == true ? '--adaptive-cv' : ''
         save_full = params.SAVE_FULL == true ? '--save-full' : ''
-        outfilename = build_outfilename(file(queryfile), file(phenotypes_batch), target_type)
+        outfilename = build_outfilename(file(queryfile), phenotypes_batch, target_type)
         """
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $outfilename --phenotypes-list ${phenotypes_batch.getName()} --target-type $target_type $adaptive_cv $save_full
         """
