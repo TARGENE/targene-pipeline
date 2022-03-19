@@ -1,6 +1,6 @@
 module UKBBEpistasisPipeline
 
-using MKL
+#using MKL
 using DataFrames
 using CSV
 using TOML
@@ -26,7 +26,7 @@ include("sieve_plateau.jl")
 export generate_queries
 export filter_asb
 export filter_chromosome, merge_beds, adapt_flashpca
-export prepare_phenotypes
+export prepare_phenotypes, tmle_phenotypes_batches
 export grm_from_gcta
 export sieve_variance_plateau
 
