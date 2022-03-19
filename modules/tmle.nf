@@ -41,7 +41,8 @@ process TMLE {
     script:
         def adaptive_cv = params.ADAPTIVE_CV == true ? '--adaptive-cv' : ''
         def save_full = params.SAVE_FULL == true ? '--save-full' : ''
-        def outfilename = build_outfilename(file(queryfile), phenotypes_batch, target_type)
+        println queryfile
+        def outfilename = build_outfilename(queryfile, phenotypes_batch, target_type)
         println outfilename
         """
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $outfilename --phenotypes-list ${phenotypes_batch.getName()} --target-type $target_type $adaptive_cv $save_full
