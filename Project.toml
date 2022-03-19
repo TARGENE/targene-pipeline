@@ -11,7 +11,7 @@ DataFrames = "1.3"
 JLD2 = "0.4"
 MKL = "0.5"
 SnpArrays = "0.3"
-TMLE = ">=0.6.1"
+TMLE = ">=0.6.2"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
