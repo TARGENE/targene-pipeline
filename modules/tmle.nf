@@ -55,7 +55,7 @@ process PhenotypesBatches {
         path phenotypes_file
     
     output:
-        "phenotypes_batch_*"
+        path "phenotypes_batch_*"
     
     script:
         "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/make_phenotypes_batches.jl ${phenotypes_file.getName()} --batch-size $params.PHENOTYPES_BATCH_SIZE"
