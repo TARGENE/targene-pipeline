@@ -23,6 +23,7 @@ def String build_outfilename(queryfile, phenotypes_batch, type) {
 
 process TMLE {
     container "olivierlabayle/tmle-epistasis:0.3.0"
+    publishDir "$params.OUTDIR/hdf5files", saveAs: { filename -> filename.split("_batch")[0] + "/$filename" }, mode: 'symlink'
     label "bigmem"
     label "multithreaded"
 
@@ -58,17 +59,4 @@ process PhenotypesBatches {
     
     script:
         "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/make_phenotypes_batches.jl ${phenotypes_file.getName()} --batch-size $params.PHENOTYPES_BATCH_SIZE"
-}
-
-process MergeHDF5 {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
-
-    input:
-        tuple val rs_ids , path results_files
-
-    output:
-        "${rs_ids}.hdf5"
-
-    script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/merge_jld2.jl ${rs_ids}"
 }
