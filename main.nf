@@ -125,8 +125,8 @@ workflow generateEstimates {
         queries_to_binary_phenotype_batches = queries_files.combine(BinaryPhenotypesBatches.out.flatten())
         TMLEBinary(bgen_files_ch.collect(), binary_phenotypes_file, confounders_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
 
-        hdf5_files = ContinuousPhenotypesBatches.out
-                        .concat(BinaryPhenotypesBatches.out)
+        hdf5_files = TMLEContinuous.out.flatten()
+                        .concat(TMLEBinary.out.flatten())
                         .map { it -> [it.getName().split("_batch")[0], it]}
                         .groupTuple()
 
