@@ -7,12 +7,19 @@ params.QUERIES_MODE = "given"
 params.THRESHOLD = 0.9
 params.ADAPTIVE_CV = true
 params.SAVE_FULL = false
+params.PHENOTYPES_BATCH_SIZE = 1
+params.GRM_NSPLITS = 100
+params.MAF_THRESHOLD = 0.01
+params.NB_PCS = 6
+params.NB_VAR_ESTIMATORS = 10
+params.OUTDIR = "$launchDir/results"
 
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { generatePCs } from './modules/confounders.nf'
 include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas as BridgeContinuous; phenotypesFromGeneAtlas as BridgeBinary } from './modules/phenotypes.nf'
 include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
+include {PhenotypesBatches as ContinuousPhenotypesBatches; PhenotypesBatches as BinaryPhenotypesBatches} from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 
@@ -108,24 +115,34 @@ workflow generateEstimates {
         bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
 
-        // compute TMLE estimates
-        TMLEContinuous(bgen_files_ch.collect(), continuous_phenotypes_file, confounders_file, estimator_file, queries_files, "Real")
-        TMLEBinary(bgen_files_ch.collect(), binary_phenotypes_file, confounders_file, estimator_file, queries_files, "Bool")
+        // compute TMLE estimates for continuous targets
+        ContinuousPhenotypesBatches(continuous_phenotypes_file)
+        queries_to_continuous_phenotype_batches = queries_files.combine(ContinuousPhenotypesBatches.out)
+        TMLEContinuous(bgen_files_ch.collect(), continuous_phenotypes_file, confounders_file, estimator_file, queries_to_continuous_phenotype_batches, "Real")
+        
+        // compute TMLE estimates for binary targets
+        BinaryPhenotypesBatches(binary_phenotypes_file)
+        queries_to_binary_phenotype_batches = queries_files.combine(BinaryPhenotypesBatches.out)
+        TMLEBinary(bgen_files_ch.collect(), binary_phenotypes_file, confounders_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
+
+        hdf5_files = ContinuousPhenotypesBatches.out
+                        .concat(BinaryPhenotypesBatches.out)
+                        .map { it -> [it.getName().split("_batch")[0], it]}
+                        .groupTuple()
 
     emit:
-        continuous = TMLEContinuous.out
-        binary = TMLEBinary.out
+        hdf5_files.out
 }
 
 
 workflow generateVarianceEstimates {
     take:
-        estimate_file
+        hdf5_files
         GRM_ids
         GRM_matrix
     
     main:
-        SieveVarianceEstimation(estimate_file, GRM_ids, GRM_matrix, params.NB_VAR_ESTIMATORS)
+        SieveVarianceEstimation(hdf5_files, GRM_ids, GRM_matrix, params.NB_VAR_ESTIMATORS)
     
     emit:
         SieveVarianceEstimation.out
