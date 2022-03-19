@@ -1,5 +1,7 @@
 def String build_outfilename(queryfile, phenotypes_batch, target_type) {
     println "IN FUNCTION"
+    println queryfile
+    println phenotypes_batch
     allLines = queryfile.readLines()
     SNPSection = false
     outfilename = ""
