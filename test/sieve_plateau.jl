@@ -26,12 +26,15 @@ function build_result_file(grm_ids; path="results_test.hdf5")
         LogisticClassifier(),
         query_1,
         query_2)
-    mach₁ = machine(tmle, T, W, y₁)
-    fit!(mach₁, verbosity=0)
-    mach₂ = machine(tmle, T, W, y₂)
-    fit!(mach₂, verbosity=0)
+    mach = machine(tmle, T, W, (y₁=y₁, y₂=y₂), cache=false)
+    fit!(mach, verbosity=0)
 
     jldopen(path, "w") do io
+        io["SAMPLE_IDS"] = Dict(
+            "cancer" => string.(grm_ids.SAMPLE_ID),
+            "bmi" => string.(grm_ids.SAMPLE_ID)
+        )
+
         cancer = JLD2.Group(io, "cancer")
         cancer["queryreports"] = queryreports(mach₁)
         cancer["sample_ids"] = string.(grm_ids.SAMPLE_ID)
