@@ -1,4 +1,5 @@
 def String build_outfilename(queryfile, phenotypes_batch, target_type) {
+    println "IN FUNCTION"
     allLines = queryfile.readLines()
     SNPSection = false
     outfilename = ""
@@ -15,7 +16,7 @@ def String build_outfilename(queryfile, phenotypes_batch, target_type) {
             SNPSection = false
         }
     }
-
+    println "IN FUNCTION BEFORE FINAL"
     outfilename += "batch_" + phenotypes_batch.getName()[17..-5] + "_" + target_type + ".hdf5"
 
     return outfilename
