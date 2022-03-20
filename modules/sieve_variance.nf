@@ -10,6 +10,7 @@ process SieveVarianceEstimation {
         path GRM_matrix
 
     output:
+        val rsprefix
         path "${rsprefix}_sieve_variance.hdf5"
     
     script:
