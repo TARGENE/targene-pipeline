@@ -24,7 +24,7 @@ process TMLE {
         """
         outfilename=\$(julia --project --startup-file=no -e 'using TOML; ks=join(sort(collect(keys(TOML.parse(open("${queryfilename}"))["SNPS"]))), "_");println(ks)')
         outfilename="\${outfilename}_batch_${batch_id}_${target_type}.hdf5"
-        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $outfilename --phenotypes-list $phen_batch--target-type $target_type $adaptive_cv $save_full
+        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile \$outfilename --phenotypes-list $phen_batch--target-type $target_type $adaptive_cv $save_full
         """
 }
 
