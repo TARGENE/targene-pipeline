@@ -1,5 +1,5 @@
 process GRMPart {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.0"
     label "bigmem"
     label "multithreaded"
 
