@@ -9,6 +9,7 @@ function align_ic(ic, sample_ids, grm_ids)
     return coalesce.(aligned_ic, 0)
 end
 
+
 """
     bit_distances(sample_grm, nτs)
 
@@ -25,25 +26,38 @@ function bit_distances(sample_grm, τs)
     return convert(Matrix{Float32}, permutedims(distances) .<= τs)
 end
 
-default_τs(nτs) = Float32[2(i-1)/(nτs-1) for i in 1:nτs]
 
-function build_work_list(results_file, grm_ids; pval=0.05)
+default_τs(nτs;max_τ=2) = Float32[max_τ*(i-1)/(nτs-1) for i in 1:nτs]
+
+
+function build_work_list(prefix, grm_ids; pval=0.05)
+    dirname_, prefix_ = splitdir(prefix)
+    dirname__ = dirname_ == "" ? "." : dirname_
+    hdf5files = filter(
+            x -> startswith(x, prefix_) && endswith(x, ".hdf5"), 
+            readdir(dirname__)
+    )
+    hdf5files = [joinpath(dirname_, x) for x in hdf5files]
+
     influence_curves = Vector{Float32}[]
     n_obs = Int[]
-    phenotype_query_pairs = Pair{String, Int}[]
-    for phenotype in keys(results_file)
-        for (query_idx, queryreport) in enumerate(results_file[phenotype]["queryreports"])
-            if pvalue(ztest(queryreport)) <= pval
-                sample_ids = parse.(Int, results_file[phenotype]["sample_ids"])
-                push!(influence_curves, align_ic(queryreport.influence_curve, sample_ids, grm_ids))
-                push!(n_obs, size(sample_ids, 1))
-                push!(phenotype_query_pairs, phenotype=>query_idx)
+    file_queryreport_pairs = Pair{String, Int}[]
+    for hdf5file in hdf5files
+        jldopen(hdf5file) do io
+            qrs = haskey(io, "MACHINE") ? queryreports(io["MACHINE"]) : io["QUERYREPORTS"]
+            for (qr_id, qr) in enumerate(qrs)
+                if pvalue(ztest(qr)) <= pval
+                    phenotype = string(qr.target_name)
+                    sample_ids = parse.(Int, io["SAMPLE_IDS"][phenotype])
+                    push!(influence_curves, align_ic(qr.influence_curve, sample_ids, grm_ids))
+                    push!(n_obs, size(sample_ids, 1))
+                    push!(file_queryreport_pairs, hdf5file => qr_id)
+                end
             end
         end
     end
-    return reduce(vcat, transpose(influence_curves)), n_obs, phenotype_query_pairs
+    return reduce(vcat, transpose(influence_curves)), n_obs, file_queryreport_pairs
 end
-
 
 
 """
@@ -72,6 +86,7 @@ function aggregate_variances(influence_curves, indicator, sample)
     end
 end
 
+
 """
     compute_variances(influence_curves, nτs, grm_files)
 
@@ -91,7 +106,7 @@ and queries.
 observations used during estimation
 
 # Returns:
-- variances: An Array of size (nτs, n_queries, n_phenotypes)
+- variances: An Array of size (nτs, n_curves) where n_curves is the number of influence curves.
 """
 function compute_variances(influence_curves, grm, τs, n_obs)
     n_curves, n_samples = size(influence_curves)
@@ -110,6 +125,7 @@ function compute_variances(influence_curves, grm, τs, n_obs)
     return variances
 end
 
+
 function grm_rows_bounds(n_samples)
     bounds = Pair{Int, Int}[]
     start_idx = 1
@@ -123,54 +139,34 @@ function grm_rows_bounds(n_samples)
     return bounds
 end
 
-function update_results_file!(results_file, variances, phenotype_query_pairs)
-    for (curve_id, (phenotype, query_idx)) in enumerate(phenotype_query_pairs)
-        if !haskey(results_file[phenotype], "sieve_variances")
-            sieve_group = JLD2.Group(results_file[phenotype], "sieve_variances")
-        else
-            sieve_group = results_file[phenotype]["sieve_variances"]
-        end
-        sieve_group[string(query_idx)] = variances[:, curve_id]
+
+function save_results(outfilename, τs, variances, std_errors, file_queryreport_pairs)
+    jldopen(outfilename, "w") do io
+        io["TAUS"] = τs
+        io["VARIANCES"] = variances
+        io["SOURCEFILE_REPORTID_PAIRS"] = file_queryreport_pairs
+        io["STDERRORS"] = std_errors
     end
 end
+
+
+corrected_stderrors(variances, n_obs) =
+    sqrt.(view(maximum(variances, dims=1), 1, :) ./ n_obs)
+
 
 function sieve_variance_plateau(parsed_args)
-    results_file = jldopen(parsed_args["results"], "a+")
+    prefix = parsed_args["prefix"]
+    pval = parsed_args["pval"]
+    outfilename = parsed_args["out"]
 
-    τs = default_τs(parsed_args["nb-estimators"])
+    τs = default_τs(parsed_args["nb-estimators"];max_τ=parsed_args["max-tau"])
     grm, grm_ids = readGRM(parsed_args["grm-prefix"])
-    influence_curves, n_obs, phenotype_query_pairs = build_work_list(results_file, grm_ids; pval=0.05)
+
+    influence_curves, n_obs, file_queryreport_pairs = build_work_list(prefix, grm_ids; pval=pval)
     variances = compute_variances(influence_curves, grm, τs, n_obs)
-    #monotone_variances, radial_variances = make_monotone_and_smooth(variances)
+    std_errors = corrected_stderrors(variances, n_obs)
 
-    update_results_file!(results_file, variances, phenotype_query_pairs)
-
-    close(results_file)
-end
-
-"""
-make_monotone_and_smooth(variances)
-
-For each phenotype/query, build monotonically increasing variances estimates and 
-smooth them with radial basis functions.
-
-# Arguments:
-- variances: an Array with shape: (n_phenotypes, n_queries, nτ)
-
-"""
-function make_monotone_and_smooth(variances)
-    n_phenotypes, n_queries, nτ = size(variances)
-    monotone_variances = zeros(n_phenotypes, n_queries, nτ)
-    radial_variances = zeros(n_phenotypes, n_queries, nτ)
-    for query_idx in 1:n_queries
-        for phenotype_idx in 1:n_phenotypes
-            monotone_variances[phenotype_idx, query_idx, :] = 
-                pooled_pava_isotonic_regression(variances[phenotype_idx, query_idx, :])
-            radial_variances[phenotype_idx, query_idx, :] =
-                radial_basis_interpolation(monotone_variances[phenotype_idx, query_idx, :])
-        end
-    end
-    monotone_variances, radial_variances
+    save_results(outfilename, τs, variances, std_errors, file_queryreport_pairs)
 end
 
 

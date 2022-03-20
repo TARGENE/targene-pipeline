@@ -12,6 +12,8 @@ params.GRM_NSPLITS = 100
 params.MAF_THRESHOLD = 0.01
 params.NB_PCS = 6
 params.NB_VAR_ESTIMATORS = 10
+params.MAX_TAU = 8
+params.PVAL_SIEVE = 0.05
 params.OUTDIR = "$launchDir/results"
 
 include { IIDGenotypes } from './modules/genotypes.nf'
@@ -142,7 +144,7 @@ workflow generateVarianceEstimates {
         GRM_matrix
     
     main:
-        SieveVarianceEstimation(hdf5_files, GRM_ids, GRM_matrix, params.NB_VAR_ESTIMATORS)
+        SieveVarianceEstimation(hdf5_files, GRM_ids, GRM_matrix)
     
     emit:
         SieveVarianceEstimation.out
@@ -174,5 +176,5 @@ workflow {
     )
     
     // generate variance estimates
-    //generateVarianceEstimates(generateEstimates.out, generateGRM.out.grm_ids, generateGRM.out.grm_matrix)
+    generateVarianceEstimates(generateEstimates.out, generateGRM.out.grm_ids, generateGRM.out.grm_matrix)
 }
