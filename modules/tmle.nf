@@ -18,11 +18,11 @@ process TMLE {
     script:
         adaptive_cv = params.ADAPTIVE_CV == true ? '--adaptive-cv' : ''
         save_full = params.SAVE_FULL == true ? '--save-full' : ''
-        query_filename = query_file.getName()
+        queryfilename = queryfile.getName()
         phen_batch = phenotypes_batch.getName()
         batch_id = phen_batch[17..-5]
         """
-        outfilename=\$(julia --project --startup-file=no -e 'using TOML; ks=join(sort(collect(keys(TOML.parse(open("${query_filename}"))["SNPS"]))), "_");println(ks)')
+        outfilename=\$(julia --project --startup-file=no -e 'using TOML; ks=join(sort(collect(keys(TOML.parse(open("${queryfilename}"))["SNPS"]))), "_");println(ks)')
         outfilename="\${outfilename}_batch_${batch_id}_${target_type}.hdf5"
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $outfilename --phenotypes-list $phen_batch--target-type $target_type $adaptive_cv $save_full
         """
