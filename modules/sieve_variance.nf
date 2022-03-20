@@ -1,5 +1,5 @@
 process SieveVarianceEstimation {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.0"
     publishDir "$params.OUTDIR/hdf5files/sieve_variances", mode: 'symlink'
     label "unlimited_vmem"
     label "multithreaded"

@@ -30,7 +30,7 @@ process TMLE {
 
 
 process PhenotypesBatches {
-    container "olivierlabayle/ukbb-estimation-pipeline:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.0"
 
     input:
         path phenotypes_file
