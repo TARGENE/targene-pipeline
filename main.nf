@@ -167,10 +167,10 @@ workflow {
 
     // generate estimates
     generateEstimates(
-        generatePhenotypes.out.continuous,
-        generatePhenotypes.out.binary,
+        generatePhenotypes.out.continuous.first(),
+        generatePhenotypes.out.binary.first(),
         generateQueries.out.flatten(), 
-        generateConfounders.out
+        generateConfounders.out.first()
     )
     
     // generate variance estimates
