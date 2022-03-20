@@ -1,31 +1,3 @@
-def String build_outfilename(queryfile, phenotypes_batch, target_type) {
-    println "IN FUNCTION"
-    println queryfile
-    println phenotypes_batch
-    allLines = queryfile.readLines()
-    println "AFTER READLINES"
-    SNPSection = false
-    outfilename = ""
-    for (line : allLines) {
-        println line
-        if (line == "[SNPS]") {
-            SNPSection = true
-        }
-        else if (SNPSection) {
-            if (line.contains("=")) {
-                newRS = line.split("=")[0].strip()
-                outfilename += newRS + "_"
-            }
-        else if (line.startsWith("["))
-            SNPSection = false
-        }
-    }
-    println "IN FUNCTION BEFORE FINAL"
-    outfilename += "batch_" + phenotypes_batch.getName()[17..-5] + "_" + target_type + ".hdf5"
-    println "IN FUNCTION AFTER FINAL"
-    return outfilename
-}
-
 process TMLE {
     container "olivierlabayle/tmle-epistasis:0.3.0"
     publishDir "$params.OUTDIR/hdf5files", saveAs: { filename -> filename.split("_batch")[0] + "/$filename" }, mode: 'symlink'
@@ -46,9 +18,13 @@ process TMLE {
     script:
         adaptive_cv = params.ADAPTIVE_CV == true ? '--adaptive-cv' : ''
         save_full = params.SAVE_FULL == true ? '--save-full' : ''
-        outfilename = build_outfilename(file(queryfile), phenotypes_batch, target_type)
+        query_filename = query_file.getName()
+        phen_batch = phenotypes_batch.getName()
+        batch_id = phen_batch[17..-5]
         """
-        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $outfilename --phenotypes-list ${phenotypes_batch.getName()} --target-type $target_type $adaptive_cv $save_full
+        outfilename=\$(julia --project --startup-file=no -e 'using TOML; ks=join(sort(collect(keys(TOML.parse(open("${query_filename}"))["SNPS"]))), "_");println(ks)')
+        outfilename="\${outfilename}_batch_${batch_id}_${target_type}.hdf5"
+        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile $outfilename --phenotypes-list $phen_batch--target-type $target_type $adaptive_cv $save_full
         """
 }
 
