@@ -12,37 +12,64 @@ using MLJBase
 using Random
 
 
-function build_result_file(grm_ids; path="results_test.hdf5")
+function clean_results_files(prefix)
+    rm(string(prefix, "_batch_1_Real.hdf5"))
+    rm(string(prefix, "_batch_1_Bool.hdf5"))
+end
+
+
+function build_results_files(grm_ids, prefix; mode="QUERYREPORTS")
     rng = Xoshiro(0)
     n = size(grm_ids, 1)
     T = (t₁=categorical(rand(rng, [0, 1], n)),)
     W = (w₁=rand(rng, n), w₂=rand(rng, n))
-    y₁ = rand(rng, n)
-    y₂ = 2convert(Vector{Float64}, T.t₁) + 0.2rand(rng, n)
+    height = rand(rng, n)
+    bmi = 2convert(Vector{Float64}, T.t₁) + 0.2rand(rng, n)
+    cancer = categorical(rand(rng, [0,1], n))
     query_1 = Query(case=(t₁=1,), control=(t₁=0,))
     query_2 = Query(case=(t₁=0,), control=(t₁=1,))
-    tmle = TMLEstimator(
+
+    # Continuous single batch
+    tmle_reg = TMLEstimator(
         LinearRegressor(), 
         LogisticClassifier(),
         query_1,
         query_2)
-    mach = machine(tmle, T, W, (y₁=y₁, y₂=y₂), cache=false)
-    fit!(mach, verbosity=0)
-
-    jldopen(path, "w") do io
+    mach_reg = machine(tmle_reg, T, W, (height=height, bmi=bmi), cache=false)
+    fit!(mach_reg, verbosity=0)
+    cont_path = string(prefix, "_batch_1_Real.hdf5")
+    jldopen(cont_path, "w") do io
         io["SAMPLE_IDS"] = Dict(
-            "cancer" => string.(grm_ids.SAMPLE_ID),
+            "height" => string.(grm_ids.SAMPLE_ID),
             "bmi" => string.(grm_ids.SAMPLE_ID)
         )
-
-        cancer = JLD2.Group(io, "cancer")
-        cancer["queryreports"] = queryreports(mach₁)
-        cancer["sample_ids"] = string.(grm_ids.SAMPLE_ID)
-
-        bmi = JLD2.Group(io, "bmi")
-        bmi["queryreports"] = queryreports(mach₂)
-        bmi["sample_ids"] = string.(grm_ids.SAMPLE_ID)
+        if mode == "MACHINE"
+            io["MACHINE"] = mach_reg
+        else
+            io["QUERYREPORTS"] = queryreports(mach_reg)
+        end
     end
+
+    # Binary single batch
+    tmle_bin = TMLEstimator(
+        LogisticClassifier(), 
+        LogisticClassifier(),
+        query_1,
+        query_2)
+    mach_bin = machine(tmle_bin, T, W, (cancer=cancer,), cache=false)
+    fit!(mach_bin, verbosity=0)
+    bin_path = string(prefix, "_batch_1_Bool.hdf5")
+    jldopen(bin_path, "w") do io
+        io["SAMPLE_IDS"] = Dict(
+            "cancer" => string.(grm_ids.SAMPLE_ID)
+        )
+        if mode == "MACHINE"
+            io["MACHINE"] = mach_bin
+        else
+            io["QUERYREPORTS"] = queryreports(mach_bin)
+        end
+    end
+
 end
 
 function basic_variance_implementation(matrix_distance, influence_curve, n_obs)
@@ -69,20 +96,38 @@ end
 
 @testset "Test build_work_list" begin
     grm_ids = UKBBEpistasisPipeline.GRMIDs("data/grm/test.grm.id")
-    path = "results_test.hdf5"
-    build_result_file(grm_ids; path=path)
-    results_file = jldopen(path, "a")
-    influence_curves, n_obs, phenotype_query_pairs = UKBBEpistasisPipeline.build_work_list(results_file, grm_ids; pval=0.05)
-    bmi_qrs = results_file["bmi"]["queryreports"]
-    @test influence_curves == convert(Matrix{Float32}, [bmi_qrs[1].influence_curve'; bmi_qrs[2].influence_curve'])
+    prefix = "rs12_rs54"
+    build_results_files(grm_ids, prefix; mode="QUERYREPORTS")
+    # mode=QUERYREPORTS, pval=0.05
+    influence_curves, n_obs, phenotype_query_pairs = UKBBEpistasisPipeline.build_work_list(prefix, grm_ids; pval=0.05)
+    jldopen(string(prefix, "_batch_1_Real.hdf5")) do io
+        expected_infcurves = [qr.influence_curve for qr in io["QUERYREPORTS"] if qr.target_name == :bmi]
+        @test influence_curves[1, :] == convert(Vector{Float32}, expected_infcurves[1])
+        @test influence_curves[2, :] == convert(Vector{Float32}, expected_infcurves[2])
+    end
     @test n_obs == [194, 194]
-    @test phenotype_query_pairs == ["bmi"=> 1, "bmi"=>2]
-    rm(path)
+    @test phenotype_query_pairs == ["rs12_rs54_batch_1_Real.hdf5" => 3, "rs12_rs54_batch_1_Real.hdf5"=>4]
+
+    # mode=MACHINE, pval=1
+    influence_curves, n_obs, phenotype_query_pairs = UKBBEpistasisPipeline.build_work_list(prefix, grm_ids; pval=1)
+    @test size(influence_curves) == (6, 194)
+    @test n_obs == repeat([194], 6)
+    phenotype_query_pairs == [
+        "rs12_rs54_batch_1_Bool.hdf5" => 1,
+        "rs12_rs54_batch_1_Bool.hdf5" => 2,
+        "rs12_rs54_batch_1_Real.hdf5" => 1,
+        "rs12_rs54_batch_1_Real.hdf5" => 2,
+        "rs12_rs54_batch_1_Real.hdf5" => 3,
+        "rs12_rs54_batch_1_Real.hdf5" => 4
+    ]
+    clean_results_files(prefix)
 end
 
 @testset "Test bit_distance" begin
     sample_grm = Float32[-0.6, -0.8, -0.25, -0.3, -0.1, 0.1, 0.7, 0.5, 0.2, 1.]
     nτs = 6
+    τs = UKBBEpistasisPipeline.default_τs(nτs, max_τ=0.75)
+    @test τs == Float32[0.0, 0.15, 0.3, 0.45, 0.6, 0.75]
     τs = UKBBEpistasisPipeline.default_τs(nτs)
     @test τs == Float32[0., 0.4, 0.8, 1.2, 1.6, 2.0]
     d = UKBBEpistasisPipeline.bit_distances(sample_grm, τs)
@@ -165,27 +210,6 @@ end
 
 end
 
-@testset "Test sieve_variance_plateau" begin
-    grm_ids = UKBBEpistasisPipeline.GRMIDs("data/grm/test.grm.id")
-    path = "results_test.hdf5"
-    build_result_file(grm_ids; path=path)
-    parsed_args = Dict(
-        "grm-prefix" => "data/grm/test.grm",
-        "results" => path,
-        "nb-estimators" => 10
-    )
-
-    sieve_variance_plateau(parsed_args)
-
-    results_file = jldopen(path, "a+")
-
-    @test haskey(results_file["cancer"], "sieve_variances") == false
-    @test size(results_file["bmi"]["sieve_variances"]["1"]) == (10,)
-    @test size(results_file["bmi"]["sieve_variances"]["2"]) == (10,)
-
-    rm(path)
-end
-
 @testset "Test grm_rows_bounds" begin
     n_samples = 5
     grm_bounds = UKBBEpistasisPipeline.grm_rows_bounds(n_samples)
@@ -196,7 +220,48 @@ end
                          11 => 15]
 end
 
+@testset "Test corrected_stderrors" begin
+    io = jldopen(joinpath("data", "sieve_variances.hdf5"))
+    variances = io["variances"]
+    n_obs = [10, 10, 10, 10, 10, 100, 100, 1000, 1000, 1000]
+    stderrors = UKBBEpistasisPipeline.corrected_stderrors(variances, n_obs)
+    # sanity check
+    @test size(stderrors, 1) == 10
 
+    # check for the first curve
+    stderrors[1] == sqrt(maximum(variances[:,1])/n_obs[1])
 
+    close(io)
+end
+
+@testset "Test sieve_variance_plateau" begin
+    grm_ids = UKBBEpistasisPipeline.GRMIDs("data/grm/test.grm.id")
+    prefix = "rs12_rs45"
+    nb_estimators = 10
+    build_results_files(grm_ids, prefix)
+    outfilename = "rs12_rs45_sieve_variance.hdf5"
+    parsed_args = Dict(
+        "prefix" => prefix,
+        "pval" => 0.05,
+        "grm-prefix" => "data/grm/test.grm",
+        "out" => outfilename,
+        "nb-estimators" => nb_estimators,
+        "max-tau" => 0.75
+    )
+
+    sieve_variance_plateau(parsed_args)
+
+    results_file = jldopen(outfilename)
+    @test size(results_file["TAUS"]) == (nb_estimators,)
+    @test size(results_file["VARIANCES"]) == (nb_estimators, 2)
+    @test results_file["SOURCEFILE_REPORTID_PAIRS"] == 
+        ["rs12_rs45_batch_1_Real.hdf5" => 3,"rs12_rs45_batch_1_Real.hdf5" => 4]
+    @test size(results_file["STDERRORS"]) == (2,)
+
+    close(results_file)
+
+    rm(outfilename)
+    clean_results_files(prefix)
+end
 
 end

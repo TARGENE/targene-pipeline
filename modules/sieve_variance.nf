@@ -4,14 +4,13 @@ process SieveVarianceEstimation {
     label "multithreaded"
 
     input:
-        path estimate_file
+        tuple val(rsprefix), file(estimate_file)
         path GRM_ids
         path GRM_matrix
-        val nb_estimators
 
     output:
-        path "${estimate_file.getName()}"
+        path "${rsprefix}_sieve_variance.hdf5"
     
     script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/sieve_variance.jl ${estimate_file.getName()} GRM --nb-estimators=$nb_estimators"
+        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/sieve_variance.jl $rsprefix GRM ${rsprefix}_sieve_variance.hdf5 --nb-estimators=$nb_estimators --max-tau=$params.MAX_TAU --pval=$params.PVAL_SIEVE"
 }
