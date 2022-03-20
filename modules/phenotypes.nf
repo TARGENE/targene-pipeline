@@ -15,5 +15,5 @@ process phenotypesFromGeneAtlas {
     
     script:
         def phen_list = phenotypes_list.getName() != 'NO_FILE' ? "--phenotypes-list $phenotypes_list" : ''
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_phenotypes.jl $phenotype_file $bridge $outname --withdrawal-list $withdrawal_list $phen_list"
+        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_phenotypes.jl $phenotype_file $bridge $outname --withdrawal-list $withdrawal_list $phen_list"
 }

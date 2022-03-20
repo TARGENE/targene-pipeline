@@ -8,7 +8,7 @@ process filterASB {
         path "filtered_asb_snps.csv", emit: filtered_asb_snps
 
     script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/filter_asb.jl --out filtered_asb_snps.csv ${asb_snp_files.join(" ")}"
+        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/filter_asb.jl --out filtered_asb_snps.csv ${asb_snp_files.join(" ")}"
 }
 
 
@@ -30,7 +30,7 @@ process queriesFromASBxTransActors {
         def exclude = excluded_snps.name != 'NO_FILE' ? "--exclude $excluded_snps" : ''
         """
         mkdir -p queries
-        julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/generate_queries.jl $filtered_asb_snps $trans_actors -o queries -s $bgen_sample -t $params.THRESHOLD $exclude
+        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/generate_queries.jl $filtered_asb_snps $trans_actors -o queries -s $bgen_sample -t $params.THRESHOLD $exclude
         """
 }
 

@@ -24,7 +24,7 @@ process TMLE {
         """
         outfilename=\$(julia --project --startup-file=no -e 'using TOML; ks=join(sort(collect(keys(TOML.parse(open("${queryfilename}"))["SNPS"]))), "_");println(ks)')
         outfilename="\${outfilename}_batch_${batch_id}_${target_type}.hdf5"
-        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile \$outfilename --phenotypes-list $phen_batch --target-type $target_type $adaptive_cv $save_full
+        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/ukbb.jl $phenotypefile $confoundersfile $queryfile $estimatorfile \$outfilename --phenotypes-list $phen_batch --target-type $target_type $adaptive_cv $save_full
         """
 }
 
@@ -39,5 +39,5 @@ process PhenotypesBatches {
         path "phenotypes_batch_*"
     
     script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/make_phenotypes_batches.jl ${phenotypes_file.getName()} --batch-size $params.PHENOTYPES_BATCH_SIZE"
+        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/make_phenotypes_batches.jl ${phenotypes_file.getName()} --batch-size $params.PHENOTYPES_BATCH_SIZE"
 }

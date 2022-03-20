@@ -25,7 +25,7 @@ process adapt_flashpca {
         path "confounders.csv"
     
     script:
-        "julia --project=/EstimationPipeline.jl --startup-file=no /EstimationPipeline.jl/bin/prepare_confounders.jl --input $flashpca_out --output confounders.csv adapt"
+        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl --input $flashpca_out --output confounders.csv adapt"
 }
 
 
