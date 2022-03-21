@@ -11,7 +11,7 @@ process Summary {
     
     script:
         """
-        julia --project=/TMLEEpistasis.jl --startup-file=no --sysimage /TMLEEpistasis.jl/test/TMLEEpistasisSysimage.so \
+        julia --project=/TMLEEpistasis.jl --startup-file=no \
         /TMLEEpistasis.jl/bin/summarize.jl $rsids ${rsids}_summary.csv
         """
 }
