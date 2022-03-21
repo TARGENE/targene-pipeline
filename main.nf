@@ -150,6 +150,16 @@ workflow generateVarianceEstimates {
         SieveVarianceEstimation.out
 }
 
+workflow generateSummaries {
+    take:
+        estimates_files
+        variances_files
+    
+    main:
+        // joining on the prefix which corresponds to a tuple of SNPS
+        all = estimates_files.join(variances_files)
+        Summary(all)
+}
 
 workflow {
     // Generate queries
@@ -177,4 +187,7 @@ workflow {
     
     // generate variance estimates
     generateVarianceEstimates(generateEstimates.out, generateGRM.out.grm_ids, generateGRM.out.grm_matrix)
+
+    // generate Summaries
+    generateSummaries(generateEstimates.out, generateVarianceEstimates.out)
 }
