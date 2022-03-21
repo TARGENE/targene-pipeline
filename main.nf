@@ -24,7 +24,7 @@ include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
 include {PhenotypesBatches as ContinuousPhenotypesBatches; PhenotypesBatches as BinaryPhenotypesBatches} from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
-
+include { Summary } from './modules/summary.nf'
 
 workflow generateIIDGenotypes {
     qc_file = Channel.value(file("$params.QC_FILE"))
