@@ -12,7 +12,7 @@ params.GRM_NSPLITS = 100
 params.MAF_THRESHOLD = 0.01
 params.NB_PCS = 6
 params.NB_VAR_ESTIMATORS = 10
-params.MAX_TAU = 8
+params.MAX_TAU = 0.8
 params.PVAL_SIEVE = 0.05
 params.OUTDIR = "$launchDir/results"
 
