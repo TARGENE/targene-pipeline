@@ -1,8 +1,6 @@
 process SieveVarianceEstimation {
     container "olivierlabayle/tmle-epistasis:0.3.0"
     publishDir "$params.OUTDIR/hdf5files/sieve_variances", mode: 'symlink'
-    label "unlimited_vmem"
-    label "multithreaded"
 
     input:
         tuple val(rsprefix), file(estimate_file)
