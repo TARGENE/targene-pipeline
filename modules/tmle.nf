@@ -1,5 +1,5 @@
 process TMLE {
-    container "olivierlabayle/tmle-epistasis:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.1"
     publishDir "$params.OUTDIR/hdf5files", saveAs: { filename -> filename.split("_batch")[0] + "/$filename" }, mode: 'symlink'
     label "bigmem"
     label "multithreaded"
@@ -30,7 +30,7 @@ process TMLE {
 
 
 process PhenotypesBatches {
-    container "olivierlabayle/tmle-epistasis:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.1"
 
     input:
         path phenotypes_file

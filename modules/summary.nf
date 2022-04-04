@@ -1,5 +1,5 @@
 process Summary {
-    container "olivierlabayle/tmle-epistasis:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.1"
     publishDir "$params.OUTDIR/summaries", mode: 'symlink'
     label "bigmem"
 
