@@ -1,5 +1,5 @@
 process SieveVarianceEstimation {
-    container "olivierlabayle/tmle-epistasis:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.1"
     publishDir "$params.OUTDIR/hdf5files/sieve_variances", mode: 'symlink'
 
     input:

@@ -1,5 +1,5 @@
 process GRMPart {
-    container "olivierlabayle/tmle-epistasis:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.1"
     label "bigmem"
     label "multithreaded"
 

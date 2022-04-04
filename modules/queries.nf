@@ -1,5 +1,5 @@
 process filterASB {
-    container "olivierlabayle/tmle-epistasis:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.1"
 
     input:
         path asb_snp_files
@@ -13,7 +13,7 @@ process filterASB {
 
 
 process queriesFromASBxTransActors {
-    container "olivierlabayle/tmle-epistasis:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.1"
     publishDir "$params.OUTDIR/queries", mode: 'symlink'
 
     input:

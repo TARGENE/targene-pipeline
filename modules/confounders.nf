@@ -14,7 +14,7 @@ process buildPCs {
 }
 
 process adapt_flashpca {
-    container "olivierlabayle/tmle-epistasis:0.3.0"
+    container "olivierlabayle/tmle-epistasis:0.3.1"
     publishDir "$params.OUTDIR/confounders", mode: 'symlink'
     memory '16 GB'
     
