@@ -83,5 +83,5 @@ workflow IIDGenotypes{
         mergeBEDS(ld_pruned.collect())
         SampleQCFilter(mergeBEDS.out.collect())
     emit:
-        mergeBEDS.out
+        SampleQCFilter.out
 }
