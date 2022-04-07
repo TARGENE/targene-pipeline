@@ -67,9 +67,7 @@ process SampleQCFilter {
         path "qc_filtered*"
 
     script:
-        "
-        plink2 --bfile ukbb_merged --make-bed --hwe 1e-10 --geno --mind --out qc_filtered
-        "
+        "plink2 --bfile ukbb_merged --make-bed --hwe 1e-10 --geno --mind --out qc_filtered"
 }
 
 
