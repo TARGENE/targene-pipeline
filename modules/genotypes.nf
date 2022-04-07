@@ -42,7 +42,7 @@ process thinByLD{
 process mergeBEDS{
     label 'bigmem'
     container "olivierlabayle/tmle-epistasis:0.3.1"
-    publishDir "$params.OUTDIR/iid_genotypes", mode: 'symlink'
+    publishDir "$params.OUTDIR/merged_genotypes", mode: 'symlink'
     
     input:
         path files
@@ -53,6 +53,23 @@ process mergeBEDS{
     script:
         "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl --input LDpruned. --output ukbb_merged merge"
 
+}
+
+process SampleQCFilter {
+    label 'bigmem'
+    container "olivierlabayle/plink2:0.1.0"
+    publishDir "$params.OUTDIR/iid_genotypes", mode: 'symlink'
+
+    input:
+        path merged_bed_files
+    
+    output:
+        path "qc_filtered*"
+
+    script:
+        "
+        plink2 --bfile ukbb_merged --make-bed --hwe 1e-10 --geno --mind --out qc_filtered
+        "
 }
 
 
@@ -66,6 +83,7 @@ workflow IIDGenotypes{
         filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks)
         ld_pruned = thinByLD(flashpca_excl_reg, filtered_bedfiles)
         mergeBEDS(ld_pruned.collect())
+        SampleQCFilter(mergeBEDS.out.collect())
     emit:
         mergeBEDS.out
 }
