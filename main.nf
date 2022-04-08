@@ -26,6 +26,7 @@ include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 include { Summary } from './modules/summary.nf'
 
+
 workflow generateIIDGenotypes {
     qc_file = Channel.value(file("$params.QC_FILE"))
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
@@ -36,23 +37,6 @@ workflow generateIIDGenotypes {
 
     emit:
         IIDGenotypes.out
-}
-
-workflow generateGRM {
-    take:
-        iid_genotypes
-
-    main:
-        grm_parts = Channel.from( 1..params.GRM_NSPLITS )
-        GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
-
-        // Aggregate files
-        AggregateGRM(GRMPart.out.collect())
-
-    emit:
-        grm_ids = AggregateGRM.out.grm_ids
-        grm_matrix = AggregateGRM.out.grm_matrix
-
 }
 
 
@@ -137,27 +121,35 @@ workflow generateEstimates {
 }
 
 
-workflow generateVarianceEstimates {
+workflow generateSieveEstimates {
     take:
-        hdf5_files
-        GRM_ids
-        GRM_matrix
+        snps_tmle_files
+        iid_genotypes
     
     main:
-        SieveVarianceEstimation(hdf5_files, GRM_ids, GRM_matrix)
-    
+        if (params.NB_VAR_ESTIMATORS != 0){
+            // Build the GRM
+            grm_parts = Channel.from( 1..params.GRM_NSPLITS )
+            GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
+            AggregateGRM(GRMPart.out.collect())
+            // Sieve estimation
+            sieve_estimates = SieveVarianceEstimation(snps_tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
+        }
+        else {
+            sieve_estimates = snps_tmle_files.map(it -> [it[0], "NO_FILE"])
+        }
     emit:
-        SieveVarianceEstimation.out
+        sieve_estimates
 }
 
 workflow generateSummaries {
     take:
-        estimates_files
-        variances_files
+        tmle_files
+        sieve_files
     
     main:
         // joining on the prefix which corresponds to a tuple of SNPS
-        all = estimates_files.join(variances_files)
+        all = tmle_files.join(sieve_files)
         Summary(all)
 }
 
@@ -171,9 +163,6 @@ workflow {
     // generate confounders
     generateConfounders(generateIIDGenotypes.out)
 
-    // generate GRM
-    generateGRM(generateIIDGenotypes.out)
-
     // generate phenotypes
     generatePhenotypes()
 
@@ -184,10 +173,10 @@ workflow {
         generateQueries.out.flatten(), 
         generateConfounders.out.first()
     )
-    
-    // generate variance estimates
-    generateVarianceEstimates(generateEstimates.out, generateGRM.out.grm_ids, generateGRM.out.grm_matrix)
+
+    // generate sieve estimates
+    generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
 
     // generate Summaries
-    generateSummaries(generateEstimates.out, generateVarianceEstimates.out)
+    generateSummaries(generateEstimates.out, generateSieveEstimates.out)
 }
