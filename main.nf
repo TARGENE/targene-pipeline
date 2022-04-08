@@ -47,7 +47,7 @@ def NbPhenotypes() {
     }
 }
 
-params.NB_PHENOTYPES = NbPhenotypes()
+NB_PHENOTYPES = NbPhenotypes()
 
 workflow generateIIDGenotypes {
     qc_file = Channel.value(file("$params.QC_FILE"))
@@ -136,7 +136,7 @@ workflow generateEstimates {
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
                         .map { it -> [it.getName().split("_batch")[0], it]}
-                        .groupTuple(size=params.NB_PHENOTYPES)
+                        .groupTuple(size: NB_PHENOTYPES)
 
     emit:
         hdf5_files
