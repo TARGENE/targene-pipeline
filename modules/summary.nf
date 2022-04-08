@@ -10,8 +10,9 @@ process Summary {
         path "${rsids}_summary.csv"
     
     script:
+        sieve_option = sieve.getName() != 'NO_FILE' ? "--sieve" : ''
         """
         julia --project=/TMLEEpistasis.jl --startup-file=no \
-        /TMLEEpistasis.jl/bin/summarize.jl $rsids ${rsids}_summary.csv
+        /TMLEEpistasis.jl/bin/summarize.jl $rsids ${rsids}_summary.csv $sieve_option
         """
 }

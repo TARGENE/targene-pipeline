@@ -13,3 +13,12 @@ process SieveVarianceEstimation {
     script:
         "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/sieve_variance.jl $rsprefix GRM ${rsprefix}_sieve_variance.hdf5 --nb-estimators=$params.NB_VAR_ESTIMATORS --max-tau=$params.MAX_TAU --pval=$params.PVAL_SIEVE"
 }
+
+process NoSieveEstimation {
+    input:
+        tuple val(rsprefix), file(estimate_file)
+
+    output:
+        tuple val(rsprefix), val("NOFILE")
+
+}
