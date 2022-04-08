@@ -27,6 +27,28 @@ include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 include { Summary } from './modules/summary.nf'
 
 
+def NbPhenotypes() {
+    if (params.PHENOTYPES_LIST != "NO_FILE") {
+        reader = file(params.PHENOTYPES_LIST).newReader()
+        int lines = 0
+        while (reader.readLine() != null) { 
+            lines++
+        }
+        return lines
+    }
+    else {
+        binReader = file(params.BINARY_PHENOTYPES).newReader()
+        nbBin = binReader.readLine().split(" ").size()
+
+        contReader = file(params.CONTINUOUS_PHENOTYPES).newReader()
+        nbCont = contReader.readLine().split(" ").size()
+        // Remove twice the FID and IID columns
+        return nbBin + nbCont - 4
+    }
+}
+
+NB_PHENOTYPES = NbPhenotypes()
+
 workflow generateIIDGenotypes {
     qc_file = Channel.value(file("$params.QC_FILE"))
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
@@ -114,7 +136,7 @@ workflow generateEstimates {
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
                         .map { it -> [it.getName().split("_batch")[0], it]}
-                        .groupTuple()
+                        .groupTuple(NB_PHENOTYPES)
 
     emit:
         hdf5_files
@@ -149,8 +171,7 @@ workflow generateSummaries {
     
     main:
         // joining on the prefix which corresponds to a tuple of SNPS
-        all = tmle_files.join(sieve_files)
-        Summary(all)
+        Summary(tmle_files.join(sieve_files))
 }
 
 workflow {
