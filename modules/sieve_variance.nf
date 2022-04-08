@@ -20,5 +20,7 @@ process NoSieveEstimation {
 
     output:
         tuple val(rsprefix), val("NOFILE")
-
+        
+    script:
+        "exit 0"
 }
