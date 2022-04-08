@@ -136,7 +136,7 @@ workflow generateEstimates {
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
                         .map { it -> [it.getName().split("_batch")[0], it]}
-                        .groupTuple(NB_PHENOTYPES)
+                        .groupTuple(size=NB_PHENOTYPES)
 
     emit:
         hdf5_files
