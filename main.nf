@@ -88,7 +88,7 @@ workflow generateQueriesAndGenotypes{
     }
     else if (params.QUERIES_MODE == "given"){
         query_files = Channel.fromPath("$params.QUERY_FILES", checkIfExists: true).collect()
-        outputs = FromGivenQueries(bgen_files_ch, query_files, excluded_snps)
+        outputs = FromGivenQueries(bgen_files_ch.collect(), query_files, excluded_snps)
     }
 
     emit:
@@ -129,12 +129,12 @@ workflow generateEstimates {
         // compute TMLE estimates for continuous targets
         ContinuousPhenotypesBatches(continuous_phenotypes_file)
         queries_to_continuous_phenotype_batches = queries_files.combine(ContinuousPhenotypesBatches.out.flatten())
-        TMLEContinuous(bgen_files_ch.collect(), continuous_phenotypes_file, confounders_file, estimator_file, queries_to_continuous_phenotype_batches, "Real")
+        TMLEContinuous(genotypes_file, continuous_phenotypes_file, confounders_file, estimator_file, queries_to_continuous_phenotype_batches, "Real")
         
         // compute TMLE estimates for binary targets
         BinaryPhenotypesBatches(binary_phenotypes_file)
         queries_to_binary_phenotype_batches = queries_files.combine(BinaryPhenotypesBatches.out.flatten())
-        TMLEBinary(bgen_files_ch.collect(), binary_phenotypes_file, confounders_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
+        TMLEBinary(genotypes_file, binary_phenotypes_file, confounders_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
 
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
