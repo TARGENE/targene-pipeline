@@ -4,7 +4,8 @@ nextflow.enable.dsl = 2
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
 params.PHENOTYPES_LIST = "NO_FILE"
 params.QUERIES_MODE = "given"
-params.THRESHOLD = 0.9
+params.CALL_THRESHOLD = 0.9
+params.MINOR_GENOTYPE_FREQUENCY = 0.001
 params.ADAPTIVE_CV = true
 params.SAVE_FULL = false
 params.PHENOTYPES_BATCH_SIZE = 1
@@ -18,10 +19,10 @@ params.OUTDIR = "$launchDir/results"
 
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { generatePCs } from './modules/confounders.nf'
-include { queriesFromASBxTransActors; filterASB; queriesFromQueryFiles } from './modules/queries.nf'
+include { FromASBxTransActors; FromGivenQueries } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas as BridgeContinuous; phenotypesFromGeneAtlas as BridgeBinary } from './modules/phenotypes.nf'
 include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
-include {PhenotypesBatches as ContinuousPhenotypesBatches; PhenotypesBatches as BinaryPhenotypesBatches} from './modules/tmle.nf'
+include { PhenotypesBatches as ContinuousPhenotypesBatches; PhenotypesBatches as BinaryPhenotypesBatches} from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 include { Summary } from './modules/summary.nf'
@@ -74,23 +75,25 @@ workflow generateConfounders {
 }
 
 
-workflow generateQueries{
+workflow generateQueriesAndGenotypes{
+    bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
+    excluded_snps = Channel.fromPath(file("$params.SNPS_EXCLUSION_LIST"))
     if (params.QUERIES_MODE == "ASBxTransActors") {
         asb_snp_ch = Channel.fromPath("$params.ASB_FILES", checkIfExists: true)
         trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
-        excluded_snps = Channel.fromPath(file("$params.SNPS_EXCLUSION_LIST"))
-        bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
-        filterASB(asb_snp_ch.collect())
-        queries = queriesFromASBxTransActors(filterASB.out.filtered_asb_snps, 
+        outputs = FromASBxTransActors(bgen_files_ch.collect(),
+                                             filterASB.out.filtered_asb_snps, 
                                              trans_actors, 
-                                             bgen_files_ch.toList(), 
                                              excluded_snps)
     }
     else if (params.QUERIES_MODE == "given"){
-        queries = queriesFromQueryFiles(Channel.fromPath("$params.QUERY_FILES", checkIfExists: true))
+        query_files = Channel.fromPath("$params.QUERY_FILES", checkIfExists: true).collect()
+        outputs = FromGivenQueries(bgen_files_ch, query_files, excluded_snps)
     }
+    
     emit:
-        queries
+        genotypes = outputs.genotypes
+        queries = outputs.queries
 
 }
 
@@ -114,13 +117,13 @@ workflow generatePhenotypes {
 
 workflow generateEstimates {
     take:
+        genotypes_file
+        queries_files
         continuous_phenotypes_file
         binary_phenotypes_file
-        queries_files
         confounders_file
 
     main:
-        bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
 
         // compute TMLE estimates for continuous targets
@@ -176,7 +179,7 @@ workflow generateSummaries {
 
 workflow {
     // Generate queries
-    generateQueries()
+    generateQueriesAndGenotypes()
 
     // Generate IID Genotypes
     generateIIDGenotypes()
@@ -189,9 +192,10 @@ workflow {
 
     // generate estimates
     generateEstimates(
+        generateQueriesAndGenotypes.out.genotypes.first(),
+        generateQueriesAndGenotypes.out.queries.flatten(),
         generatePhenotypes.out.continuous.first(),
         generatePhenotypes.out.binary.first(),
-        generateQueries.out.flatten(), 
         generateConfounders.out.first()
     )
 
