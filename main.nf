@@ -82,7 +82,7 @@ workflow generateQueriesAndGenotypes{
         asb_snp_ch = Channel.fromPath("$params.ASB_FILES", checkIfExists: true)
         trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
         outputs = FromASBxTransActors(bgen_files_ch.collect(),
-                                             filterASB.out.filtered_asb_snps, 
+                                             asb_snp_ch.collect(), 
                                              trans_actors, 
                                              excluded_snps)
     }
@@ -90,7 +90,7 @@ workflow generateQueriesAndGenotypes{
         query_files = Channel.fromPath("$params.QUERY_FILES", checkIfExists: true).collect()
         outputs = FromGivenQueries(bgen_files_ch, query_files, excluded_snps)
     }
-    
+
     emit:
         genotypes = outputs.genotypes
         queries = outputs.queries
