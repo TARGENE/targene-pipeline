@@ -3,7 +3,6 @@ def longest_prefix(files){
     index = 0
     while(true){
         current_prefix = files[0].getName()[0..index]
-        println(current_prefix)
         for (file in files){
             if(file.getName()[0..index] != current_prefix){
                 return current_prefix[0..-2]
@@ -59,7 +58,7 @@ process FromGivenQueries {
         """
         mkdir -p outputs
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/build_genotypes_and_queries.jl \
-        $chr_prefix "--mode=asb --outdir=outputs --call-threshold=${params.CALL_THRESHOLD} $exclude \
+        $chr_prefix --mode=given --outdir=outputs --call-threshold=${params.CALL_THRESHOLD} $exclude \
         --minor-genotype-freq=${params.MINOR_GENOTYPE_FREQUENCY} --query-prefix=$query_prefix
         """
 }
