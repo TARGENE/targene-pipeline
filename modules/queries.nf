@@ -15,6 +15,7 @@ def longest_prefix(files){
 process FromASBxTransActors {
     container "olivierlabayle/tmle-epistasis:0.3.1"
     publishDir "$params.OUTDIR/queries", mode: 'symlink'
+    label "bigmem"
 
     input:
         path bgenfiles
@@ -41,6 +42,7 @@ process FromASBxTransActors {
 process FromGivenQueries {
     container "olivierlabayle/tmle-epistasis:0.3.1"
     publishDir "$params.OUTDIR/queries", mode: 'symlink'
+    label "bigmem"
 
     input:
         path bgenfiles
