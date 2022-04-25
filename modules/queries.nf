@@ -1,9 +1,7 @@
 
 def longest_prefix(files){
     // Only one file, strangely it is not passed as a list
-    println(files)
-    println(files.size())
-    if (files.size() == 0) {
+    if (files instanceof Collection == false) {
         return files.getName()
     }
     // More than one file
@@ -62,9 +60,7 @@ process FromGivenQueries {
 
     script:
         chr_prefix = longest_prefix(bgenfiles)
-        println(chr_prefix)
         query_prefix = longest_prefix(query_files)
-        println(query_prefix)
         exclude = excluded_snps.name != 'NO_FILE' ? "--exclude $excluded_snps" : ''
         """
         mkdir -p outputs
