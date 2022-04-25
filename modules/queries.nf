@@ -60,9 +60,7 @@ process FromGivenQueries {
 
     script:
         chr_prefix = longest_prefix(bgenfiles)
-        println(chr_prefix)
         query_prefix = longest_prefix(query_files)
-        println(query_prefix)
         exclude = excluded_snps.name != 'NO_FILE' ? "--exclude $excluded_snps" : ''
         """
         mkdir -p outputs
