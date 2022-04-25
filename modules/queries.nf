@@ -1,5 +1,10 @@
 
 def longest_prefix(files){
+    // Only one file, strangely it is not passed as a list
+    if (files.size() == 0) {
+        return files.getName()
+    }
+    // More than one file
     index = 0
     while(true){
         current_prefix = files[0].getName()[0..index]
@@ -55,9 +60,7 @@ process FromGivenQueries {
 
     script:
         chr_prefix = longest_prefix(bgenfiles)
-        println(chr_prefix)
         query_prefix = longest_prefix(query_files)
-        println(query_prefix)
         exclude = excluded_snps.name != 'NO_FILE' ? "--exclude $excluded_snps" : ''
         """
         mkdir -p outputs
