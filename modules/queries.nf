@@ -40,7 +40,7 @@ process FromASBxTransActors {
         mkdir -p outputs
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/build_genotypes_and_queries.jl \
         $chr_prefix --mode=asb --outdir=outputs --call-threshold=${params.CALL_THRESHOLD} $exclude \
-        --minor-genotype-freq=${params.MINOR_GENOTYPE_FREQUENCY} --asb-prefix=$asb_prefix --trans-actors=$trans_actors
+        --minor-genotype-freq=${params.MINOR_CAT_FREQUENCY} --asb-prefix=$asb_prefix --trans-actors=$trans_actors
         """
 }
 
@@ -66,6 +66,6 @@ process FromGivenQueries {
         mkdir -p outputs
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/build_genotypes_and_queries.jl \
         $chr_prefix --mode=given --outdir=outputs --call-threshold=${params.CALL_THRESHOLD} $exclude \
-        --minor-genotype-freq=${params.MINOR_GENOTYPE_FREQUENCY} --query-prefix=$query_prefix
+        --minor-genotype-freq=${params.MINOR_CAT_FREQUENCY} --query-prefix=$query_prefix
         """
 }
