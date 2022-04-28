@@ -1,9 +1,0 @@
-threshold = 0.9
-
-[SNPS]
-rs2189522 = "/home/s2042526/UK-BioBank-53116/imputed/ukb_53116_chr16.bgen"
-rs10745742 = "/home/s2042526/UK-BioBank-53116/imputed/ukb_53116_chr12.bgen"
-
-[QUERY]
-rs2189522 = "GG -> GA"
-rs10745742 = "CC -> CT"
