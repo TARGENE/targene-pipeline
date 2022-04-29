@@ -1,9 +1,4 @@
-# UKBBEpistasisPipeline
-
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://olivierlabayle.github.io/UKBBEpistasisPipeline.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://olivierlabayle.github.io/UKBBEpistasisPipeline.jl/dev)
-[![Build Status](https://github.com/olivierlabayle/UKBBEpistasisPipeline.jl/workflows/CI/badge.svg)](https://github.com/olivierlabayle/UKBBEpistasisPipeline.jl/actions)
-[![Coverage](https://codecov.io/gh/olivierlabayle/UKBBEpistasisPipeline.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/olivierlabayle/UKBBEpistasisPipeline.jl)
+# TL-Pipeline
 
 Here we provide the main workflow for estimating genetic variants interactions responsible of traits in the UK Biobank. For that purpose, we rely on [Singularity](https://sylabs.io/guides/3.0/user-guide/quick_start.html) and [NextFlow](https://www.nextflow.io/).
 
@@ -78,7 +73,7 @@ If you are part of the University of Edinburgh, you can use the Eddie cluster fo
 The idea is that you can simply run:
 
 ```bash
-nextflow run olivierlabayle/UKBBEpistasisPipeline.jl -profile eddie
+nextflow run TL-GWAS/TL-Pipeline -profile eddie
 ```
 
 If you are not part of the University and cannot access Eddie, you will have to adapt the configuration file to your specific platflorm, fill an issue to get in contact.
