@@ -4,7 +4,7 @@ Here we provide the main workflow for estimating genetic variants interactions r
 
 ## Running the Workflow
 
-Please refer to the main [NextFlow](https://www.nextflow.io/) documentation for general usage. The main point being that, depending on your cluster specifications, you will need to provide a specific `myprofile configuration` file. Then simply run:
+Please refer to the main [NextFlow](https://www.nextflow.io/) documentation for general usage. The main point being that, depending on your cluster specifications, you will need to provide a specific `myprofile` configuration file. Then simply run:
 
 ```bash
 nextflow run TL-GWAS/TL-Pipeline -profile myprofile
