@@ -78,7 +78,7 @@ If you are part of the University of Edinburgh, you can use the Eddie cluster fo
 The idea is that you can simply run:
 
 ```bash
-nextflow run olivierlabayle/UKBBEpistasisPipeline.jl -profile eddie
+nextflow run TL-GWAS/TL-Pipeline -profile eddie
 ```
 
 If you are not part of the University and cannot access Eddie, you will have to adapt the configuration file to your specific platflorm, fill an issue to get in contact.
