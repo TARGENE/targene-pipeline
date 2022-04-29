@@ -1,4 +1,4 @@
-# UKBBEpistasisPipeline
+# TL-Pipeline
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://olivierlabayle.github.io/UKBBEpistasisPipeline.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://olivierlabayle.github.io/UKBBEpistasisPipeline.jl/dev)
