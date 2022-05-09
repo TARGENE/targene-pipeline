@@ -26,7 +26,7 @@ process TMLE {
         outfilename="\${outfilename}_batch_${batch_id}_${target_type}.hdf5"
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/ukbb.jl \
         $genotypefile $phenotypefile $confoundersfile $queryfile $estimatorfile \$outfilename \
-        --phenotypes-list=$phen_batch --min-freq=${params.MINOR_CAT_FREQUENCY} --target-type=$target_type $adaptive_cv $save_full
+        --phenotypes-list=$phen_batch --target-type=$target_type $adaptive_cv $save_full
         """
 }
 
