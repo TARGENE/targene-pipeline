@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Labayle"
+  given-names: "Olivier"
+- family-names: "Tetley-Campbell"
+  given-names: "Kelsey"
+- family-names: "Beentjes"
+  given-names: "Sjoerd"
+- family-names: "Khamseh"
+  given-names: "Ava"
+- family-names: "Ponting"
+  given-names: "Chris"
+title: "TL-GWAS-Pipeline"
+url: "https://github.com/TL-GWAS/TL-Pipeline"
