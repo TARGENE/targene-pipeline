@@ -1,8 +1,16 @@
 # TL-Pipeline
 
-Here we provide the main workflow for estimating genetic variants interactions responsible of traits in the UK Biobank. For that purpose, we rely on [Singularity](https://sylabs.io/guides/3.0/user-guide/quick_start.html) and [NextFlow](https://www.nextflow.io/).
+Here we provide the main workflow for estimating genetic variants interactions responsible of traits in the UK Biobank using the Targeted Learning framework. For that purpose, we rely on [NextFlow](https://www.nextflow.io/), a software that helps the development of complex parallel and reactive workflows on clouds and clusters.
 
-## Description of the Workflow
+## Running the Workflow
+
+Please refer to the main [NextFlow](https://www.nextflow.io/) documentation for general usage. The main point being that, depending on your cluster specifications, you will need to provide a specific `myprofile` configuration file. Then simply run:
+
+```bash
+nextflow run TL-GWAS/TL-Pipeline -profile myprofile
+```
+
+## Description of the Workflow's options
 
 The workflow is divided into 4 steps, where the first 3 steps generate the inputs for the final TMLE process: 
 1. The generation of the queries files. Each query file specifies a set of potentially interacting variants together with the chromosome they are located in and for each variant which allele is the `control` and which allele is the `treatment` value.
@@ -64,16 +72,3 @@ Arguments for the sieve variance correction step:
 - `PVAL_SIEVE`: Only traits for which the IID pvalue is lower than this threshold will be considered 
 for sieve variance correction. This is because in theory the Sieve Variance curve is supposed to be monotically increasing.
 
-## Running the Workflow
-
-If you are part of the University of Edinburgh, you can use the Eddie cluster for which the `eddie` profile in this repo can be used directly. For more detailed information, refer to [Eddie specific Nextflow documentation](https://www.wiki.ed.ac.uk/display/ResearchServices/Bioinformatics). Again, if you have access rights, you can see two example worflows at:
--   [The VDR project](https://git.ecdf.ed.ac.uk/tfomics/vdr)
--   [The FTO project](https://git.ecdf.ed.ac.uk/tfomics/uk-biobank/tmle-rs1421085)
-
-The idea is that you can simply run:
-
-```bash
-nextflow run TL-GWAS/TL-Pipeline -profile eddie
-```
-
-If you are not part of the University and cannot access Eddie, you will have to adapt the configuration file to your specific platflorm, fill an issue to get in contact.
