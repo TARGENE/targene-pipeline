@@ -42,7 +42,7 @@ process MergeExtraCovariatesAndPCs{
 
     script:
         """
-        julia --project=/UKBMain/ /UKBMain/bin/csvmerge.jl --startup-file=no \
+        julia --project=/UKBMain/ --startup-file=no /UKBMain/bin/csvmerge.jl \
         $csv1 $csv2 covariates.csv
         """
 }
