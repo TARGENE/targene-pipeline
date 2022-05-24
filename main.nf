@@ -81,7 +81,7 @@ process DecodeMainDataset {
 
     script:
         """
-        julia --project=/UKBMain/ /UKBMain/bin/decode.jl --startup-file=no \
+        julia --project=/UKBMain/ --startup-file=no /UKBMain/bin/decode.jl \
         $dataset_file $fields_metadata main_dataset.csv
         """
 }
