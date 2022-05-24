@@ -21,7 +21,7 @@ params.PVAL_SIEVE = 0.05
 params.OUTDIR = "$launchDir/results"
 
 include { IIDGenotypes } from './modules/genotypes.nf'
-include { generatePCs } from './modules/covariates.nf'
+include { generatePCs; MergeExtraCovariatesAndPCs } from './modules/covariates.nf'
 include { FromASBxTransActors; FromGivenQueries } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas as BridgeContinuous; phenotypesFromGeneAtlas as BridgeBinary } from './modules/phenotypes.nf'
 include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
@@ -61,7 +61,7 @@ process UKBConv {
         path encr_file
 
     output:
-        "output.csv"
+        path "output.csv"
 
     script:
         """
@@ -77,7 +77,7 @@ process DecodeMainDataset {
         path fields_metadata
 
     output:
-        "main_dataset.csv"
+        path "main_dataset.csv"
 
     script:
         """
