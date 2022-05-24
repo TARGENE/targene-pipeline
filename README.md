@@ -15,7 +15,7 @@ nextflow run TL-GWAS/TL-Pipeline -profile myprofile
 The workflow is divided into 4 steps, where the first 3 steps generate the inputs for the final TMLE process: 
 1. The generation of the queries files. Each query file specifies a set of potentially interacting variants together with the chromosome they are located in and for each variant which allele is the `control` and which allele is the `treatment` value.
 2. The generation of the phenotypes file. From the UK-Biobank main dataset, generates a set of traits of interest for the study.
-3. The generation of the confounders file. To adjust for confounding effects in the final estimation step.
+3. The generation of the covariates file. To adjust for confounding effects in the final estimation step.
 4. The TMLE estimation step, requiring all 3 previous steps.
 
 We now describe the pipeline arguments for each sub-workflow:
