@@ -38,7 +38,7 @@ process MergeExtraCovariatesAndPCs{
         path csv2
 
     output:
-        "covariates.csv"
+        path "covariates.csv"
 
     script:
         """
