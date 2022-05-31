@@ -15,19 +15,37 @@ process buildPCs {
 
 process adapt_flashpca {
     container "olivierlabayle/tl-core:v0.1.0"
-    publishDir "$params.OUTDIR/confounders", mode: 'symlink'
+    publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
     memory '16 GB'
     
     input:
         path flashpca_out
     
     output:
-        path "confounders.csv"
+        path "pcs.csv"
     
     script:
-        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl --input $flashpca_out --output confounders.csv adapt"
+        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl --input $flashpca_out --output pcs.csv adapt"
 }
 
+process MergeExtraCovariatesAndPCs{
+    container "olivierlabayle/ukbmain:v0.1.0"
+    publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
+    memory '16 GB'
+    
+    input:
+        path csv1
+        path csv2
+
+    output:
+        path "covariates.csv"
+
+    script:
+        """
+        julia --project=/UKBMain/ --startup-file=no /UKBMain/bin/csvmerge.jl \
+        $csv1 $csv2 covariates.csv
+        """
+}
 
 workflow generatePCs{
     take:

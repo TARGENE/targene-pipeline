@@ -1,6 +1,9 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+params.FIELDS_METADATA = "NO_FILE"
+params.EXTRA_COVARIATES = "NO_FILE"
+params.ENCRYPTION_FILE = "NO_FILE"
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
 params.PHENOTYPES_LIST = "NO_FILE"
 params.QUERIES_MODE = "given"
@@ -18,7 +21,7 @@ params.PVAL_SIEVE = 0.05
 params.OUTDIR = "$launchDir/results"
 
 include { IIDGenotypes } from './modules/genotypes.nf'
-include { generatePCs } from './modules/confounders.nf'
+include { generatePCs; MergeExtraCovariatesAndPCs } from './modules/covariates.nf'
 include { FromASBxTransActors; FromGivenQueries } from './modules/queries.nf'
 include { phenotypesFromGeneAtlas as BridgeContinuous; phenotypesFromGeneAtlas as BridgeBinary } from './modules/phenotypes.nf'
 include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
@@ -50,6 +53,40 @@ def NbPhenotypes() {
 
 NB_PHENOTYPES = NbPhenotypes()
 
+process UKBConv {
+    container "olivierlabayle/ukbmain:v0.1.0"
+
+    input:
+        path fields_file
+        path encr_file
+
+    output:
+        path "output.csv"
+
+    script:
+        """
+        ukbconv $encr_file csv -i$fields_file -ooutput
+        """
+}
+
+process DecodeMainDataset {
+    container "olivierlabayle/ukbmain:v0.1.0"
+
+    input:
+        path dataset_file
+        path fields_metadata
+
+    output:
+        path "main_dataset.csv"
+
+    script:
+        """
+        julia --project=/UKBMain/ --startup-file=no /UKBMain/bin/decode.jl \
+        $dataset_file $fields_metadata main_dataset.csv
+        """
+}
+
+
 workflow generateIIDGenotypes {
     qc_file = Channel.value(file("$params.QC_FILE"))
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
@@ -63,15 +100,23 @@ workflow generateIIDGenotypes {
 }
 
 
-workflow generateConfounders {
+workflow generateCovariates {
     take:
         iid_genotypes
 
     main:
-        generatePCs(iid_genotypes.collect())
+        covariates = generatePCs(iid_genotypes.collect())
+        if (params.EXTRA_COVARIATES != "NO_FILE") {
+            covariates_file = Channel.value(file("$params.EXTRA_COVARIATES"))
+            encryption_file = Channel.value(file("$params.ENCRYPTION_FILE"))
+            fields_metadata = Channel.value(file("$params.FIELDS_METADATA"))
+            UKBConv(covariates_file, encryption_file)
+            DecodeMainDataset(UKBConv.out, fields_metadata)
+            covariates = MergeExtraCovariatesAndPCs(covariates, DecodeMainDataset.out)
+        }
 
     emit:
-        generatePCs.out
+        covariates
 }
 
 
@@ -121,7 +166,7 @@ workflow generateEstimates {
         queries_files
         continuous_phenotypes_file
         binary_phenotypes_file
-        confounders_file
+        covariates_file
 
     main:
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
@@ -129,12 +174,12 @@ workflow generateEstimates {
         // compute TMLE estimates for continuous targets
         ContinuousPhenotypesBatches(continuous_phenotypes_file)
         queries_to_continuous_phenotype_batches = queries_files.combine(ContinuousPhenotypesBatches.out.flatten())
-        TMLEContinuous(genotypes_file, continuous_phenotypes_file, confounders_file, estimator_file, queries_to_continuous_phenotype_batches, "Real")
+        TMLEContinuous(genotypes_file, continuous_phenotypes_file, covariates_file, estimator_file, queries_to_continuous_phenotype_batches, "Real")
         
         // compute TMLE estimates for binary targets
         BinaryPhenotypesBatches(binary_phenotypes_file)
         queries_to_binary_phenotype_batches = queries_files.combine(BinaryPhenotypesBatches.out.flatten())
-        TMLEBinary(genotypes_file, binary_phenotypes_file, confounders_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
+        TMLEBinary(genotypes_file, binary_phenotypes_file, covariates_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
 
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
@@ -184,8 +229,8 @@ workflow {
     // Generate IID Genotypes
     generateIIDGenotypes()
 
-    // generate confounders
-    generateConfounders(generateIIDGenotypes.out)
+    // generate covariates
+    generateCovariates(generateIIDGenotypes.out)
 
     // generate phenotypes
     generatePhenotypes()
@@ -196,7 +241,7 @@ workflow {
         generateQueriesAndGenotypes.out.queries.flatten(),
         generatePhenotypes.out.continuous.first(),
         generatePhenotypes.out.binary.first(),
-        generateConfounders.out.first()
+        generateCovariates.out.first()
     )
 
     // generate sieve estimates
