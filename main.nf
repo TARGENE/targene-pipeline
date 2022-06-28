@@ -54,7 +54,7 @@ def NbPhenotypes() {
 NB_PHENOTYPES = NbPhenotypes()
 
 process UKBConv {
-    container "olivierlabayle/ukbmain:v0.1.0"
+    container "olivierlabayle/ukbmain:v0.2.0"
 
     input:
         path fields_file
@@ -70,7 +70,7 @@ process UKBConv {
 }
 
 process DecodeMainDataset {
-    container "olivierlabayle/ukbmain:v0.1.0"
+    container "olivierlabayle/ukbmain:v0.2.0"
 
     input:
         path dataset_file
