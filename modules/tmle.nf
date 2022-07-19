@@ -1,5 +1,5 @@
 process TMLE {
-    container "olivierlabayle/targeted-estimation:v0.1.0"
+    container "olivierlabayle/targeted-estimation:0.1.0"
     publishDir "$params.OUTDIR/hdf5files", saveAs: { filename -> filename.split("_batch")[0] + "/$filename" }, mode: 'symlink'
     label "bigmem"
     label "multithreaded"
