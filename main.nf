@@ -9,7 +9,6 @@ params.PHENOTYPES_LIST = "NO_FILE"
 params.QUERIES_MODE = "given"
 params.CALL_THRESHOLD = 0.9
 params.MINOR_CAT_FREQUENCY = 0.001
-params.ADAPTIVE_CV = true
 params.SAVE_FULL = false
 params.PHENOTYPES_BATCH_SIZE = 1
 params.GRM_NSPLITS = 100
