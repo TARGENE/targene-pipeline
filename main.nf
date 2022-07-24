@@ -180,15 +180,10 @@ workflow generateEstimates {
         queries_to_binary_phenotype_batches = queries_files.combine(BinaryPhenotypesBatches.out.flatten())
         TMLEBinary(genotypes_file, binary_phenotypes_file, covariates_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
 
-        TMLEContinuous.out.flatten()
-                        .concat(TMLEBinary.out.flatten())
-                        .map { it -> [it.getName().split("_batch")[0], it]}
-                        .groupTuple()
-                        .view()
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
                         .map { it -> [it.getName().split("_batch")[0], it]}
-                        .groupTuple(size: NB_PHENOTYPES)
+                        .groupTuple()
 
     emit:
         hdf5_files
@@ -201,15 +196,11 @@ workflow generateSieveEstimates {
         iid_genotypes
     
     main:
-        Channel.from([4, 5, 6]).view()
         if (params.NB_VAR_ESTIMATORS != 0){
             // Build the GRM
             grm_parts = Channel.from( 1..params.GRM_NSPLITS )
             GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
             AggregateGRM(GRMPart.out.collect())
-            // Debug
-            Channel.from([7, 8, 9]).view()
-            snps_tmle_files.view()
             // Sieve estimation
             sieve_estimates = SieveVarianceEstimation(snps_tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
         }
@@ -253,8 +244,6 @@ workflow {
     )
 
     // generate sieve estimates
-    Channel.from([1,2,3]).view()
-    generateEstimates.out.view()
     generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
 
     // generate Summaries
