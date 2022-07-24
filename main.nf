@@ -183,7 +183,7 @@ workflow generateEstimates {
         TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
                         .map { it -> [it.getName().split("_batch")[0], it]}
-                        .groupTuple(size: NB_PHENOTYPES)
+                        .groupTuple()
                         .view()
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
