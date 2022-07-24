@@ -196,12 +196,14 @@ workflow generateSieveEstimates {
         iid_genotypes
     
     main:
+        Channel.from([4, 5, 6]).view()
         if (params.NB_VAR_ESTIMATORS != 0){
             // Build the GRM
             grm_parts = Channel.from( 1..params.GRM_NSPLITS )
             GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
             AggregateGRM(GRMPart.out.collect())
             // Debug
+            Channel.from([7, 8, 9]).view()
             snps_tmle_files.view()
             // Sieve estimation
             sieve_estimates = SieveVarianceEstimation(snps_tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
