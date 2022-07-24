@@ -246,6 +246,7 @@ workflow {
     )
 
     // generate sieve estimates
+    Channel.from([1,2,3]).view()
     generateEstimates.out.view()
     generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
 
