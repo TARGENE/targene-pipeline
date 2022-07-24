@@ -246,6 +246,7 @@ workflow {
     )
 
     // generate sieve estimates
+    generateEstimates.out.view()
     generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
 
     // generate Summaries
