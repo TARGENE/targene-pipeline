@@ -1,5 +1,5 @@
 process UKBFieldsList {
-    container "olivierlabayle/ukbmain:v0.1.0"
+    container "olivierlabayle/ukbmain:extract_subset_split"
 
     input:
         path traits_config
@@ -12,7 +12,7 @@ process UKBFieldsList {
 }
 
 process UKBConv {
-    container "olivierlabayle/ukbmain:v0.2.0"
+    container "olivierlabayle/ukbmain:extract_subset_split"
 
     input:
         path fields_list
@@ -28,7 +28,7 @@ process UKBConv {
 
 process TraitsFromUKB {
     publishDir "$params.OUTDIR/traits", mode: 'symlink'
-    container "olivierlabayle/ukbmain:v0.1.0"
+    container "olivierlabayle/ukbmain:extract_subset_split"
     memory "20G"
 
     input:
@@ -41,8 +41,8 @@ process TraitsFromUKB {
         path 'processed.continuous.phenotypes.csv', emit: continuous_phenotypes, optional: true
         path 'processed.binary.phenotypes.csv', emit: binary_phenotypes, optional: true
         path 'processed.covariates.csv', emit: covariates, optional: true
-        path 'processed.confounders.csv', emit: confounders, optional: true
-        
+        path 'processed.extra_confounders.csv', emit: confounders, optional: true
+        path 'processed.extra_treatments.csv', emit: treatments, optional: true
     
     script:
         """

@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+params.DECRYPTED_DATASET = "NO_FILE"
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
 params.QUERIES_MODE = "given"
 params.CALL_THRESHOLD = 0.9
@@ -16,54 +17,37 @@ params.PVAL_SIEVE = 0.05
 params.OUTDIR = "$launchDir/results"
 
 include { IIDGenotypes } from './modules/genotypes.nf'
-include { generatePCs; MergeExtraCovariatesAndPCs } from './modules/covariates.nf'
+include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
 include { FromASBxTransActors; FromGivenQueries } from './modules/queries.nf'
 include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
 include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
-include { PhenotypesBatches as ContinuousPhenotypesBatches; PhenotypesBatches as BinaryPhenotypesBatches} from './modules/tmle.nf'
+include { PhenotypesBatches as ContinuousPhenotypesBatches; PhenotypesBatches as BinaryPhenotypesBatches; FinalizeTMLEInputs} from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 include { Summary } from './modules/summary.nf'
 
-
-def NbPhenotypes() {
-    if (params.PHENOTYPES_LIST != "NO_FILE") {
-        reader = file(params.PHENOTYPES_LIST).newReader()
-        int lines = 0
-        while (reader.readLine() != null) { 
-            lines++
-        }
-        return lines
+workflow extractTraits {
+    traits_config = Channel.value(file("$params.TRAITS_CONFIG"))
+    withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
+    if (params.DECRYPTED_DATASET == "NO_FILE") {
+        encrypted_dataset = Channel.value(file("$params.ENCRYPTED_DATASET"))
+        encoding_file = Channel.value(file("$params.ENCODING_FILE"))
+        UKBFieldsList(traits_config)
+        decrypted_dataset = UKBConv(UKBFieldsList.out, encrypted_dataset, encoding_file)
     }
     else {
-        binReader = file(params.BINARY_PHENOTYPES).newReader()
-        nbBin = binReader.readLine().split(" ").size()
-
-        contReader = file(params.CONTINUOUS_PHENOTYPES).newReader()
-        nbCont = contReader.readLine().split(" ").size()
-        // Remove twice the FID and IID columns
-        return nbBin + nbCont - 4
+        decrypted_dataset = Channel.value(file("$params.DECRYPTED_DATASET"))
     }
-}
 
-NB_PHENOTYPES = NbPhenotypes()
-
-workflow extractTraits{
-    traits_config = Channel.value(file("$params.TRAITS_CONFIG"))
-    encrypted_dataset = Channel.value(file("$params.ENCRYPTED_DATASET"))
-    encoding_file = Channel.value(file("$params.ENCODING_FILE"))
-    withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
-
-    UKBFieldsList(traits_config)
-    UKBConv(UKBFieldsList.out, encrypted_dataset, encoding_file)
-    TraitsFromUKB(UKBConv.out, traits_config, withdrawal_list)
+    TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
 
     emit:
-        sample_ids = TraitsFromUKB.sample_ids
-        binary_phenotypes = TraitsFromUKB.binary_phenotypes
-        continuous_phenotypes = TraitsFromUKB.continuous_phenotypes
-        confounders = TraitsFromUKB.confounders
-        covariates = TraitsFromUKB.covariates
+        sample_ids = TraitsFromUKB.out.sample_ids
+        binary_phenotypes = TraitsFromUKB.out.binary_phenotypes
+        continuous_phenotypes = TraitsFromUKB.out.continuous_phenotypes
+        confounders = TraitsFromUKB.out.confounders
+        treatments = TraitsFromUKB.out.treatments
+        covariates = TraitsFromUKB.out.covariates
 }
 
 workflow generateIIDGenotypes {
@@ -80,6 +64,19 @@ workflow generateIIDGenotypes {
 
     emit:
         IIDGenotypes.out
+}
+
+workflow geneticConfounders {
+    take:
+        iid_genotypes
+
+    main:
+        FlashPCA(iid_genotypes)
+        AdaptFlashPCA(FlashPCA.out)
+
+    emit:
+        AdaptFlashPCA.out
+
 }
 
 workflow generateQueriesAndGenotypes{
@@ -111,32 +108,44 @@ workflow generateQueriesAndGenotypes{
 
 workflow generateEstimates {
     take:
-        genotypes_file
-        queries_files
-        continuous_phenotypes_file
-        binary_phenotypes_file
-        covariates_file
+        genotypes
+        queries
+        continuous_phenotypes
+        binary_phenotypes
+        genetic_confounders
+        extra_confounders
+        covariates
+        extra_treatments
 
     main:
+        tmle_data = FinalizeTMLEInputs(
+            continuous_phenotypes,
+            binary_phenotypes,
+            genotypes,
+            genetic_confounders,
+            extra_confounders,
+            covariates,
+            extra_treatments
+        )
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
 
         // compute TMLE estimates for continuous targets
-        ContinuousPhenotypesBatches(continuous_phenotypes_file)
-        queries_to_continuous_phenotype_batches = queries_files.combine(ContinuousPhenotypesBatches.out.flatten())
-        TMLEContinuous(genotypes_file, continuous_phenotypes_file, covariates_file, estimator_file, queries_to_continuous_phenotype_batches, "Real")
+        ContinuousPhenotypesBatches(tmle_data.continuous_phenotypes)
+        queries_to_continuous_phenotype_batches = queries.combine(ContinuousPhenotypesBatches.out.flatten())
+        //TMLEContinuous(tmle_data.genotypes, tmle_data.continuous_phenotypes, covariates_file, estimator_file, queries_to_continuous_phenotype_batches, "Real")
         
         // compute TMLE estimates for binary targets
-        BinaryPhenotypesBatches(binary_phenotypes_file)
-        queries_to_binary_phenotype_batches = queries_files.combine(BinaryPhenotypesBatches.out.flatten())
-        TMLEBinary(genotypes_file, binary_phenotypes_file, covariates_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
+        BinaryPhenotypesBatches(tmle_data.binary_phenotypes)
+        queries_to_binary_phenotype_batches = queries.combine(BinaryPhenotypesBatches.out.flatten())
+        //TMLEBinary(genotypes_file, binary_phenotypes_file, covariates_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
 
-        hdf5_files = TMLEContinuous.out.flatten()
-                        .concat(TMLEBinary.out.flatten())
-                        .map { it -> [it.getName().split("_batch")[0], it]}
-                        .groupTuple()
+        // hdf5_files = TMLEContinuous.out.flatten()
+        //                 .concat(TMLEBinary.out.flatten())
+        //                 .map { it -> [it.getName().split("_batch")[0], it]}
+        //                 .groupTuple()
 
-    emit:
-        hdf5_files
+    // emit:
+    //     hdf5_files
 }
 
 
@@ -181,20 +190,24 @@ workflow {
     // Generate IID Genotypes
     generateIIDGenotypes(extractTraits.out.sample_ids)
 
+    // Genetic confounders
+    geneticConfounders(generateIIDGenotypes.out)
 
     // generate estimates
     generateEstimates(
-        generateQueriesAndGenotypes.out.genotypes.first(),
+        generateQueriesAndGenotypes.out.genotypes,
         generateQueriesAndGenotypes.out.queries.flatten(),
         extractTraits.out.continuous_phenotypes,
         extractTraits.out.binary_phenotypes,
-        extractTraits.out.confounders
-        extractTraits.out.covariates
+        geneticConfounders.out,
+        extractTraits.out.confounders.ifEmpty("NO_FILE"),
+        extractTraits.out.covariates.ifEmpty("NO_FILE"),
+        extractTraits.out.treatments.ifEmpty("NO_FILE")
     )
 
     // generate sieve estimates
-    generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
+    //generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
 
     // generate Summaries
-    generateSummaries(generateEstimates.out, generateSieveEstimates.out)
+    //generateSummaries(generateEstimates.out, generateSieveEstimates.out)
 }
