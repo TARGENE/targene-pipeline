@@ -1,11 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-params.FIELDS_METADATA = "NO_FILE"
-params.EXTRA_COVARIATES = "NO_FILE"
-params.ENCRYPTION_FILE = "NO_FILE"
 params.SNPS_EXCLUSION_LIST = "NO_FILE"
-params.PHENOTYPES_LIST = "NO_FILE"
 params.QUERIES_MODE = "given"
 params.CALL_THRESHOLD = 0.9
 params.MINOR_CAT_FREQUENCY = 0.001
@@ -22,7 +18,7 @@ params.OUTDIR = "$launchDir/results"
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { generatePCs; MergeExtraCovariatesAndPCs } from './modules/covariates.nf'
 include { FromASBxTransActors; FromGivenQueries } from './modules/queries.nf'
-include { phenotypesFromGeneAtlas as BridgeContinuous; phenotypesFromGeneAtlas as BridgeBinary } from './modules/phenotypes.nf'
+include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
 include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
 include { PhenotypesBatches as ContinuousPhenotypesBatches; PhenotypesBatches as BinaryPhenotypesBatches} from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
@@ -52,112 +48,66 @@ def NbPhenotypes() {
 
 NB_PHENOTYPES = NbPhenotypes()
 
-process UKBConv {
-    container "olivierlabayle/ukbmain:v0.2.0"
+workflow extractTraits{
+    traits_config = Channel.value(file("$params.TRAITS_CONFIG"))
+    encrypted_dataset = Channel.value(file("$params.ENCRYPTED_DATASET"))
+    encoding_file = Channel.value(file("$params.ENCODING_FILE"))
+    withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
 
-    input:
-        path fields_file
-        path encr_file
+    UKBFieldsList(traits_config)
+    UKBConv(UKBFieldsList.out, encrypted_dataset, encoding_file)
+    TraitsFromUKB(UKBConv.out, traits_config, withdrawal_list)
 
-    output:
-        path "output.csv"
-
-    script:
-        """
-        ukbconv $encr_file csv -i$fields_file -ooutput
-        """
+    emit:
+        sample_ids = TraitsFromUKB.sample_ids
+        binary_phenotypes = TraitsFromUKB.binary_phenotypes
+        continuous_phenotypes = TraitsFromUKB.continuous_phenotypes
+        confounders = TraitsFromUKB.confounders
+        covariates = TraitsFromUKB.covariates
 }
-
-process DecodeMainDataset {
-    container "olivierlabayle/ukbmain:v0.2.0"
-
-    input:
-        path dataset_file
-        path fields_metadata
-
-    output:
-        path "main_dataset.csv"
-
-    script:
-        """
-        julia --project=/UKBMain/ --startup-file=no /UKBMain/bin/decode.jl \
-        $dataset_file $fields_metadata main_dataset.csv
-        """
-}
-
 
 workflow generateIIDGenotypes {
-    qc_file = Channel.value(file("$params.QC_FILE"))
-    flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
-    ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
-    bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+    take:
+        sample_ids
 
-    IIDGenotypes(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file)
+    main:
+        qc_file = Channel.value(file("$params.QC_FILE"))
+        flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
+        ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
+        bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+
+        IIDGenotypes(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file, sample_ids)
 
     emit:
         IIDGenotypes.out
 }
 
-
-workflow generateCovariates {
+workflow generateQueriesAndGenotypes{
     take:
-        iid_genotypes
+        sample_ids
 
     main:
-        covariates = generatePCs(iid_genotypes.collect())
-        if (params.EXTRA_COVARIATES != "NO_FILE") {
-            covariates_file = Channel.value(file("$params.EXTRA_COVARIATES"))
-            encryption_file = Channel.value(file("$params.ENCRYPTION_FILE"))
-            fields_metadata = Channel.value(file("$params.FIELDS_METADATA"))
-            UKBConv(covariates_file, encryption_file)
-            DecodeMainDataset(UKBConv.out, fields_metadata)
-            covariates = MergeExtraCovariatesAndPCs(covariates, DecodeMainDataset.out)
+        bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
+        excluded_snps = Channel.fromPath(file("$params.SNPS_EXCLUSION_LIST"))
+        if (params.QUERIES_MODE == "ASBxTransActors") {
+            asb_snp_ch = Channel.fromPath("$params.ASB_FILES", checkIfExists: true)
+            trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
+            outputs = FromASBxTransActors(bgen_files_ch.collect(),
+                                                asb_snp_ch.collect(), 
+                                                trans_actors, 
+                                                excluded_snps,
+                                                sample_ids)
         }
-
-    emit:
-        covariates
-}
-
-
-workflow generateQueriesAndGenotypes{
-    bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
-    excluded_snps = Channel.fromPath(file("$params.SNPS_EXCLUSION_LIST"))
-    if (params.QUERIES_MODE == "ASBxTransActors") {
-        asb_snp_ch = Channel.fromPath("$params.ASB_FILES", checkIfExists: true)
-        trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
-        outputs = FromASBxTransActors(bgen_files_ch.collect(),
-                                             asb_snp_ch.collect(), 
-                                             trans_actors, 
-                                             excluded_snps)
-    }
-    else if (params.QUERIES_MODE == "given"){
-        query_files = Channel.fromPath("$params.QUERY_FILES", checkIfExists: true).collect()
-        outputs = FromGivenQueries(bgen_files_ch.collect(), query_files, excluded_snps)
-    }
+        else if (params.QUERIES_MODE == "given"){
+            query_files = Channel.fromPath("$params.QUERY_FILES", checkIfExists: true).collect()
+            outputs = FromGivenQueries(bgen_files_ch.collect(), query_files, excluded_snps, sample_ids)
+        }
 
     emit:
         genotypes = outputs.genotypes
         queries = outputs.queries
 
 }
-
-
-workflow generatePhenotypes {
-    binary_phenotypes = Channel.fromPath("$params.BINARY_PHENOTYPES")
-    continuous_phenotypes = Channel.fromPath("$params.CONTINUOUS_PHENOTYPES")
-    bridge = Channel.fromPath("$params.GENEATLAS_BRIDGE")
-    withdrawal_list = Channel.fromPath("$params.WITHDRAWAL_LIST")
-    phenotypes_list = Channel.fromPath("$params.PHENOTYPES_LIST")
-
-    BridgeContinuous(continuous_phenotypes, bridge, withdrawal_list, phenotypes_list, "continuous_phenotypes.csv")
-
-    BridgeBinary(binary_phenotypes, bridge, withdrawal_list, phenotypes_list, "binary_phenotypes.csv")
-    
-    emit:
-        continuous = BridgeContinuous.out
-        binary = BridgeBinary.out
-}
-
 
 workflow generateEstimates {
     take:
@@ -222,25 +172,24 @@ workflow generateSummaries {
 }
 
 workflow {
+    // Extract traits
+    extractTraits()
+
     // Generate queries
-    generateQueriesAndGenotypes()
+    generateQueriesAndGenotypes(extractTraits.out.sample_ids)
 
     // Generate IID Genotypes
-    generateIIDGenotypes()
+    generateIIDGenotypes(extractTraits.out.sample_ids)
 
-    // generate covariates
-    generateCovariates(generateIIDGenotypes.out)
-
-    // generate phenotypes
-    generatePhenotypes()
 
     // generate estimates
     generateEstimates(
         generateQueriesAndGenotypes.out.genotypes.first(),
         generateQueriesAndGenotypes.out.queries.flatten(),
-        generatePhenotypes.out.continuous.first(),
-        generatePhenotypes.out.binary.first(),
-        generateCovariates.out.first()
+        extractTraits.out.continuous_phenotypes,
+        extractTraits.out.binary_phenotypes,
+        extractTraits.out.confounders
+        extractTraits.out.covariates
     )
 
     // generate sieve estimates
