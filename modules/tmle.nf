@@ -31,7 +31,7 @@ process TMLE {
 
 
 process PhenotypesBatches {
-    container "olivierlabayle/tl-core:v0.1.1"
+    container "olivierlabayle/tl-core:sample_filtering"
 
     input:
         path phenotypes_file
@@ -41,4 +41,36 @@ process PhenotypesBatches {
     
     script:
         "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/make_phenotypes_batches.jl ${phenotypes_file.getName()} --batch-size $params.PHENOTYPES_BATCH_SIZE"
+}
+
+process FinalizeTMLEInputs {
+    input:
+        path continuous_phenotypes
+        path binary_phenotypes
+        path genotypes
+        path genetic_confounders
+        path extra_confounders
+        path covariates
+        path extra_treatments
+    
+    output:
+        path "final.binary-phenotypes.csv", emit: binary_phenotypes
+        path "final.continuous-phenotypes.csv", emit: continuous_phenotypes
+        path "final.treatments.csv", emit: treatments
+        path "final.confounders.csv", emit: confounders
+        path "final.covariates.csv", emit: covariates, optional: true
+    
+    script:
+        covariates_option = covariates == "NO_FILE" ? "--covariates $covariates" : ""
+        treatments_option = extra_treatments == "NO_FILE" ? "--extra_treatments $extra_treatments" : ""
+        extra_confounders_option = extra_confounders == "NO_FILE" ? "--extra-confounders $extra_confounders" : ""
+        """
+        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/finalize_tmle_inputs.jl \
+        --out-prefix final \
+        --binary-phenotypes $binary_phenotypes \
+        --continuous-phenotypes $continuous_phenotypes \
+        --genotypes $genotypes \
+        --genetic-confounders $genetic_confounders \
+        $extra_confounders_option $covariates_option $treatments_option
+        """
 }
