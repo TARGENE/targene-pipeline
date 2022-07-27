@@ -1,19 +1,23 @@
 process filterBED{
     label 'bigmem'
-    container "olivierlabayle/tl-core:v0.1.0"
+    container "olivierlabayle/tl-core:v0.1.1"
     publishDir "$params.OUTDIR/qc_filtered_chromosomes", mode: 'symlink'
 
     input:
         tuple val(chr_id), file(bedfiles)
         path qcfile
         path ld_blocks
+        path sample_ids
 
     output:
         path "filtered.*", emit: filtered_bedfiles
 
     script:
         prefix = bedfiles[0].toString().minus('.bed')
-        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks filter"
+        """
+        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl \
+        --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --sample-ids $sample_ids filter
+        """
 
 }
 
@@ -41,7 +45,7 @@ process thinByLD{
 
 process mergeBEDS{
     label 'bigmem'
-    container "olivierlabayle/tl-core:v0.1.0"
+    container "olivierlabayle/tl-core:v0.1.1"
     publishDir "$params.OUTDIR/merged_genotypes", mode: 'symlink'
     
     input:
@@ -77,11 +81,14 @@ workflow IIDGenotypes{
         ld_blocks
         bed_files
         qc_file
+        sample_ids
+
     main:
-        filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks)
+        filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks, sample_ids)
         ld_pruned = thinByLD(flashpca_excl_reg, filtered_bedfiles)
         mergeBEDS(ld_pruned.collect())
         SampleQCFilter(mergeBEDS.out.collect())
+
     emit:
         SampleQCFilter.out
 }

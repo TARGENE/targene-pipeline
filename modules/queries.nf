@@ -18,7 +18,7 @@ def longest_prefix(files){
 }
 
 process FromASBxTransActors {
-    container "olivierlabayle/tl-core:v0.1.0"
+    container "olivierlabayle/tl-core:v0.1.1"
     publishDir "$params.OUTDIR/queries", mode: 'symlink'
     label "bigmem"
 
@@ -27,6 +27,7 @@ process FromASBxTransActors {
         path asbs
         path trans_actors
         path excluded_snps
+        path sample_ids
 
     output:
         path "outputs/*.toml", emit: queries
@@ -40,12 +41,12 @@ process FromASBxTransActors {
         mkdir -p outputs
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/build_genotypes_and_queries.jl \
         $chr_prefix --mode=asb --outdir=outputs --call-threshold=${params.CALL_THRESHOLD} $exclude \
-        --minor-genotype-freq=${params.MINOR_CAT_FREQUENCY} --asb-prefix=$asb_prefix --trans-actors=$trans_actors
+        --minor-genotype-freq=${params.MINOR_CAT_FREQUENCY} --asb-prefix=$asb_prefix --trans-actors=$trans_actors --sample-ids=$sample_ids
         """
 }
 
 process FromGivenQueries {
-    container "olivierlabayle/tl-core:v0.1.0"
+    container "olivierlabayle/tl-core:v0.1.1"
     publishDir "$params.OUTDIR/queries", mode: 'symlink'
     label "bigmem"
 
@@ -53,6 +54,7 @@ process FromGivenQueries {
         path bgenfiles
         path query_files
         path excluded_snps
+        path sample_ids
 
     output:
         path "outputs/*.toml", emit: queries
@@ -66,6 +68,6 @@ process FromGivenQueries {
         mkdir -p outputs
         julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/build_genotypes_and_queries.jl \
         $chr_prefix --mode=given --outdir=outputs --call-threshold=${params.CALL_THRESHOLD} $exclude \
-        --minor-genotype-freq=${params.MINOR_CAT_FREQUENCY} --query-prefix=$query_prefix
+        --minor-genotype-freq=${params.MINOR_CAT_FREQUENCY} --query-prefix=$query_prefix --sample-ids=$sample_ids
         """
 }
