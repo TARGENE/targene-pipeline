@@ -4,21 +4,39 @@ Here we provide the main workflow for estimating genetic variants interactions r
 
 ## Running the Workflow
 
-Please refer to the main [NextFlow](https://www.nextflow.io/) documentation for general usage. The main point being that, depending on your cluster specifications, you will need to provide a specific `myprofile` configuration file. Then simply run:
+Please refer to the main [NextFlow](https://www.nextflow.io/) documentation for general usage. The main point being that, depending on your cluster specifications, you will need to provide a specific `myprofile` configuration file. If you are part of the University of Edinburgh and simply using Eddie, then the `eddie` profile is already defined. Then simply run:
 
 ```bash
-nextflow run TL-GWAS/TL-Pipeline -profile myprofile
+nextflow run TARGENE/targene-pipeline -profile myprofile -resume
 ```
 
-## Description of the Workflow's options
+In order to configure the pipeline to your project you must write a `nextflow.config` file that will provide the parameters described below.
 
-The workflow is divided into 4 steps, where the first 3 steps generate the inputs for the final TMLE process: 
-1. The generation of the queries files. Each query file specifies a set of potentially interacting variants together with the chromosome they are located in and for each variant which allele is the `control` and which allele is the `treatment` value.
-2. The generation of the phenotypes file. From the UK-Biobank main dataset, generates a set of traits of interest for the study.
-3. The generation of the covariates file. To adjust for confounding effects in the final estimation step.
-4. The TMLE estimation step, requiring all 3 previous steps.
+## Configuration
 
-We now describe the pipeline arguments for each sub-workflow:
+Here is a detailed description of the parameters expected by the pipeline.
+
+### Data sources
+
+Currently only the UK-Biobank is supported.
+
+#### UK-Biobank
+
+The following arguments are required:
+
+- `UKBMAIN_DATASET`: It is the dataset containing individuals' traits, typically extracted using the `ukbconv` program provided by the UK-Biobank. Traits are extracted and split based on the role they play in the causal model according to a configuration file described [here](https://github.com/TARGENE/UKBMain.jl). The configuration file also enables filtering of individuals.
+- `UKBB_BGEN_FILES`: The imputed genotypes from the UK-Biobank. Since the UK-Biobank genotype data is split in chromosomes, it should be of the form `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bgen,sample,bgen.bgi}`.
+- `UKBB_BED_FILES`: The base genotypes in PLINK BED format. Again in the form of `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bed,bim,fam}`.
+- `QC_FILE`: A path to the UK-biobank SNP quaility control `ukb_snp_qc.txt` file.
+- `WITHDRAWAL_LIST`: A path to the withdrawal sample list to exclude removed participants from the study.
+
+### Confounding Adjustement
+
+To account for potential confounding effect due to population stratification, we extract principal components from the genetic data using [flashpca](https://github.com/gabraham/flashpca). We follow the recommended procedure for this tool which implies some preprocessing and filtering. The following arguments are compulsory:
+
+- `LD_BLOCKS`: A path to pre-identified linkage desequlibrium blocks around the variants that will be queried for causal effect estimation. Those will be removed from the data.
+- `FLASHPCA_EXCLUSION_REGIONS`: A path to the flashpca special exclusion regions which is provided in their repository.
+- `NB_PCS`: The number of PCA components to extract.
 
 ### Queries Generation
 
@@ -31,30 +49,7 @@ There are currently two possible procedures which are specified by the `QUERIES_
 - `QUERIES_MODE` = "given". This is useful if only a few query files have to be generated and can be written "by hand". Then the following argument has to be provided:
     - `QUERY_FILES`: Path to the query files.
 
-### Covariates Generation
-
-To account for potential confounding effect due to population stratification, we extract principal components from the genetic data using [flashpca](https://github.com/gabraham/flashpca). We follow the recommended procedure for this tool which implies some preprocessing and filtering. The following arguments are compulsory:
-- `QC_FILE`: A path to the UK-biobank SNP quaility control `ukb_snp_qc.txt` file.
-- `LD_BLOCKS`: A path to pre-identified linkage desequlibrium blocks around the variants that will be queried for causal effect estimation. Those will be removed from the data.
-- `FLASHPCA_EXCLUSION_REGIONS`: A path to the flashpca special exclusion regions which is provided in their repository.
-- `NB_PCS`: The number of PCA components to extract.
-- `UKBB_BED_FILES`: PCA components are built from the UK-biobankk bed files which must be provided.
-
-### Phenotypes Generation
-
-For now, we rely on the phenotypes that have been considered and generated by the [GeneAtlas](http://geneatlas.roslin.ed.ac.uk/) study. Because each study is independent, the sample ids in each study are unique. This means a bridge file has to be provided to link the data from the GeneAtlas and your study. The arguments are:
-- `BINARY_PHENOTYPES`: A path to the binary phenotypes file from the GeneAtlas.
-- `CONTINUOUS_PHENOTYPES`: A path to the continuous phenotypes file from the GeneAtlas.
-- `GENEATLAS_BRIDGE`: A path to the bridge file linking your study to the GeneAtlas study.
-- `WITHDRAWAL_LIST`: A path to the withdrawal sample list to exclude removed participants from the study.
-- `PHENOTYPES_LIST`: A file containing a list of the phenotypes from the GeneAtlas to use, one line for each phenotype
-
-### Genetic Relationship Matrix
-
-This is used solely by the Sieve Variance correction step and uses the GCTA software under the hood.
-
-- `GRM_NSPLITS`: The number of sub grm parts to be computed since the full GRM requires more than 1TB of memory.
-### TMLE
+### ESTIMATION
 
 Almost the last step of the pipeline: targeted estimation. This step uses "SuperLearning" (Stacking) which means a configuration for this learning step has to be provided:
 
@@ -67,6 +62,7 @@ Almost the last step of the pipeline: targeted estimation. This step uses "Super
 
 Arguments for the sieve variance correction step:
 
+- `GRM_NSPLITS`: The number of sub grm parts to be computed since the full GRM requires more than 1TB of memory.
 - `NB_VAR_ESTIMATORS`: Number of estimators to compute, the interval [0, MAX_TAU], will be split.
 - `MAX_TAU`: Maximum distance up to which individuals will be included in the estimation. Previous analysis showed that above 0.8, some side effects seem to occur. The theoretical maximum is 2.
 - `PVAL_SIEVE`: Only traits for which the IID pvalue is lower than this threshold will be considered 
