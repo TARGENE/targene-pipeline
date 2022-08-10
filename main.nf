@@ -2,10 +2,10 @@
 nextflow.enable.dsl = 2
 
 params.DECRYPTED_DATASET = "NO_FILE"
-params.SNPS_EXCLUSION_LIST = "NO_FILE"
-params.QUERIES_MODE = "given"
+params.MODE = "GivenParameters"
+params.PARAMETER_FILES = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
-params.MINOR_CAT_FREQUENCY = 0.001
+params.POSITIVITY_CONSTRAINT = 0.01
 params.SAVE_FULL = false
 params.PHENOTYPES_BATCH_SIZE = 1
 params.GRM_NSPLITS = 100
@@ -18,10 +18,9 @@ params.OUTDIR = "$launchDir/results"
 
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
-include { FromASBxTransActors; FromGivenQueries } from './modules/queries.nf'
 include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
 include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
-include { PhenotypesBatches as ContinuousPhenotypesBatches; PhenotypesBatches as BinaryPhenotypesBatches; FinalizeTMLEInputs} from './modules/tmle.nf'
+include { TMLEInputsFromGivenParams; TMLEInputsFromASBTrans } from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 include { Summary } from './modules/summary.nf'
@@ -79,37 +78,8 @@ workflow geneticConfounders {
 
 }
 
-workflow generateQueriesAndGenotypes{
-    take:
-        sample_ids
-
-    main:
-        bgen_files_ch = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true)
-        excluded_snps = Channel.fromPath(file("$params.SNPS_EXCLUSION_LIST"))
-        if (params.QUERIES_MODE == "ASBxTransActors") {
-            asb_snp_ch = Channel.fromPath("$params.ASB_FILES", checkIfExists: true)
-            trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
-            outputs = FromASBxTransActors(bgen_files_ch.collect(),
-                                                asb_snp_ch.collect(), 
-                                                trans_actors, 
-                                                excluded_snps,
-                                                sample_ids)
-        }
-        else if (params.QUERIES_MODE == "given"){
-            query_files = Channel.fromPath("$params.QUERY_FILES", checkIfExists: true).collect()
-            outputs = FromGivenQueries(bgen_files_ch.collect(), query_files, excluded_snps, sample_ids)
-        }
-
-    emit:
-        genotypes = outputs.genotypes
-        queries = outputs.queries
-
-}
-
 workflow generateEstimates {
     take:
-        genotypes
-        queries
         continuous_phenotypes
         binary_phenotypes
         genetic_confounders
@@ -118,34 +88,63 @@ workflow generateEstimates {
         extra_treatments
 
     main:
-        tmle_data = FinalizeTMLEInputs(
-            continuous_phenotypes,
-            binary_phenotypes,
-            genotypes,
-            genetic_confounders,
-            extra_confounders,
-            covariates,
-            extra_treatments
-        )
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
+        bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
+        parameter_files = Channel.fromPath("$params.PARAMETER_FILES").collect()
 
+        if (params.MODE == "ASBxTransActors") {
+            asbs = Channel.fromPath("$params.ASB_FILES", checkIfExists: true).collect()
+            trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
+            tmle_inputs = TMLEInputsFromASBTrans(
+                bgen_files,
+                binary_phenotypes,
+                continuous_phenotypes,
+                genetic_confounders,
+                extra_confounders,
+                extra_treatments,
+                covariates,
+                asbs, 
+                trans_actors, 
+                parameter_files)
+        }
+        else if (params.MODE == "GivenParameters"){
+            tmle_inputs = TMLEInputsFromGivenParams(
+                bgen_files,
+                binary_phenotypes,
+                continuous_phenotypes,
+                genetic_confounders,
+                extra_confounders,
+                extra_treatments,
+                covariates,
+                parameter_files)
+        }
         // compute TMLE estimates for continuous targets
-        ContinuousPhenotypesBatches(tmle_data.continuous_phenotypes)
-        queries_to_continuous_phenotype_batches = queries.combine(ContinuousPhenotypesBatches.out.flatten())
-        //TMLEContinuous(tmle_data.genotypes, tmle_data.continuous_phenotypes, covariates_file, estimator_file, queries_to_continuous_phenotype_batches, "Real")
+        TMLEContinuous(
+            tmle_inputs.treatments,
+            tmle_inputs.continuous_phenotypes, 
+            tmle_inputs.confounders,
+            tmle_inputs.continuous_parameters,
+            estimator,
+            tmle_inputs.covariates,
+            "Real")
         
         // compute TMLE estimates for binary targets
-        BinaryPhenotypesBatches(tmle_data.binary_phenotypes)
-        queries_to_binary_phenotype_batches = queries.combine(BinaryPhenotypesBatches.out.flatten())
-        //TMLEBinary(genotypes_file, binary_phenotypes_file, covariates_file, estimator_file, queries_to_binary_phenotype_batches, "Bool")
+        TMLEBinary(
+            tmle_inputs.treatments,
+            tmle_inputs.binary_phenotypes, 
+            tmle_inputs.confounders,
+            tmle_inputs.binary_parameters,
+            estimator,
+            tmle_inputs.covariates,
+            "Bool")
 
-        // hdf5_files = TMLEContinuous.out.flatten()
-        //                 .concat(TMLEBinary.out.flatten())
-        //                 .map { it -> [it.getName().split("_batch")[0], it]}
-        //                 .groupTuple()
+        hdf5_files = TMLEContinuous.out.flatten()
+                        .concat(TMLEBinary.out.flatten())
+                        .map { it -> [it.getName().split(".")[3], it]}
+                        .groupTuple()
 
-    // emit:
-    //     hdf5_files
+    emit:
+        hdf5_files
 }
 
 
@@ -184,9 +183,6 @@ workflow {
     // Extract traits
     extractTraits()
 
-    // Generate queries
-    generateQueriesAndGenotypes(extractTraits.out.sample_ids)
-
     // Generate IID Genotypes
     generateIIDGenotypes(extractTraits.out.sample_ids)
 
@@ -195,14 +191,12 @@ workflow {
 
     // generate estimates
     generateEstimates(
-        generateQueriesAndGenotypes.out.genotypes,
-        generateQueriesAndGenotypes.out.queries.flatten(),
         extractTraits.out.continuous_phenotypes,
         extractTraits.out.binary_phenotypes,
         geneticConfounders.out,
-        extractTraits.out.confounders.ifEmpty("NO_FILE"),
-        extractTraits.out.covariates.ifEmpty("NO_FILE"),
-        extractTraits.out.treatments.ifEmpty("NO_FILE")
+        extractTraits.out.confounders.ifEmpty("NO_EXTRA_CONFOUNDER"),
+        extractTraits.out.covariates.ifEmpty("NO_COVARIATE"),
+        extractTraits.out.treatments.ifEmpty("NO_EXTRA_TREATMENT")
     )
 
     // generate sieve estimates
