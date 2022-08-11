@@ -84,8 +84,8 @@ process TMLEInputsFromGivenParams {
         --bgen-prefix $bgen_prefix --call-threshold ${params.CALL_THRESHOLD} \
         --genetic-confounders $genetic_confounders $extra_confounders \
         $extra_treatments $covariates \
-        --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}
-        --positivity-constraint ${params.POSITIVITY_CONSTRAINT}
+        --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE} \
+        --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
         with-param-files $params_prefix
         """
 }
@@ -130,8 +130,8 @@ process TMLEInputsFromASBTrans {
         --bgen-prefix $bgen_prefix --call-threshold ${params.CALL_THRESHOLD} \
         --genetic-confounders $genetic_confounders $extra_confounders \
         $extra_treatments $covariates \
-        --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}
-        --positivity-constraint ${params.POSITIVITY_CONSTRAINT}
+        --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE} \
+        --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
         with-asb-trans $asb_prefix $trans_actors $param_prefix
         """
 }
