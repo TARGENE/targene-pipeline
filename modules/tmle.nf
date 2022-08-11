@@ -80,7 +80,7 @@ process TMLEInputsFromGivenParams {
         covariates = covariates.name != 'NO_COVARIATE' ? "--covariates $covariates" : ''
         """
         julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
-        --binary-phenotypes $binary_phenotypes --continuous-phenotypes $continuous_phenotypes 
+        --binary-phenotypes $binary_phenotypes --continuous-phenotypes $continuous_phenotypes \
         --bgen-prefix $bgen_prefix --call-threshold ${params.CALL_THRESHOLD} \
         --genetic-confounders $genetic_confounders $extra_confounders \
         $extra_treatments $covariates \
@@ -126,7 +126,7 @@ process TMLEInputsFromASBTrans {
         covariates = covariates.name != 'NO_COVARIATE' ? "--covariates $covariates" : ''
         """
         julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
-        --binary-phenotypes $binary_phenotypes --continuous-phenotypes $continuous_phenotypes 
+        --binary-phenotypes $binary_phenotypes --continuous-phenotypes $continuous_phenotypes \
         --bgen-prefix $bgen_prefix --call-threshold ${params.CALL_THRESHOLD} \
         --genetic-confounders $genetic_confounders $extra_confounders \
         $extra_treatments $covariates \
