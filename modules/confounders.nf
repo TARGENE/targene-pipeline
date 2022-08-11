@@ -25,5 +25,5 @@ process AdaptFlashPCA {
         path "pcs.csv"
     
     script:
-        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl --input $flashpca_out --output pcs.csv adapt"
+        "julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl --input $flashpca_out --output pcs.csv adapt"
 }

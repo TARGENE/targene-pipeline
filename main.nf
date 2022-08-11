@@ -124,7 +124,7 @@ workflow generateEstimates {
             tmle_inputs.continuous_phenotypes, 
             tmle_inputs.confounders,
             tmle_inputs.continuous_parameters,
-            estimator,
+            estimator_file,
             tmle_inputs.covariates,
             "Real")
         
@@ -134,7 +134,7 @@ workflow generateEstimates {
             tmle_inputs.binary_phenotypes, 
             tmle_inputs.confounders,
             tmle_inputs.binary_parameters,
-            estimator,
+            estimator_file,
             tmle_inputs.covariates,
             "Bool")
 
@@ -194,9 +194,9 @@ workflow {
         extractTraits.out.continuous_phenotypes,
         extractTraits.out.binary_phenotypes,
         geneticConfounders.out,
-        extractTraits.out.confounders.ifEmpty("NO_EXTRA_CONFOUNDER"),
-        extractTraits.out.covariates.ifEmpty("NO_COVARIATE"),
-        extractTraits.out.treatments.ifEmpty("NO_EXTRA_TREATMENT")
+        extractTraits.out.confounders.ifEmpty(file("NO_EXTRA_CONFOUNDER")),
+        extractTraits.out.covariates.ifEmpty(file("NO_COVARIATE")),
+        extractTraits.out.treatments.ifEmpty(file("NO_EXTRA_TREATMENT"))
     )
 
     // generate sieve estimates

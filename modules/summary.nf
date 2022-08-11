@@ -12,7 +12,7 @@ process Summary {
     script:
         sieve_option = sieve.getName() != 'NO_FILE' ? "--sieve" : ''
         """
-        julia --project=/TMLEEpistasis.jl --startup-file=no \
-        /TMLEEpistasis.jl/bin/summarize.jl $rsids ${rsids}_summary.csv $sieve_option
+        julia --project=/TargeneCore.jl --startup-file=no \
+        /TargeneCore.jl/bin/summarize.jl $rsids ${rsids}_summary.csv $sieve_option
         """
 }

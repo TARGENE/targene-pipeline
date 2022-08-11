@@ -86,7 +86,7 @@ process TMLEInputsFromGivenParams {
         $extra_treatments $covariates \
         --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT}
-        with-param-files --param-prefix $params_prefix
+        with-param-files $params_prefix
         """
 }
 
