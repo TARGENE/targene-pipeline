@@ -15,7 +15,7 @@ process filterBED{
     script:
         prefix = bedfiles[0].toString().minus('.bed')
         """
-        julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl \
+        julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
         --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --sample-ids $sample_ids filter
         """
 
@@ -55,7 +55,7 @@ process mergeBEDS{
         path "ukbb_merged*"
 
     script:
-        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/prepare_confounders.jl --input LDpruned. --output ukbb_merged merge"
+        "julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl --input LDpruned. --output ukbb_merged merge"
 
 }
 
