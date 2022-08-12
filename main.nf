@@ -6,7 +6,8 @@ params.MODE = "GivenParameters"
 params.PARAMETER_FILES = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
-params.SAVE_FULL = false
+params.SAVE_MODELS = false
+params.SAVE_IC = true
 params.PHENOTYPES_BATCH_SIZE = 1
 params.GRM_NSPLITS = 100
 params.MAF_THRESHOLD = 0.01
@@ -125,7 +126,7 @@ workflow generateEstimates {
             tmle_inputs.confounders,
             tmle_inputs.continuous_parameters,
             estimator_file,
-            tmle_inputs.covariates,
+            tmle_inputs.covariates.ifEmpty(file("NO_COVARIATE")),
             "Real")
         
         // compute TMLE estimates for binary targets
@@ -135,7 +136,7 @@ workflow generateEstimates {
             tmle_inputs.confounders,
             tmle_inputs.binary_parameters,
             estimator_file,
-            tmle_inputs.covariates,
+            tmle_inputs.covariates.ifEmpty(file("NO_COVARIATE")),
             "Bool")
 
         hdf5_files = TMLEContinuous.out.flatten()

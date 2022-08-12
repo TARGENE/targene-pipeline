@@ -26,7 +26,7 @@ process TMLE {
         path treatments
         path targets 
         path confounders
-        path parameters
+        path parameterfile
         path estimator
         path covariatesfile
         val target_type
@@ -36,14 +36,13 @@ process TMLE {
     
     script:
         covariates = covariatesfile.name != 'NO_COVARIATE' ? "--covariates $covariatesfile" : ''
-        save_full = params.SAVE_FULL == true ? '--save-full' : ''
-        queryfilename = queryfile.getName()
+        save_models = params.SAVE_MODELS == true ? '--save-models' : ''
+        save_ic = params.SAVE_IC == true ? '' : '--no-ic' 
+        outfilename = parameterfile.getName().replace("yaml", "hdf5")
         """
-        outfilename=\$(julia --project --startup-file=no -e 'using TOML; ks=join(sort(collect(keys(TOML.parse(open("${queryfilename}"))["SNPS"]))), "_");println(ks)')
-        outfilename="\${outfilename}_batch_${batch_id}_${target_type}.hdf5"
         julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
-        $treatments $targets $confounders $parameters $estimator \$outfilename \
-        $covariates --target-type $target_type $save_full
+        $treatments $targets $confounders $parameterfile $estimator $outfilename \
+        $covariates --target-type $target_type $save_models $save_ic
         """
 }
 
@@ -69,8 +68,8 @@ process TMLEInputsFromGivenParams {
         path "final.confounders.csv", emit: confounders
         path "final.covariates.csv", emit: covariates, optional: true
         path "final.treatments.csv", emit: treatments
-        path "final.binary.parameter*.yaml", emit: binary_parameters
-        path "final.continuous.parameter*.yaml", emit: continuous_parameters
+        path "final.binary.*.yaml", emit: binary_parameters
+        path "final.continuous.*.yaml", emit: continuous_parameters
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
@@ -114,8 +113,8 @@ process TMLEInputsFromASBTrans {
         path "final.confounders.csv", emit: confounders
         path "final.covariates.csv", emit: covariates, optional: true
         path "final.treatments.csv", emit: treatments
-        path "final.binary.parameter*.yaml", emit: binary_parameters
-        path "final.continuous.parameter*.yaml", emit: continuous_parameters
+        path "final.binary.*.yaml", emit: binary_parameters
+        path "final.continuous.*.yaml", emit: continuous_parameters
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
