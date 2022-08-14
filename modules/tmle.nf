@@ -37,7 +37,7 @@ process TMLE {
     script:
         covariates = covariatesfile.name != 'NO_COVARIATE' ? "--covariates $covariatesfile" : ''
         save_models = params.SAVE_MODELS == true ? '--save-models' : ''
-        save_ic = params.SAVE_IC == true ? '' : '--no-ic' 
+        save_ic = params.SAVE_IC == true ? '' : '--no-ic'
         outfilename = parameterfile.getName().replace("yaml", "hdf5")
         """
         julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \

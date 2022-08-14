@@ -3,23 +3,26 @@ process SieveVarianceEstimation {
     publishDir "$params.OUTDIR/hdf5files/sieve_variances", mode: 'symlink'
 
     input:
-        tuple val(rsprefix), file(estimate_file)
+        tuple val(treatment_id), file(tmle_files)
         path GRM_ids
         path GRM_matrix
 
     output:
-        tuple val(rsprefix), file("${rsprefix}_sieve_variance.hdf5")
+        tuple val(treatment_id), file("final.${treatment_id}.sieve_variance.hdf5")
     
     script:
-        "julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/sieve_variance.jl $rsprefix GRM ${rsprefix}_sieve_variance.hdf5 --nb-estimators=$params.NB_VAR_ESTIMATORS --max-tau=$params.MAX_TAU --pval=$params.PVAL_SIEVE"
+        """julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/sieve_variance.jl \
+        final GRM final.${treatment_id}.sieve_variance.hdf5 \
+        --nb-estimators=$params.NB_VAR_ESTIMATORS --max-tau=$params.MAX_TAU --pval=$params.PVAL_SIEVE
+        """
 }
 
 process NoSieveEstimation {
     input:
-        tuple val(rsprefix), file(estimate_file)
+        tuple val(treatment_id), file(tmle_files)
 
     output:
-        tuple val(rsprefix), val("NOFILE")
+        tuple val(treatment_id), val("NOFILE")
         
     script:
         "exit 0"

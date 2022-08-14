@@ -124,7 +124,7 @@ workflow generateEstimates {
             tmle_inputs.treatments,
             tmle_inputs.continuous_phenotypes, 
             tmle_inputs.confounders,
-            tmle_inputs.continuous_parameters,
+            tmle_inputs.continuous_parameters.flatten(),
             estimator_file,
             tmle_inputs.covariates.ifEmpty(file("NO_COVARIATE")),
             "Real")
@@ -134,14 +134,14 @@ workflow generateEstimates {
             tmle_inputs.treatments,
             tmle_inputs.binary_phenotypes, 
             tmle_inputs.confounders,
-            tmle_inputs.binary_parameters,
+            tmle_inputs.binary_parameters.flatten(),
             estimator_file,
             tmle_inputs.covariates.ifEmpty(file("NO_COVARIATE")),
             "Bool")
 
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
-                        .map { it -> [it.getName().split(".")[3], it]}
+                        .map { it -> [it.getName().tokenize(".")[2], it]}
                         .groupTuple()
 
     emit:
@@ -151,7 +151,7 @@ workflow generateEstimates {
 
 workflow generateSieveEstimates {
     take:
-        snps_tmle_files
+        tmle_files
         iid_genotypes
     
     main:
@@ -161,10 +161,10 @@ workflow generateSieveEstimates {
             GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
             AggregateGRM(GRMPart.out.collect())
             // Sieve estimation
-            sieve_estimates = SieveVarianceEstimation(snps_tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
+            sieve_estimates = SieveVarianceEstimation(tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
         }
         else {
-            sieve_estimates = snps_tmle_files.map(it -> [it[0], "NO_FILE"])
+            sieve_estimates = tmle_files.map(it -> [it[0], "NO_FILE"])
         }
     emit:
         sieve_estimates
@@ -176,7 +176,7 @@ workflow generateSummaries {
         sieve_files
     
     main:
-        // joining on the prefix which corresponds to a tuple of SNPS
+        // joining on the prefix which corresponds to a tuple of Treatments
         Summary(tmle_files.join(sieve_files))
 }
 
@@ -201,8 +201,8 @@ workflow {
     )
 
     // generate sieve estimates
-    //generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
+    generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
 
     // generate Summaries
-    //generateSummaries(generateEstimates.out, generateSieveEstimates.out)
+    generateSummaries(generateEstimates.out, generateSieveEstimates.out)
 }

@@ -4,15 +4,15 @@ process Summary {
     label "bigmem"
 
     input:
-        tuple val(rsids), file(tmle), file(sieve)
+        tuple val(treatment_id), file(tmle), file(sieve)
     
     output:
-        path "${rsids}_summary.csv"
+        path "${treatment_id}.summary.csv"
     
     script:
         sieve_option = sieve.getName() != 'NO_FILE' ? "--sieve" : ''
         """
-        julia --project=/TargeneCore.jl --startup-file=no \
-        /TargeneCore.jl/bin/summarize.jl $rsids ${rsids}_summary.csv $sieve_option
+        julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/summarize.jl \
+        final ${treatment_id}.summary.csv $sieve_option
         """
 }
