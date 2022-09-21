@@ -1,5 +1,8 @@
 # TL-Pipeline
 
+> **Warning**:
+>   This is rapidly evolving software that should be considered unstable.
+
 Here we provide the main workflow for estimating genetic variants interactions responsible of traits in the UK Biobank using the Targeted Learning framework. For that purpose, we rely on [NextFlow](https://www.nextflow.io/), a software that helps the development of complex parallel and reactive workflows on clouds and clusters.
 
 ## Running the Workflow
@@ -16,55 +19,47 @@ In order to configure the pipeline to your project you must write a `nextflow.co
 
 Here is a detailed description of the parameters expected by the pipeline.
 
-### Data sources
+### Data source configuration
 
 Currently only the UK-Biobank is supported.
 
 #### UK-Biobank
 
-The following arguments are required:
+The UK-Biobank is composed of both genetic data (.bed and .bgen files) and trait data.
 
-- `UKBMAIN_DATASET`: It is the dataset containing individuals' traits, typically extracted using the `ukbconv` program provided by the UK-Biobank. Traits are extracted and split based on the role they play in the causal model according to a configuration file described [here](https://github.com/TARGENE/UKBMain.jl). The configuration file also enables filtering of individuals.
-- `UKBB_BGEN_FILES`: The imputed genotypes from the UK-Biobank. Since the UK-Biobank genotype data is split in chromosomes, it should be of the form `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bgen,sample,bgen.bgi}`.
-- `UKBB_BED_FILES`: The base genotypes in PLINK BED format. Again in the form of `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bed,bim,fam}`.
-- `QC_FILE`: A path to the UK-biobank SNP quaility control `ukb_snp_qc.txt` file.
+- The trait data: The first option is to provide the path to the encrypted dataset `ENCRYPTED_DATASET` which must be decoded via the ukbconv software and the encoding file `ENCODING_FILE`. The second option is to decrypt the dataset only once outside of the pipeline and then use the `DECRYPTED_DATASET` as an input to the pipeline. Finally, since one is usually not interested in all of the traits, and those traits can play a different role in the causal model, the `TRAITS_CONFIG` file described [here](https://github.com/TARGENE/UKBMain.jl) has to be provided.
+
+
+- The genetic data: We are currently using both .bgen and .bed files. Those are respectively provided with the `UKBB_BGEN_FILES` and `UKBB_BED_FILES` parameters. Since the UK-Biobank genotypic data is split in chromosomes, it should be of the form `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bgen,sample,bgen.bgi}` and `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bed,bim,fam}` respectively.
+
+Additional UK-Biobank required files for preprocessing and filtering are:
+
+- `QC_FILE`: A path to the UK-Biobank SNP quaility control `ukb_snp_qc.txt` file.
 - `WITHDRAWAL_LIST`: A path to the withdrawal sample list to exclude removed participants from the study.
 
-### Confounding Adjustement
+### Confounding Adjustement configuration
 
 To account for potential confounding effect due to population stratification, we extract principal components from the genetic data using [flashpca](https://github.com/gabraham/flashpca). We follow the recommended procedure for this tool which implies some preprocessing and filtering. The following arguments are compulsory:
 
 - `LD_BLOCKS`: A path to pre-identified linkage desequlibrium blocks around the variants that will be queried for causal effect estimation. Those will be removed from the data.
 - `FLASHPCA_EXCLUSION_REGIONS`: A path to the flashpca special exclusion regions which is provided in their repository.
-- `NB_PCS`: The number of PCA components to extract.
+- `NB_PCS` (default: 6): The number of PCA components to extract.
 
-### Queries Generation
+### Parameters configuration files
 
-There are currently two possible procedures which are specified by the `QUERIES_MODE` argument.
-- `QUERIES_MODE` = "ASBxTransActors". It is assumed that an initial set of variants has been pre-identified from a previous allele-specific binding (ASB) study as output by the [ball-nf](https://git.ecdf.ed.ac.uk/oalmelid/baal-nf) pipeline. It is also assumed that another set of potential trans-actors if given in a csv file. The cross product of those two sets of variants is taken to generate the queries. For more information on the procedure and expected format of those files see: `julia bin/generate_queries.jl --help`. Two arguments thus have to be passed:
-    - `ASB_FILES`: Path to all files output by the ball-nf pipeline.
-    - `TRANS_ACTORS_FILE`: Path to the trans-actors files.
-    - Additionaly, the `THRESHOLD` argument can be overided to specify the hard-calling threshold to convert probabilities to genotypes values.
+There are two ways to specify the parameters of interest to your research via the `MODE` parameter. In any case, the goal is to produce a set of parameter files as described in [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl). Those modes are described below:
+- `ASBxTransActors`: It is assumed that an initial set of variants has been pre-identified from a previous allele-specific binding (ASB) study as output by the [ball-nf](https://git.ecdf.ed.ac.uk/oalmelid/baal-nf) pipeline: `ASB_FILES` parameter. It is also assumed that another set of potential trans-actors is given in a .csv file: `TRANS_ACTORS_FILE` parameter. In that scenario, the target parameter will be the Interaction Average Treatment Effect between every pair of SNPs. Additionally, if template parameters configuration files containing extra treatments are provided (via `PARAMETER_FILES`), nth-order interaction parameters will be generated.
 
-- `QUERIES_MODE` = "given". This is useful if only a few query files have to be generated and can be written "by hand". Then the following argument has to be provided:
-    - `QUERY_FILES`: Path to the query files.
+- `GivenParameters`: This is useful if only a few parameters are of interest and can be written "by hand" or generated outside of the pipeline. Those parameter files can be specified by: `PARAMETER_FILES`.
 
-### ESTIMATION
+### Estimators configuration
 
-Almost the last step of the pipeline: targeted estimation. This step uses "SuperLearning" (Stacking) which means a configuration for this learning step has to be provided:
+Almost the last step of the pipeline: targeted estimation. This step uses machine learning estimators which have to be specified via the `ESTIMATORFILE` parameter. This file is more widely described in [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl).
 
-- `ESTIMATORFILE`: This configuration will be used to build super-learners estimators
-- `CROSSVAL`: A boolean to indicate weither an additional cross validation procedure is run to evaluate the models in each super learning step. Unfortunately this is currently run aside of TMLE and thus quite expensive. Only use it if you really need those figures.
-- `PHENOTYPES_BATCH_SIZE`: Estimation is parallelized over queries. If the number of queries is low it can be advantageous to parallelize over phenotypes too.
+Since the same estimator for `p(T|W)` can be used for multiple target parameters, it may be useful to batch phenotypes using `PHENOTYPES_BATCH_SIZE`(default: 1) in order to reduce the computational burden.
 
 
 ### Sieve Variance Estimation
 
-Arguments for the sieve variance correction step:
-
-- `GRM_NSPLITS`: The number of sub grm parts to be computed since the full GRM requires more than 1TB of memory.
-- `NB_VAR_ESTIMATORS`: Number of estimators to compute, the interval [0, MAX_TAU], will be split.
-- `MAX_TAU`: Maximum distance up to which individuals will be included in the estimation. Previous analysis showed that above 0.8, some side effects seem to occur. The theoretical maximum is 2.
-- `PVAL_SIEVE`: Only traits for which the IID pvalue is lower than this threshold will be considered 
-for sieve variance correction. This is because in theory the Sieve Variance curve is supposed to be monotically increasing.
+Finally, the variance estimator can be adjusted via the Sieve Variance Plateau method. For that, we need to compute the GRM which is typically split via `GRM_NSPLITS` (default: 100). Then the number of estimators to compute in the interval [0, `MAX_TAU` (default: 0.8)] is given by `NB_VAR_ESTIMATORS` (default: 0). If `NB_VAR_ESTIMATORS` is set to 0, the Sieve Variance Plateau method will not be applied. It is also possible, in order to reduce the computational burden to perform this correction only if the initial p-value is below a specific threshold `PVAL_SIEVE` (default: 0.05). This is because in the correction will only increase the variance estimate.
 
