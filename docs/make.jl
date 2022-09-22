@@ -1,0 +1,36 @@
+# using TarGene
+using Documenter
+
+# DocMeta.setdocmeta!(TarGene, :DocTestSetup, :(using TarGene); recursive=true)
+
+makedocs(;
+    # modules=[TarGene],
+    authors="Olivier Labayle",
+    repo="https://github.com/TARGENE/targene-pipeline/blob/{commit}{path}#{line}",
+    sitename="TarGene",
+    format=Documenter.HTML(;
+        prettyurls=get(ENV, "CI", "false") == "true",
+        canonical="https://TARGENE.github.io/targene-pipeline",
+        edit_link="main",
+        assets=String[],
+    ),
+    pages=[
+        "Home" => "index.md",
+        "User Guide" => [
+            "data_sources.md",
+            "confounding_adjustment.md",
+            "parameter_specification.md",
+            "tmle.md",
+            "sieve_variance.md",
+            "params_description.md"
+        ],
+        "Example Projects" => "example_projects.md",
+        "Associated Softwares" => "associated_softwares.md",
+        "Related Publications" => "publications.md"
+    ],
+)
+
+deploydocs(;
+    repo="github.com/TARGENE/targene-pipeline",
+    devbranch="main",
+)
