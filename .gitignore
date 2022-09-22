@@ -9,3 +9,4 @@ publish_dir
 test/grmmatrix
 LocalPreferences.toml
 test/sandbox.jl
+docs/Manifest.toml

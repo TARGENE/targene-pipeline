@@ -1,0 +1,3 @@
+# Sieve Variance Plateau Correction
+
+Finally, the variance estimator can be adjusted via the Sieve Variance Plateau method. For that, we need to compute the GRM which is typically split via `GRM_NSPLITS` (default: 100). Then the number of estimators to compute in the interval [0, `MAX_TAU` (default: 0.8)] is given by `NB_VAR_ESTIMATORS` (default: 0). If `NB_VAR_ESTIMATORS` is set to 0, the Sieve Variance Plateau method will not be applied. It is also possible, in order to reduce the computational burden to perform this correction only if the initial p-value is below a specific threshold `PVAL_SIEVE` (default: 0.05). This is because in the correction will only increase the variance estimate.
