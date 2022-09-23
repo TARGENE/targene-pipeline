@@ -33,4 +33,5 @@ makedocs(;
 deploydocs(;
     repo="github.com/TARGENE/targene-pipeline",
     devbranch="main",
+    push_preview=true
 )
