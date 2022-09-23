@@ -17,14 +17,14 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "User Guide" => [
+            "overview.md",
             "data_sources.md",
             "confounding_adjustment.md",
             "parameter_specification.md",
             "tmle.md",
             "sieve_variance.md",
-            "params_description.md"
+            "nextflow_params.md"
         ],
-        "Example Projects" => "example_projects.md",
         "Associated Softwares" => "associated_softwares.md",
         "Related Publications" => "publications.md"
     ],

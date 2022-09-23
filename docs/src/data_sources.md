@@ -1,6 +1,6 @@
 # Setting a data source
 
-Currently, only the UK-Biobank is supported, stay tuned!
+Currently, only the UK-Biobank is supported, stay tuned for further data sources!
 
 ## UK-Biobank
 
@@ -14,4 +14,3 @@ Additional UK-Biobank required files for preprocessing and filtering are:
 
 - `QC_FILE`: A path to the UK-Biobank SNP quaility control `ukb_snp_qc.txt` file.
 - `WITHDRAWAL_LIST`: A path to the withdrawal sample list to exclude removed participants from the study.
-

@@ -1,6 +1,6 @@
 # Parameter specification
 
-## Overview
+## Parameter Files
 
 In this section, by parameter, we mean the statistical parameter that represents the scientific quantity of interest and will be estimated via TarGene. The complete specification of a parameter requires the description of a causal model which can be represented by the following graph.
 
@@ -71,3 +71,7 @@ In this setting, one typically write by "hand" or generate a set of parameter fi
 - `MODE` = `ASBxTransActors`
 
 It is assumed that an initial set of variants has been pre-identified from a previous allele-specific binding (ASB) study as output by the [ball-nf](https://git.ecdf.ed.ac.uk/oalmelid/baal-nf) pipeline: `ASB_FILES` parameter. It is also assumed that another set of potential trans-actors is given in a .csv file: `TRANS_ACTORS_FILE` parameter. In that scenario, the target parameter will be the Interaction Average Treatment Effect between every pair of SNPs. Additionally, if template parameters configuration files containing extra treatments are provided (via `PARAMETER_FILES`), nth-order interaction parameters will be generated.
+
+## Parallelization
+
+Since the same estimator for `p(T|W)` can be used for multiple target parameters, it may be useful to batch phenotypes using `PHENOTYPES_BATCH_SIZE`(default: 1) in order to reduce the computational burden.
