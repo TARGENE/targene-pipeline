@@ -42,17 +42,12 @@ workflow extractTraits {
     TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
 
     emit:
-        sample_ids = TraitsFromUKB.out.sample_ids
-        binary_phenotypes = TraitsFromUKB.out.binary_phenotypes
-        continuous_phenotypes = TraitsFromUKB.out.continuous_phenotypes
-        confounders = TraitsFromUKB.out.confounders
-        treatments = TraitsFromUKB.out.treatments
-        covariates = TraitsFromUKB.out.covariates
+        traits = TraitsFromUKB.out
 }
 
 workflow generateIIDGenotypes {
     take:
-        sample_ids
+        traits
 
     main:
         qc_file = Channel.value(file("$params.QC_FILE"))
@@ -185,7 +180,7 @@ workflow {
     extractTraits()
 
     // Generate IID Genotypes
-    generateIIDGenotypes(extractTraits.out.sample_ids)
+    generateIIDGenotypes(extractTraits.out)
 
     // Genetic confounders
     geneticConfounders(generateIIDGenotypes.out)

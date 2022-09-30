@@ -8,7 +8,7 @@ The UK-Biobank is composed of both genetic data (.bed and .bgen files) and trait
 
 ### Main Dataset
 
-This dataset is often called a "main dataset" and consists of an encrypted file containing individuals trait information accessible via your project. The first option is thus to provide this dataset using the `ENCRYPTED_DATASET` parameter. Since the data is encrypted, the pipeline will also need the encoding file that you can provide with `ENCODING_FILE`.
+The trait dataset is often called the "main dataset" and consists of an encrypted file containing individuals' trait information accessible via your project. The first option is thus to provide this dataset using the `ENCRYPTED_DATASET` parameter. Since the data is encrypted, the pipeline will also need the encoding file that you can provide with `ENCODING_FILE`.
 
 A "main dataset" is typically very large and only a few traits will be of interest to a given study. To extract those relevant traits from the dataset, a `TRAITS_CONFIG` YAML file must be provided. The structure of a file is composed of extraction rules that convert UK-Biobank fields to traits of interest. An example is presented below:
 
