@@ -14,7 +14,7 @@ process buildPCs {
 }
 
 process adapt_flashpca {
-    container "olivierlabayle/tl-core:v0.1.0"
+    container "olivierlabayle/tl-core:v0.1.1"
     publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
     memory '16 GB'
     
