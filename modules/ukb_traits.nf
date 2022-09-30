@@ -37,16 +37,11 @@ process TraitsFromUKB {
         path withdrawal_list
     
     output:
-        path 'processed.sample_ids.txt', emit: sample_ids
-        path 'processed.continuous.phenotypes.csv', emit: continuous_phenotypes, optional: true
-        path 'processed.binary.phenotypes.csv', emit: binary_phenotypes, optional: true
-        path 'processed.covariates.csv', emit: covariates, optional: true
-        path 'processed.extra_confounders.csv', emit: confounders, optional: true
-        path 'processed.extra_treatments.csv', emit: treatments, optional: true
-    
+        path 'traits.csv'
+
     script:
         """
         julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/process_main_dataset.jl \
-        $dataset --conf $traits_config --withdrawal-list $withdrawal_list --out-prefix processed
+        $dataset --conf $traits_config --withdrawal-list $withdrawal_list --out traits.csv
         """
 }
