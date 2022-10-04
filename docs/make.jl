@@ -25,6 +25,9 @@ makedocs(;
             "sieve_variance.md",
             "nextflow_params.md"
         ],
+        "Developper Guide" => [
+            "project_organization.md",
+            ],
         "Associated Softwares" => "associated_softwares.md",
         "Related Publications" => "publications.md"
     ],
