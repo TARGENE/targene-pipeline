@@ -31,7 +31,7 @@ process TMLE {
 
 
 process PhenotypesBatches {
-    container "olivierlabayle/tl-core:v0.1.1"
+    container "olivierlabayle/tl-core:v0.1.2"
 
     input:
         path phenotypes_file

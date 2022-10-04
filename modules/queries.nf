@@ -18,7 +18,7 @@ def longest_prefix(files){
 }
 
 process FromASBxTransActors {
-    container "olivierlabayle/tl-core:v0.1.1"
+    container "olivierlabayle/tl-core:v0.1.2"
     publishDir "$params.OUTDIR/queries", mode: 'symlink'
     label "bigmem"
 
@@ -45,7 +45,7 @@ process FromASBxTransActors {
 }
 
 process FromGivenQueries {
-    container "olivierlabayle/tl-core:v0.1.1"
+    container "olivierlabayle/tl-core:v0.1.2"
     publishDir "$params.OUTDIR/queries", mode: 'symlink'
     label "bigmem"
 

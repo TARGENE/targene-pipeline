@@ -1,6 +1,6 @@
 process phenotypesFromGeneAtlas {
     publishDir "$params.OUTDIR/phenotypes", mode: 'symlink'
-    container "olivierlabayle/tl-core:v0.1.1"
+    container "olivierlabayle/tl-core:v0.1.2"
     label "bigmem"
 
     input:
