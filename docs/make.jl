@@ -27,6 +27,7 @@ makedocs(;
         ],
         "Developper Guide" => [
             "project_organization.md",
+            "contribution_guide.md"
             ],
         "Associated Softwares" => "associated_softwares.md",
         "Related Publications" => "publications.md"
