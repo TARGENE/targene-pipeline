@@ -1,5 +1,5 @@
 process Summary {
-    container "olivierlabayle/tl-core:sample_filtering"
+    container "olivierlabayle/tl-core:new_strategies"
     publishDir "$params.OUTDIR/summaries", mode: 'symlink'
     label "bigmem"
 

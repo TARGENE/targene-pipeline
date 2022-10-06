@@ -60,15 +60,15 @@ Parameters:
       case: AG
 ```
 
-## Parameter plans
+## Parameter Plans
 
 There are two main ways one can specify parameters that need to be estimated during a targene-pipeline run. This is done via the `MODE` parameter.
 
-### `PARAMETER_PLAN` = `Provided`
+### `PARAMETER_PLAN` = `FROM_PARAM_FILES`
 
 This is the most general setting and should match the needs of any project, however it requires some preliminary work. In this setting, one typically provides a set of parameter files as described above. The path to those parameters is then provided with the `PARAMETER_FILES` nextflow parameter. It is not necessary to declare the principal components (from PCA) in the `W` section of those parameter files, they will dynamically be added. The same is true for the target section (`Y`), all variables from the traits dataset that are not part of other sections will be added to the target section. If the `Y` is provided for some parameter file, only those targets will be considered for this specific parameter file.
 
-### `PARAMETER_PLAN` = `FromActors`
+### `PARAMETER_PLAN` = `FROM_ACTORS`
 
 In this setting the goal is to infer the interaction effect between multiple variants and potential external factors, interacting together via a specific biological mechanism. Typically, multiple sets of variants are of interest and each set is identified with a specific molecule, contributing to the mechanism. In particular, it is assumed that a set of variants, usually binding quantitative trait loci (bQTLs) play a pivotal role because they can be precisely located in the genome and don't suffer from linkage disequilibrium. All interactions of interest are thus defined with respect to that set of genetic variations. Let's Consider the following scenario: we know that a transcription factor binds to molecules `x` and `y` and then differentially binds to specific regions in the genome (`bQTLs`) to regulate downstream genes. We suspect that an alteration of this mechanism is responsible for some diseases. A set of `xQTLs`, associated with the expression of `x` and a set of `yQTLs` associated with the expression of `y` have been identified. Together `xQTLs` and `yQTLs` variants are termed "trans actors". We further suspect that some environmental factors may influence this process. From that scenario, there are many questions that can be asked, for instance : "What is the interaction effects of a bQTL with an environmental factor?". This is a simple pairwise interaction setting and more complex scenarios can be envisaged as described in the following graph.
 
