@@ -2,7 +2,7 @@
 nextflow.enable.dsl = 2
 
 params.DECRYPTED_DATASET = "NO_FILE"
-params.MODE = "GivenParameters"
+params.PARAMETER_PLAN = "PROVIDED"
 params.PARAMETER_FILES = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
@@ -13,15 +13,23 @@ params.GRM_NSPLITS = 100
 params.MAF_THRESHOLD = 0.01
 params.NB_PCS = 6
 params.NB_VAR_ESTIMATORS = 0
-params.MAX_TAU = 0.8
+params.MAX_TAU = 0.9
 params.PVAL_SIEVE = 0.05
 params.OUTDIR = "$launchDir/results"
+
+params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
+params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
+
+params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
+params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
+params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
+params.ORDERS = "1,2"
 
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
 include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
-include { TMLE as TMLEContinuous; TMLE as TMLEBinary} from './modules/tmle.nf'
-include { TMLEInputsFromGivenParams; TMLEInputsFromASBTrans } from './modules/tmle.nf'
+include { TMLE } from './modules/tmle.nf'
+include { TMLEInputsFromParamFiles; TMLEInputsFromActors } from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 include { Summary } from './modules/summary.nf'
@@ -42,7 +50,7 @@ workflow extractTraits {
     TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
 
     emit:
-        traits = TraitsFromUKB.out
+        TraitsFromUKB.out
 }
 
 workflow generateIIDGenotypes {
@@ -55,7 +63,7 @@ workflow generateIIDGenotypes {
         ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
         bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
 
-        IIDGenotypes(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file, sample_ids)
+        IIDGenotypes(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file, traits)
 
     emit:
         IIDGenotypes.out
@@ -76,46 +84,39 @@ workflow geneticConfounders {
 
 workflow generateEstimates {
     take:
-        continuous_phenotypes
-        binary_phenotypes
+        traits
         genetic_confounders
-        extra_confounders
-        covariates
-        extra_treatments
 
     main:
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
         bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
-        parameter_files = Channel.fromPath("$params.PARAMETER_FILES").collect()
 
-        if (params.MODE == "ASBxTransActors") {
-            asbs = Channel.fromPath("$params.ASB_FILES", checkIfExists: true).collect()
-            trans_actors = Channel.fromPath("$params.TRANS_ACTORS_FILE", checkIfExists: true)
-            tmle_inputs = TMLEInputsFromASBTrans(
+        if (params.MODE == "FROM_ACTORS") {
+            bqtls = Channel.value(file("$params.BQTLS"), checkIfExists: true)
+            trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
+            extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
+            extra_treatments = Channel.value(file("$params.ENVIRONMENTALS"))
+            extra_covariates = Channel.value(file("$params.EXTRA_COVARIATES"))
+            tmle_inputs = TMLEInputsFromActors(
                 bgen_files,
-                binary_phenotypes,
-                continuous_phenotypes,
+                traits,
                 genetic_confounders,
                 extra_confounders,
                 extra_treatments,
-                covariates,
-                asbs, 
-                trans_actors, 
-                parameter_files)
+                extra_covariates,
+                bqtls,
+                trans_actors)
         }
-        else if (params.MODE == "GivenParameters"){
-            tmle_inputs = TMLEInputsFromGivenParams(
+        else if (params.MODE == "FROM_PARAM_FILES"){
+            parameter_files = Channel.fromPath("$params.PARAMETER_FILES").collect()
+            tmle_inputs = TMLEInputsFromParamFiles(
                 bgen_files,
-                binary_phenotypes,
-                continuous_phenotypes,
+                traits,
                 genetic_confounders,
-                extra_confounders,
-                extra_treatments,
-                covariates,
                 parameter_files)
         }
         // compute TMLE estimates for continuous targets
-        TMLEContinuous(
+        TMLE(
             tmle_inputs.treatments,
             tmle_inputs.continuous_phenotypes, 
             tmle_inputs.confounders,
@@ -187,12 +188,8 @@ workflow {
 
     // generate estimates
     generateEstimates(
-        extractTraits.out.continuous_phenotypes,
-        extractTraits.out.binary_phenotypes,
+        extractTraits.out,
         geneticConfounders.out,
-        extractTraits.out.confounders.ifEmpty(file("NO_EXTRA_CONFOUNDER")),
-        extractTraits.out.covariates.ifEmpty(file("NO_COVARIATE")),
-        extractTraits.out.treatments.ifEmpty(file("NO_EXTRA_TREATMENT"))
     )
 
     // generate sieve estimates

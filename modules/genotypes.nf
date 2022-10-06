@@ -1,13 +1,13 @@
 process filterBED{
     label 'bigmem'
-    container "olivierlabayle/tl-core:sample_filtering"
+    container "olivierlabayle/tl-core:new_strategies"
     publishDir "$params.OUTDIR/qc_filtered_chromosomes", mode: 'symlink'
 
     input:
         tuple val(chr_id), file(bedfiles)
         path qcfile
         path ld_blocks
-        path sample_ids
+        path traits
 
     output:
         path "filtered.*", emit: filtered_bedfiles
@@ -16,7 +16,7 @@ process filterBED{
         prefix = bedfiles[0].toString().minus('.bed')
         """
         julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
-        --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --sample-ids $sample_ids filter
+        --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --traits $traits filter
         """
 
 }
@@ -45,7 +45,7 @@ process thinByLD{
 
 process mergeBEDS{
     label 'bigmem'
-    container "olivierlabayle/tl-core:sample_filtering"
+    container "olivierlabayle/tl-core:new_strategies"
     publishDir "$params.OUTDIR/merged_genotypes", mode: 'symlink'
     
     input:

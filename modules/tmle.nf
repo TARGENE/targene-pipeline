@@ -46,91 +46,71 @@ process TMLE {
         """
 }
 
-process TMLEInputsFromGivenParams {
-    container "olivierlabayle/tl-core:sample_filtering"
+process TMLEInputsFromParamFiles {
+    container "olivierlabayle/tl-core:new_strategies"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
 
     input:
         path bgenfiles
-        path binary_phenotypes
-        path continuous_phenotypes
+        path traits
         path genetic_confounders
-        path extra_confounders
-        path extra_treatments
-        path covariates
         path parameters
 
     output:
-        path "final.binary-phenotypes.csv", emit: binary_phenotypes
-        path "final.continuous-phenotypes.csv", emit: continuous_phenotypes
-        path "final.confounders.csv", emit: confounders
-        path "final.covariates.csv", emit: covariates, optional: true
-        path "final.treatments.csv", emit: treatments
-        path "final.binary.*.yaml", emit: binary_parameters
-        path "final.continuous.*.yaml", emit: continuous_parameters
+        path "final.data.csv", emit: traits
+        path "final.*.yaml", emit: parameters
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
         params_prefix = longest_prefix(parameters)
-        extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
-        extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
-        covariates = covariates.name != 'NO_COVARIATE' ? "--covariates $covariates" : ''
         """
         julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
-        --binary-phenotypes $binary_phenotypes --continuous-phenotypes $continuous_phenotypes \
-        --bgen-prefix $bgen_prefix --call-threshold ${params.CALL_THRESHOLD} \
-        --genetic-confounders $genetic_confounders $extra_confounders \
-        $extra_treatments $covariates \
+        --traits $traits \
+        --bgen-prefix $bgen_prefix \
+        --call-threshold ${params.CALL_THRESHOLD} \
+        --pcs $genetic_confounders \
         --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE} \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
-        with-param-files $params_prefix
+        from-param-files $params_prefix
         """
 }
 
-process TMLEInputsFromASBTrans {
-    container "olivierlabayle/tl-core:sample_filtering"
+process TMLEInputsFromActors {
+    container "olivierlabayle/tl-core:new_strategies"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
 
     input:
         path bgenfiles
-        path binary_phenotypes
-        path continuous_phenotypes
+        path traits
         path genetic_confounders
         path extra_confounders
         path extra_treatments
-        path covariates
-        path asbs
+        path extra_covariates
+        path bqtls
         path trans_actors
-        path parameters
 
     output:
-        path "final.binary-phenotypes.csv", emit: binary_phenotypes
-        path "final.continuous-phenotypes.csv", emit: continuous_phenotypes
-        path "final.confounders.csv", emit: confounders
-        path "final.covariates.csv", emit: covariates, optional: true
-        path "final.treatments.csv", emit: treatments
-        path "final.binary.*.yaml", emit: binary_parameters
-        path "final.continuous.*.yaml", emit: continuous_parameters
+        path "final.data.csv", emit: traits
+        path "final.*.yaml", emit: parameters
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
-        asb_prefix = longest_prefix(asbs)
-        param_prefix = parameters[0].name ? "NO_PARAMETER_FILE" : "--param-prefix ${longest_prefix(parameters)}"
+        trans_actors_prefix = longest_prefix(trans_actors)
         extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
         extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
-        covariates = covariates.name != 'NO_COVARIATE' ? "--covariates $covariates" : ''
+        extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $covariates" : ''
         """
         julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
-        --binary-phenotypes $binary_phenotypes --continuous-phenotypes $continuous_phenotypes \
-        --bgen-prefix $bgen_prefix --call-threshold ${params.CALL_THRESHOLD} \
-        --genetic-confounders $genetic_confounders $extra_confounders \
-        $extra_treatments $covariates \
+        --traits $traits \
+        --bgen-prefix $bgen_prefix \
+        --call-threshold ${params.CALL_THRESHOLD} \
+        --pcs $genetic_confounders \
         --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE} \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
-        with-asb-trans $asb_prefix $trans_actors $param_prefix
+        from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS}
         """
 }

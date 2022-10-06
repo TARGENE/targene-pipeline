@@ -1,5 +1,5 @@
 process SieveVarianceEstimation {
-    container "olivierlabayle/tl-core:sample_filtering"
+    container "olivierlabayle/tl-core:new_strategies"
     publishDir "$params.OUTDIR/hdf5files/sieve_variances", mode: 'symlink'
 
     input:

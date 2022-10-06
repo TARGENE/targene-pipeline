@@ -8,7 +8,8 @@ process UKBFieldsList {
         path "fields_list.txt"
 
     script:
-        "julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/build_fields_list.jl --conf $traits_config"
+        traits_config = traits_config.name != 'NO_UKB_TRAIT_CONFIG' ? "--conf $traits_config" : ''
+        "julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/build_fields_list.jl $traits_config"
 }
 
 process UKBConv {
@@ -40,8 +41,10 @@ process TraitsFromUKB {
         path 'traits.csv'
 
     script:
+        traits_config = traits_config.name != 'NO_UKB_TRAIT_CONFIG' ? "--conf $traits_config" : ''
+        withdrawal_list = withdrawal_list.name != 'NO_WITHDRAWAL_LIST' ? "--withdrawal-list $withdrawal_list" : ''
         """
         julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/process_main_dataset.jl \
-        $dataset --conf $traits_config --withdrawal-list $withdrawal_list --out traits.csv
+        $dataset $traits_config $withdrawal_list
         """
 }
