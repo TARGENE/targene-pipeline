@@ -125,15 +125,6 @@ workflow generateEstimates {
             tmle_inputs.covariates.ifEmpty(file("NO_COVARIATE")),
             "Real")
         
-        // compute TMLE estimates for binary targets
-        TMLEBinary(
-            tmle_inputs.treatments,
-            tmle_inputs.binary_phenotypes, 
-            tmle_inputs.confounders,
-            tmle_inputs.binary_parameters.flatten(),
-            estimator_file,
-            tmle_inputs.covariates.ifEmpty(file("NO_COVARIATE")),
-            "Bool")
 
         hdf5_files = TMLEContinuous.out.flatten()
                         .concat(TMLEBinary.out.flatten())
