@@ -6,20 +6,21 @@ params.PARAMETER_PLAN = "PROVIDED"
 params.PARAMETER_FILES = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
-params.SAVE_MODELS = false
-params.SAVE_IC = true
-params.PHENOTYPES_BATCH_SIZE = 1
-params.GRM_NSPLITS = 100
+
 params.MAF_THRESHOLD = 0.01
 params.NB_PCS = 6
+
+params.GRM_NSPLITS = 100
 params.NB_VAR_ESTIMATORS = 0
 params.MAX_TAU = 0.9
 params.PVAL_SIEVE = 0.05
+
 params.OUTDIR = "$launchDir/results"
 
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
 
+params.PHENOTYPES_BATCH_SIZE = 1
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
 params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
@@ -28,8 +29,7 @@ params.ORDERS = "1,2"
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
 include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
-include { TMLE } from './modules/tmle.nf'
-include { TMLEInputsFromParamFiles; TMLEInputsFromActors } from './modules/tmle.nf'
+include { TMLE; TMLEInputsFromParamFiles; TMLEInputsFromActors } from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
 include { Summary } from './modules/summary.nf'
@@ -82,7 +82,7 @@ workflow geneticConfounders {
 
 }
 
-workflow generateEstimates {
+workflow generateTMLEEstimates {
     take:
         traits
         genetic_confounders
@@ -117,22 +117,14 @@ workflow generateEstimates {
         }
         // compute TMLE estimates for continuous targets
         TMLE(
-            tmle_inputs.treatments,
-            tmle_inputs.continuous_phenotypes, 
-            tmle_inputs.confounders,
-            tmle_inputs.continuous_parameters.flatten(),
+            tmle_inputs.traits,
+            tmle_inputs.parameters.flatten(),
             estimator_file,
-            tmle_inputs.covariates.ifEmpty(file("NO_COVARIATE")),
-            "Real")
+        )
         
 
-        hdf5_files = TMLEContinuous.out.flatten()
-                        .concat(TMLEBinary.out.flatten())
-                        .map { it -> [it.getName().tokenize(".")[2], it]}
-                        .groupTuple()
-
     emit:
-        hdf5_files
+        TMLE.out
 }
 
 
@@ -142,29 +134,13 @@ workflow generateSieveEstimates {
         iid_genotypes
     
     main:
-        if (params.NB_VAR_ESTIMATORS != 0){
-            // Build the GRM
-            grm_parts = Channel.from( 1..params.GRM_NSPLITS )
-            GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
-            AggregateGRM(GRMPart.out.collect())
-            // Sieve estimation
-            sieve_estimates = SieveVarianceEstimation(tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
-        }
-        else {
-            sieve_estimates = tmle_files.map(it -> [it[0], "NO_FILE"])
-        }
+        grm_parts = Channel.from( 1..params.GRM_NSPLITS )
+        GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
+        AggregateGRM(GRMPart.out.collect())
+        // Sieve estimation
+        sieve_estimates = SieveVarianceEstimation(tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
     emit:
         sieve_estimates
-}
-
-workflow generateSummaries {
-    take:
-        tmle_files
-        sieve_files
-    
-    main:
-        // joining on the prefix which corresponds to a tuple of Treatments
-        Summary(tmle_files.join(sieve_files))
 }
 
 workflow {
@@ -178,14 +154,13 @@ workflow {
     geneticConfounders(generateIIDGenotypes.out)
 
     // generate estimates
-    generateEstimates(
+    generateTMLEEstimates(
         extractTraits.out,
         geneticConfounders.out,
     )
 
     // generate sieve estimates
-    generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
-
-    // generate Summaries
-    generateSummaries(generateEstimates.out, generateSieveEstimates.out)
+    if (params.NB_VAR_ESTIMATORS != 0){
+        generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
+    }
 }
