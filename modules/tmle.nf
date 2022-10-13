@@ -18,31 +18,25 @@ def longest_prefix(files){
 
 process TMLE {
     container "olivierlabayle/targeted-estimation:new_interface"
-    publishDir "$params.OUTDIR/hdf5files", saveAs: { filename -> filename.split("_batch")[0] + "/$filename" }, mode: 'symlink'
+    publishDir "$params.OUTDIR/summaries",  mode: 'symlink', pattern: "*.csv"
+    publishDir "$params.OUTDIR/hdf5files",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
     label "multithreaded"
 
     input:
-        path treatments
-        path targets 
-        path confounders
+        path data
         path parameterfile
-        path estimator
-        path covariatesfile
-        val target_type
+        path estimatorfile
     
     output:
-        path "*.hdf5"
+        path "$outfilename"
     
     script:
-        covariates = covariatesfile.name != 'NO_COVARIATE' ? "--covariates $covariatesfile" : ''
-        save_models = params.SAVE_MODELS == true ? '--save-models' : ''
-        save_ic = params.SAVE_IC == true ? '' : '--no-ic'
-        outfilename = parameterfile.getName().replace("yaml", "hdf5")
+        save_full = params.NB_VAR_ESTIMATORS !== 0 ? '--save-full' : ''
+        outfilename = params.NB_VAR_ESTIMATORS !== 0 ? parameterfile.getName().replace("yaml", "hdf5") : parameterfile.getName().replace("yaml", "csv")
         """
         julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
-        $treatments $targets $confounders $parameterfile $estimator $outfilename \
-        $covariates --target-type $target_type $save_models $save_ic
+        $data $parameterfile $estimatorfile $outfilename $save_full
         """
 }
 
