@@ -30,7 +30,8 @@ process UKBConv {
 process TraitsFromUKB {
     publishDir "$params.OUTDIR/traits", mode: 'symlink'
     container "olivierlabayle/ukbmain:extract_subset_split"
-    memory "20G"
+    label "bigmem"
+    label "multithreaded"
 
     input:
         path dataset
@@ -44,7 +45,7 @@ process TraitsFromUKB {
         traits_config = traits_config.name != 'NO_UKB_TRAIT_CONFIG' ? "--conf $traits_config" : ''
         withdrawal_list = withdrawal_list.name != 'NO_WITHDRAWAL_LIST' ? "--withdrawal-list $withdrawal_list" : ''
         """
-        julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/process_main_dataset.jl \
+        julia --project=/UKBMain.jl --startup-file=no --threads $task.cpus /UKBMain.jl/scripts/process_main_dataset.jl \
         $dataset $traits_config $withdrawal_list
         """
 }

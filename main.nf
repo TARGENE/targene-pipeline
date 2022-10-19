@@ -2,7 +2,7 @@
 nextflow.enable.dsl = 2
 
 params.DECRYPTED_DATASET = "NO_FILE"
-params.PARAMETER_PLAN = "PROVIDED"
+params.PARAMETER_PLAN = "FROM_PARAM_FILES"
 params.PARAMETER_FILES = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
@@ -32,7 +32,6 @@ include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
 include { TMLE; TMLEInputsFromParamFiles; TMLEInputsFromActors } from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
-include { Summary } from './modules/summary.nf'
 
 workflow extractTraits {
     traits_config = Channel.value(file("$params.TRAITS_CONFIG"))
@@ -91,7 +90,7 @@ workflow generateTMLEEstimates {
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
         bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
 
-        if (params.MODE == "FROM_ACTORS") {
+        if (params.PARAMETER_PLAN == "FROM_ACTORS") {
             bqtls = Channel.value(file("$params.BQTLS"), checkIfExists: true)
             trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
             extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
@@ -107,13 +106,16 @@ workflow generateTMLEEstimates {
                 bqtls,
                 trans_actors)
         }
-        else if (params.MODE == "FROM_PARAM_FILES"){
+        else if (params.PARAMETER_PLAN == "FROM_PARAM_FILES"){
             parameter_files = Channel.fromPath("$params.PARAMETER_FILES").collect()
             tmle_inputs = TMLEInputsFromParamFiles(
                 bgen_files,
                 traits,
                 genetic_confounders,
                 parameter_files)
+        }
+        else { 
+            throw new Exception("This PARAMETER_PLAN is not available.")
         }
         // compute TMLE estimates for continuous targets
         TMLE(
@@ -138,9 +140,7 @@ workflow generateSieveEstimates {
         GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
         AggregateGRM(GRMPart.out.collect())
         // Sieve estimation
-        sieve_estimates = SieveVarianceEstimation(tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
-    emit:
-        sieve_estimates
+        SieveVarianceEstimation(tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
 }
 
 workflow {
@@ -161,6 +161,6 @@ workflow {
 
     // generate sieve estimates
     if (params.NB_VAR_ESTIMATORS != 0){
-        generateSieveEstimates(generateEstimates.out, generateIIDGenotypes.out)
+        generateSieveEstimates(generateTMLEEstimates.out, generateIIDGenotypes.out)
     }
 }
