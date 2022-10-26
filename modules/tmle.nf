@@ -59,13 +59,14 @@ process TMLEInputsFromParamFiles {
     script:
         bgen_prefix = longest_prefix(bgenfiles)
         params_prefix = longest_prefix(parameters)
+        batch_size = params.PHENOTYPES_BATCH_SIZE == 0 ? "" :  "--phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}"
         """
         julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
         --traits $traits \
         --bgen-prefix $bgen_prefix \
         --call-threshold ${params.CALL_THRESHOLD} \
         --pcs $genetic_confounders \
-        --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE} \
+        $batch_size \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
         from-param-files $params_prefix
         """
