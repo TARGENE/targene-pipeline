@@ -20,7 +20,7 @@ params.OUTDIR = "$launchDir/results"
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
 
-params.PHENOTYPES_BATCH_SIZE = 1
+params.PHENOTYPES_BATCH_SIZE = 0
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
 params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
@@ -91,7 +91,7 @@ workflow generateTMLEEstimates {
         bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
 
         if (params.PARAMETER_PLAN == "FROM_ACTORS") {
-            bqtls = Channel.value(file("$params.BQTLS"), checkIfExists: true)
+            bqtls = Channel.value(file("$params.BQTLS"))
             trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
             extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
             extra_treatments = Channel.value(file("$params.ENVIRONMENTALS"))
