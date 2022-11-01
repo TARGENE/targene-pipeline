@@ -1,9 +1,8 @@
 # TL-Pipeline
 
-> **Warning**:
->   This is rapidly evolving software that should be considered unstable.
+## Documentation Access
 
-Here we provide the main workflow for estimating genetic variants interactions responsible of traits in the UK Biobank using the Targeted Learning framework. For that purpose, we rely on [NextFlow](https://www.nextflow.io/), a software that helps the development of complex parallel and reactive workflows on clouds and clusters.
+Please visit [the docs](https://targene.github.io/targene-pipeline/stable/)
 
 ## Running the Workflow
 
