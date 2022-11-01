@@ -1,0 +1,3 @@
+# Overview
+
+Since TarGene is a Nextflow pipeline, the "only" thing that needs to be done to run a pipeline is to write a `nextflow.config` file providing a specification for each of the pipeline parameters. Most of those parameters are paths to additional files located in your project or in an accessible location on your system. The following sections describe those parameters and provide some examples to help you get started.

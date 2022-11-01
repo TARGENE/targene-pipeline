@@ -1,44 +1,111 @@
+def longest_prefix(files){
+    // Only one file, strangely it is not passed as a list
+    if (files instanceof Collection == false) {
+        return files.getName()
+    }
+    // More than one file
+    index = 0
+    while(true){
+        current_prefix = files[0].getName()[0..index]
+        for (file in files){
+            if(file.getName()[0..index] != current_prefix){
+                return current_prefix[0..-2]
+            }
+        }
+        index++
+    }
+}
+
 process TMLE {
-    container "olivierlabayle/targeted-estimation:0.1.0"
-    publishDir "$params.OUTDIR/hdf5files", saveAs: { filename -> filename.split("_batch")[0] + "/$filename" }, mode: 'symlink'
+    container "olivierlabayle/targeted-estimation:0.2.0"
+    publishDir "$params.OUTDIR/summaries",  mode: 'symlink', pattern: "*.csv"
+    publishDir "$params.OUTDIR/hdf5files",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
     label "multithreaded"
 
     input:
-        path genotypefile
-        path phenotypefile
-        path covariatesfile
+        path data
+        path parameterfile
         path estimatorfile
-        tuple file(queryfile), file(phenotypes_batch)
-        val target_type
     
     output:
-        path "*.hdf5"
+        path "$outfilename"
     
     script:
-        save_full = params.SAVE_FULL == true ? '--save-full' : ''
-        queryfilename = queryfile.getName()
-        phen_batch = phenotypes_batch.getName()
-        batch_id = phen_batch[17..-5]
+        save_full = params.NB_VAR_ESTIMATORS !== 0 ? '--save-full' : ''
+        outfilename = params.NB_VAR_ESTIMATORS !== 0 ? parameterfile.getName().replace("yaml", "hdf5") : parameterfile.getName().replace("yaml", "csv")
         """
-        outfilename=\$(julia --project --startup-file=no -e 'using TOML; ks=join(sort(collect(keys(TOML.parse(open("${queryfilename}"))["SNPS"]))), "_");println(ks)')
-        outfilename="\${outfilename}_batch_${batch_id}_${target_type}.hdf5"
         julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
-        $genotypefile $phenotypefile $covariatesfile $queryfile $estimatorfile \$outfilename \
-        --phenotypes-list=$phen_batch --target-type=$target_type $save_full
+        $data $parameterfile $estimatorfile $outfilename $save_full
         """
 }
 
-
-process PhenotypesBatches {
-    container "olivierlabayle/tl-core:v0.1.2"
+process TMLEInputsFromParamFiles {
+    container "olivierlabayle/tl-core:0.2.0"
+    publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
+    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
+    label "bigmem"
 
     input:
-        path phenotypes_file
-    
+        path bgenfiles
+        path traits
+        path genetic_confounders
+        path parameters
+
     output:
-        path "phenotypes_batch_*"
-    
+        path "final.data.csv", emit: traits
+        path "final.*.yaml", emit: parameters
+
     script:
-        "julia --project=/TMLEEpistasis.jl --startup-file=no /TMLEEpistasis.jl/bin/make_phenotypes_batches.jl ${phenotypes_file.getName()} --batch-size $params.PHENOTYPES_BATCH_SIZE"
+        bgen_prefix = longest_prefix(bgenfiles)
+        params_prefix = longest_prefix(parameters)
+        batch_size = params.PHENOTYPES_BATCH_SIZE == 0 ? "" :  "--phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}"
+        """
+        julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
+        --traits $traits \
+        --bgen-prefix $bgen_prefix \
+        --call-threshold ${params.CALL_THRESHOLD} \
+        --pcs $genetic_confounders \
+        $batch_size \
+        --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
+        from-param-files $params_prefix
+        """
+}
+
+process TMLEInputsFromActors {
+    container "olivierlabayle/tl-core:0.2.0"
+    publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
+    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
+    label "bigmem"
+
+    input:
+        path bgenfiles
+        path traits
+        path genetic_confounders
+        path extra_confounders
+        path extra_treatments
+        path extra_covariates
+        path bqtls
+        path trans_actors
+
+    output:
+        path "final.data.csv", emit: traits
+        path "final.*.yaml", emit: parameters
+
+    script:
+        bgen_prefix = longest_prefix(bgenfiles)
+        trans_actors_prefix = longest_prefix(trans_actors)
+        extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
+        extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
+        extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $covariates" : ''
+        """
+        julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
+        --traits $traits \
+        --bgen-prefix $bgen_prefix \
+        --call-threshold ${params.CALL_THRESHOLD} \
+        --pcs $genetic_confounders \
+        --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE} \
+        --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
+        from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS}
+        """
 }
