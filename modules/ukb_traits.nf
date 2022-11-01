@@ -1,5 +1,5 @@
 process UKBFieldsList {
-    container "olivierlabayle/ukbmain:extract_subset_split"
+    container "olivierlabayle/ukbmain:0.3.0"
 
     input:
         path traits_config
@@ -13,7 +13,7 @@ process UKBFieldsList {
 }
 
 process UKBConv {
-    container "olivierlabayle/ukbmain:extract_subset_split"
+    container "olivierlabayle/ukbmain:0.3.0"
 
     input:
         path fields_list
@@ -29,7 +29,7 @@ process UKBConv {
 
 process TraitsFromUKB {
     publishDir "$params.OUTDIR/traits", mode: 'symlink'
-    container "olivierlabayle/ukbmain:extract_subset_split"
+    container "olivierlabayle/ukbmain:0.3.0"
     label "bigmem"
     label "multithreaded"
 

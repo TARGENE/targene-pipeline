@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:new_interface"
+    container "olivierlabayle/targeted-estimation:0.2.0"
     publishDir "$params.OUTDIR/summaries",  mode: 'symlink', pattern: "*.csv"
     publishDir "$params.OUTDIR/hdf5files",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
@@ -41,7 +41,7 @@ process TMLE {
 }
 
 process TMLEInputsFromParamFiles {
-    container "olivierlabayle/tl-core:new_strategies"
+    container "olivierlabayle/tl-core:0.2.0"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
@@ -73,7 +73,7 @@ process TMLEInputsFromParamFiles {
 }
 
 process TMLEInputsFromActors {
-    container "olivierlabayle/tl-core:new_strategies"
+    container "olivierlabayle/tl-core:0.2.0"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"

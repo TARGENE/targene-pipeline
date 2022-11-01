@@ -14,7 +14,7 @@ process FlashPCA {
 }
 
 process AdaptFlashPCA {
-    container "olivierlabayle/tl-core:new_strategies"
+    container "olivierlabayle/tl-core:0.2.0"
     publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
     memory '16 GB'
     
