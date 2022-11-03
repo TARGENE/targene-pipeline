@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:0.2.0"
+    container "olivierlabayle/targeted-estimation:0.2.1"
     publishDir "$params.OUTDIR/summaries",  mode: 'symlink', pattern: "*.csv"
     publishDir "$params.OUTDIR/hdf5files",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
