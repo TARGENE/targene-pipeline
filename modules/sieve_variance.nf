@@ -28,14 +28,12 @@ process MergeOutputs {
         path sieve_files
 
     output:
-        "summary.csv"
+        path "summary.csv"
 
     script:
         tmle_prefix = "tmle"
         sieve_prefix = sieve_files.getName() == "NO_SIEVE_FILE" ? "" : "--sieve-prefix sieve_variance"
-        """julia --project=/TargetedEstimation.jl --startup-file=no scripts/merge_summaries.jl \
-            $tmle_prefix \
-            summary.csv \
-            $sieve_prefix
+        """julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/merge_summaries.jl \
+        $tmle_prefix summary.csv $sieve_prefix
         """
 }

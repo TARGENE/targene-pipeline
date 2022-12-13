@@ -173,5 +173,5 @@ workflow {
         sieve_csv = Channel.value(file("NO_SIEVE_FILE"))
     }
 
-    MergeOutputs(generateTMLEEstimates.out.tmle_csvs, sieve_csv)
+    MergeOutputs(generateTMLEEstimates.out.tmle_csvs.collect(), sieve_csv)
 }
