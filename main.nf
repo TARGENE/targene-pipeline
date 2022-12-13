@@ -31,7 +31,8 @@ include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
 include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
 include { TMLE; TMLEInputsFromParamFiles; TMLEInputsFromActors } from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
-include { SieveVarianceEstimation } from './modules/sieve_variance.nf'
+include { SieveVarianceEstimation ; MergeOutputs } from './modules/sieve_variance.nf'
+
 
 workflow extractTraits {
     traits_config = Channel.value(file("$params.TRAITS_CONFIG"))
@@ -126,7 +127,8 @@ workflow generateTMLEEstimates {
         
 
     emit:
-        TMLE.out
+        tmle_csvs = TMLE.out.tmle_csv
+        inf_curves = TMLE.out.inf_curve
 }
 
 
@@ -140,7 +142,10 @@ workflow generateSieveEstimates {
         GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
         AggregateGRM(GRMPart.out.collect())
         // Sieve estimation
-        SieveVarianceEstimation(tmle_files, AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
+        SieveVarianceEstimation(tmle_files.collect(), AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
+    emit:
+        csv_file = SieveVarianceEstimation.out.csv_file
+        hdf5_file = SieveVarianceEstimation.out.hdf5_file
 }
 
 workflow {
@@ -161,6 +166,12 @@ workflow {
 
     // generate sieve estimates
     if (params.NB_VAR_ESTIMATORS != 0){
-        generateSieveEstimates(generateTMLEEstimates.out, generateIIDGenotypes.out)
+        sieve_results = generateSieveEstimates(generateTMLEEstimates.out.inf_curves, generateIIDGenotypes.out)
+        sieve_csv = sieve_results.csv_file
     }
+    else {
+        sieve_csv = Channel.value(file("NO_SIEVE_FILE"))
+    }
+
+    MergeOutputs(generateTMLEEstimates.out.tmle_csvs, sieve_csv)
 }

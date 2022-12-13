@@ -1,16 +1,16 @@
 T:
-   - rs1421085
+   - 2:14983:G:A
 
 Parameters:
    - name: ATE     
-     rs1421085:
+     2:14983:G:A:
       control: 0 
       case: 1
    - name: ATE
-     rs1421085:
+     2:14983:G:A:
       control: 1
       case: 2
    - name: ATE
-     rs1421085:
+     2:14983:G:A:
       control: 0
       case: 2
