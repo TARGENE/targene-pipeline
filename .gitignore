@@ -4,6 +4,7 @@
 /docs/build/
 .nextflow*
 work/
+results/
 test.nf
 publish_dir
 test/grmmatrix

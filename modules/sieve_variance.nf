@@ -1,21 +1,41 @@
 process SieveVarianceEstimation {
-    container "olivierlabayle/tl-core:0.2.0"
-    publishDir "$params.OUTDIR/hdf5files", mode: 'symlink', pattern: "*.hdf5"
-    publishDir "$params.OUTDIR/summaries", mode: 'symlink', pattern: "*.csv"
+    container "olivierlabayle/targeted-estimation:sal"
+    publishDir "$params.OUTDIR/hdf5files/sieve", mode: 'symlink', pattern: "*.hdf5"
+    publishDir "$params.OUTDIR/csvs", mode: 'symlink', pattern: "*.csv"
 
     input:
-        path tmle_file
+        path tmle_files
         path GRM_ids
         path GRM_matrix
 
     output:
-        path "${outprefix}.csv", emit: summary
-        path "${outprefix}.hdf5", emit: hdf5file
+        path "sieve_variance.hdf5", emit: hdf5_file
+        path "sieve_variance.csv", emit: csv_file
     
     script:
-        outprefix = tmle_file.getName().replace("hdf5", "sieve")
-        """julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/sieve_variance.jl \
-        $tmle_file GRM $outprefix \
-        --nb-estimators=$params.NB_VAR_ESTIMATORS --max-tau=$params.MAX_TAU --pval=$params.PVAL_SIEVE
+        """julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/sieve_variance.jl \
+        tmle GRM sieve_variance \
+        --nb-estimators=$params.NB_VAR_ESTIMATORS --max-tau=$params.MAX_TAU
+        """
+}
+
+process MergeOutputs {
+    container "olivierlabayle/targeted-estimation:sal"
+    publishDir "$params.OUTDIR", mode: 'symlink'
+
+    input:
+        path tmle_files
+        path sieve_files
+
+    output:
+        "summary.csv"
+
+    script:
+        tmle_prefix = "tmle"
+        sieve_prefix = sieve_files.getName() == "NO_SIEVE_FILE" ? "" : "--sieve-prefix sieve_variance"
+        """julia --project=/TargetedEstimation.jl --startup-file=no scripts/merge_summaries.jl \
+            $tmle_prefix \
+            summary.csv \
+            $sieve_prefix
         """
 }
