@@ -98,6 +98,7 @@ process TMLEInputsFromActors {
     script:
         bgen_prefix = longest_prefix(bgenfiles)
         trans_actors_prefix = longest_prefix(trans_actors)
+        batch_size = params.PHENOTYPES_BATCH_SIZE == 0 ? "" :  "--phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}"
         extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
         extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
         extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $covariates" : ''
@@ -107,8 +108,8 @@ process TMLEInputsFromActors {
         --bgen-prefix $bgen_prefix \
         --call-threshold ${params.CALL_THRESHOLD} \
         --pcs $genetic_confounders \
-        --phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE} \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
+        $batch_size \
         from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS}
         """
 }
