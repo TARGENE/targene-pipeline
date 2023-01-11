@@ -1,0 +1,26 @@
+T:
+   - 1:238411180:T:C
+   - 3:3502414:T:C
+
+Parameters:
+   - name: ATE     
+     1:238411180:T:C:
+      control: 0 
+      case: 1
+     3:3502414:T:C:
+      control: 0 
+      case: 1
+   - name: IATE     
+     1:238411180:T:C:
+      control: 0 
+      case: 1
+     3:3502414:T:C:
+      control: 0 
+      case: 1
+   - name: CM     
+     1:238411180:T:C:
+      control: 0 
+      case: 1
+     3:3502414:T:C:
+      control: 0 
+      case: 1
