@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:sal"
+    container "olivierlabayle/targeted-estimation:v0.3.0"
     publishDir "$params.OUTDIR/csvs",  mode: 'symlink', pattern: "*.csv"
     publishDir "$params.OUTDIR/hdf5files/inf_curves",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
@@ -36,7 +36,7 @@ process TMLE {
         save_ic = params.NB_VAR_ESTIMATORS !== 0 ? '--save-ic' : ''
         outprefix = "tmle." + parameterfile.getName().replace(".yaml", "")
         """
-        julia -J /TargetedEstimation.jl/TargetedEstimationSysimage.so --project=/TargetedEstimation.jl --startup-file=no --threads=$task.cpus /TargetedEstimation.jl/scripts/tmle.jl \
+        JULIA_DEPOT_PATH=/tmp:/opt julia -J /TargetedEstimation.jl/TargetedEstimationSysimage.so --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
         $data $parameterfile $estimatorfile $outprefix \
         $save_ic \
         --pval-threshold=${params.PVAL_SIEVE}
@@ -76,7 +76,7 @@ process TMLEInputsFromParamFiles {
 }
 
 process TMLEInputsFromActors {
-    container "olivierlabayle/tl-core:0.2.0"
+    container "olivierlabayle/tl-core:v0.3.0"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
