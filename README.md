@@ -1,4 +1,4 @@
-# TL-Pipeline
+# TarGene-Pipeline
 
 ## Documentation Access
 
