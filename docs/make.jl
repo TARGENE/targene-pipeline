@@ -23,7 +23,8 @@ makedocs(;
             "parameter_specification.md",
             "tmle.md",
             "sieve_variance.md",
-            "nextflow_params.md"
+            "nextflow_params.md",
+            "runtime_considerations.md"
         ],
         "Developper Guide" => [
             "project_organization.md",
