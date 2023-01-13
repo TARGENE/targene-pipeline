@@ -17,9 +17,6 @@ The pipeline can rougly be decoupled into three steps. The first, aims at pre-pr
 
 If you are a University of Edinburgh researcher and have access to the Eddie cluster you may want to use the [Eddie-Template](https://github.com/TARGENE/Eddie-Template) to quickly setup your project. 
 
-## License
-
-Todo: depends on PI discussion.
 
 ## Getting in touch
 

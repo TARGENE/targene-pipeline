@@ -12,7 +12,7 @@ Here are two example estimator configurations that can serve as a template.
 
 ## Example 1
 
-In this example Super Learner are used for both `Q` and `G` models. To perform a grid search across model hyperparameters, one can use a list of hyper-parameters. For instance, for the following `Q_continuous` learner, two EvoTreeRegressors will be part of the SUper Learner with respectively 10 and 20 trees. The cross-validation procedure can be made adaptive based on the outcome class balance by using the `adaptive: true` option.
+In this example, Super Learners are used for both `Q` and `G` models. To perform a grid search across model hyperparameters, one can use a list of hyper-parameters. For instance, for the following `Q_continuous` learner, two EvoTreeRegressors will be part of the Super Learner with respectively 10 and 20 trees. The cross-validation procedure can be made adaptive based on the outcome class balance by using the `adaptive: true` option.
 
 ```yaml
 threshold: 1e-8
@@ -123,7 +123,10 @@ Here is a list of currently supported models, get in touch if you need more:
 
 | Model       | Regression  | Classification  | Source Package  | Comment |
 | ----------- | ----------- | --------------- | --------------- | ------- |
-| Gradient Boosting Trees | EvoTreeRegressor | EvoTreeClassifier | [EvoTrees.jl](https://github.com/Evovest/EvoTrees.jl) | |
+| Gradient Boosting Trees | EvoTreeRegressor | EvoTreeClassifier | [EvoTrees.jl](https://github.com/Evovest/EvoTrees.jl) | Pure Julia implementation of histogram based gradient boosting trees|
+| Self Tuning EvoTree | GridSearchEvoTreeRegressor | GridSearchEvoTreeClassifier | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | Performs a grid search cross-validation over specified hyper parameters|
+| XGBoost | XGBoostRegressor | XGBoostClassifier | [XGBoost](https://xgboost.readthedocs.io/en/stable/) | Julia wrapper around the original libxgboost |
+| Self Tuning XGBoost | GridSearchXGBoostRegressor | GridSearchXGBoostClassifier | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | Performs a grid search cross-validation over specified hyper parameters|
 | Linear Models | LinearRegressor | LogisticClassifier | [MLJLinearModels.jl](https://github.com/JuliaAI/MLJLinearModels.jl) | More models available, see: [the docs](https://juliaai.github.io/MLJLinearModels.jl/stable/api/#MLJ-Interface-1) |
 | GLM with penalization constant tuning | GLMNetRegressor | GLMNetClassifier | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | This is a simple MLJ API around [GLMNet.jl](https://github.com/JuliaStats/GLMNet.jl) |
 | Same as above with interaction terms | InteractionGLMNetRegressor | InteractionGLMNetClassifier | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | order of interaction is specified with `order` |
