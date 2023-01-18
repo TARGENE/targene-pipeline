@@ -44,7 +44,7 @@ process TMLE {
 }
 
 process TMLEInputsFromParamFiles {
-    container "olivierlabayle/tl-core:for_release_0.3"
+    container "olivierlabayle/tl-core:v0.3.0"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
