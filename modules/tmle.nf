@@ -36,7 +36,8 @@ process TMLE {
         save_ic = params.NB_VAR_ESTIMATORS !== 0 ? '--save-ic' : ''
         outprefix = "tmle." + parameterfile.getName().replace(".yaml", "")
         """
-        JULIA_DEPOT_PATH=/tmp:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
         $data $parameterfile $estimatorfile $outprefix \
         $save_ic \
         --pval-threshold=${params.PVAL_SIEVE}
