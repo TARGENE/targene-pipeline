@@ -9,7 +9,10 @@ process UKBFieldsList {
 
     script:
         traits_config = traits_config.name != 'NO_UKB_TRAIT_CONFIG' ? "--conf $traits_config" : ''
-        "julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/build_fields_list.jl $traits_config"
+        """
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/build_fields_list.jl $traits_config
+        """
 }
 
 process UKBConv {
@@ -45,7 +48,8 @@ process TraitsFromUKB {
         traits_config = traits_config.name != 'NO_UKB_TRAIT_CONFIG' ? "--conf $traits_config" : ''
         withdrawal_list = withdrawal_list.name != 'NO_WITHDRAWAL_LIST' ? "--withdrawal-list $withdrawal_list" : ''
         """
-        julia --project=/UKBMain.jl --startup-file=no --threads $task.cpus /UKBMain.jl/scripts/process_main_dataset.jl \
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/UKBMain.jl --startup-file=no --threads $task.cpus /UKBMain.jl/scripts/process_main_dataset.jl \
         $dataset $traits_config $withdrawal_list
         """
 }
