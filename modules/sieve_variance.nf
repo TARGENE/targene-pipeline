@@ -13,7 +13,9 @@ process SieveVarianceEstimation {
         path "sieve_variance.csv", emit: csv_file
     
     script:
-        """julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/sieve_variance.jl \
+        """
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/sieve_variance.jl \
         tmle GRM sieve_variance \
         --nb-estimators=$params.NB_VAR_ESTIMATORS --max-tau=$params.MAX_TAU
         """
@@ -33,7 +35,9 @@ process MergeOutputs {
     script:
         tmle_prefix = "tmle"
         sieve_prefix = sieve_files.getName() == "NO_SIEVE_FILE" ? "" : "--sieve-prefix sieve_variance"
-        """julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/merge_summaries.jl \
+        """
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/merge_summaries.jl \
         $tmle_prefix summary.csv $sieve_prefix
         """
 }

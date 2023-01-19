@@ -6,7 +6,7 @@ In this section, by parameter, we mean the statistical parameter that represents
 
 ```@raw html
 <div style="text-align:center">
-<img src="assets/causal_graph.png" alt="Causal Model" style="width:400px;"/>
+<img src="assets/causal_graph.png" alt="Causal Model" style="width:800px;"/>
 </div>
 ```
 
