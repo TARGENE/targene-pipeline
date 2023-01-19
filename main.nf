@@ -17,8 +17,10 @@ params.PVAL_SIEVE = 0.05
 
 params.OUTDIR = "$launchDir/results"
 
+params.COHORT = "UKBB"
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
+params.QC_FILE = "NO_QC_FILE"
 
 params.PHENOTYPES_BATCH_SIZE = 0
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
@@ -61,7 +63,7 @@ workflow generateIIDGenotypes {
         qc_file = Channel.value(file("$params.QC_FILE"))
         flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
         ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
-        bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+        bed_files_ch = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
 
         IIDGenotypes(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file, traits)
 
@@ -89,7 +91,7 @@ workflow generateTMLEEstimates {
 
     main:
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
-        bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
+        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
 
         if (params.PARAMETER_PLAN == "FROM_ACTORS") {
             bqtls = Channel.value(file("$params.BQTLS"))
@@ -149,18 +151,23 @@ workflow generateSieveEstimates {
 }
 
 workflow {
-    // Extract traits
-    extractTraits()
+    // Extract traits for UKBB
+    if (params.COHORT == "UKBB") {
+        extractTraits()
+        phenoInput = extractTraits.out
+    } else {
+        phenoInput = Channel.fromPath("$params.DECRYPTED_DATASET", checkIfExists: true)
+    }
 
     // Generate IID Genotypes
-    generateIIDGenotypes(extractTraits.out)
+    generateIIDGenotypes(phenoInput)
 
     // Genetic confounders
     geneticConfounders(generateIIDGenotypes.out)
 
     // generate estimates
     generateTMLEEstimates(
-        extractTraits.out,
+        phenoInput,
         geneticConfounders.out,
     )
 
