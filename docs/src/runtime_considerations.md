@@ -64,11 +64,33 @@ Here are a few examples:
 
 - The `XGBoostRegressor/XGBoostClassifier` have a `tree_method` hyperparameter that defaults to `exact`. The `hist` method is usually way faster and more appropriate for big datasets.
 
-## Some figures
+## Typical workloads
 
-The following figures correspond to some experiments that have been run on the Eddie cluster. Since no reproducible benchmark has been conducted yet, they are only meant to give a general idea of how runtime is influenced by generic choices. The memory corresponds to virtual memory usage and actual RAM usage may be lower:
+The two following tables present the current runtimes for the two most common genetic association studies: PheWAS and GWAS. In both settings, we use 8 confounding variables and report runtimes for the 4 following learning strategies using an 8-cores compute node:
 
-| Parameter type | Number of outcomes | G specification | Q specification | Virtual Memory (GB) | Cores | Time to complete |
-| ---| --- | --- | --- | --- | --- | --- |
-| IATE | 770 | Super Learning: GLMnet (3-folds) + GridSearchEvoTree (3-folds, 10 hyperparameters) | Super Learning: GLMnet (3-folds) + GridSearchEvoTree (3-folds, 10 hyperparameters) |  100 | 5 | > 3 days |
-| IATE | 770 | GLMnet (3-folds) | GLMnet (3-folds) | 20 | 5 | 7 hours |
+- GLM: Standard generalized linear model
+- GLMNet: GLM with regularization hyperparameter tuning over 3-folds cross-validation.
+- XGBoost: This is the famous [gradient boosting trees](https://xgboost.readthedocs.io/en/stable/) method with hyperparameter tuning over 10 different settings in a 3-folds cross-validation scheme.
+- SL: Super Learning including both the previous XGBoost and GLMNet with a 3-folds cross-validation.
+
+### PheWAS
+
+The following figures correspond to a typical PheWAS setting including 768 traits.
+
+| Learning Algorithm | Time (hours) |
+| --- | :---: |
+| GLM | 2.2 |
+| GLMNet | 4.5 |
+| XGBoost | 8.8 |
+| SL | 30 |
+
+### GWAS
+
+The following figures correspond to a typical GWAS setting. Since the propensity score's fit runtime is quite variable across SNPs, we perform TMLE for 100 SNPs and report the mean with two standard deviations. Further columns indicate estimated runtime when scaling to 600 000 SNPs with or without parallelizing over a high-performance computing platform (200 parallel jobs). While it would be impossible to run a GWAS on a personal laptop, we find that access to a modern computing platform makes this kind of study feasible using Targeted Learning.
+
+| Learning Algorithm | Unit Time | Projected GWAS Time on HPC | Projected GWAS Time no HPC |
+| --- | :---: | :---: | :---: |
+| GLM | 13 ± 4 seconds | 10 hours | 90 days |
+| GLMNet | 57 ± 48 seconds | 48 hours | 1 year |
+| XGBoost | 95 ± 6 seconds | 72 hours | 2 years |
+| SL | 451 ± 141 seconds | 375 hours | 10 years |
