@@ -86,11 +86,11 @@ The following figures correspond to a typical PheWAS setting including 768 trait
 
 ### GWAS
 
-The following figures correspond to a typical GWAS setting. Since the propensity score's fit runtime is quite variable across SNPs, we perform TMLE for 100 SNPs and report the mean with two standard deviations. Further columns indicate estimated runtime when scaling to 600 000 SNPs with or without parallelizing over a high-performance computing platform (200 parallel jobs). While it would be impossible to run a GWAS on a personal laptop, we find that access to a modern computing platform makes this kind of study feasible using Targeted Learning.
+The following figures correspond to a typical GWAS setting. Since the propensity score's fit runtime is quite variable across SNPs, we perform TMLE for 100 SNPs and report the mean with two standard deviations. We also report an estimated runtime when scaling to 600 000 SNPs while parallelizing over a high-performance computing platform (200 parallel jobs). While it would be impossible to run a GWAS on a personal laptop, we find that access to a modern computing platform makes this kind of study feasible using Targeted Learning.
 
-| Learning Algorithm | Unit Time | Projected GWAS Time on HPC | Projected GWAS Time no HPC |
-| --- | :---: | :---: | :---: |
-| GLM | 13 ± 4 seconds | 10 hours | 90 days |
-| GLMNet | 57 ± 48 seconds | 48 hours | 1 year |
-| XGBoost | 95 ± 6 seconds | 72 hours | 2 years |
-| SL | 451 ± 141 seconds | 375 hours | 10 years |
+| Learning Algorithm | Unit Time | Projected GWAS Time on HPC |
+| --- | :---: | :---: |
+| GLM | 13 ± 4 seconds | 10 hours |
+| GLMNet | 57 ± 48 seconds | 48 hours |
+| XGBoost | 95 ± 6 seconds | 72 hours |
+| SL | 451 ± 141 seconds | 375 hours |
