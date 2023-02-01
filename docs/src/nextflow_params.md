@@ -17,11 +17,11 @@ Here is a list of all the pipeline parameters:
 
 - `PARAMETER_PLAN`: One of "FROM_PARAM_FILES", "FROM_ACTORS". See the section.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If `PARAMETER_PLAN`="FROM_PARAM_FILES":
+If `PARAMETER_PLAN`="FROM_PARAM_FILES":
 
 - `PARAMETER_FILES`: Path expression to the parameter files.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If `PARAMETER_PLAN`="FROM_ACTORS":
+If `PARAMETER_PLAN`="FROM_ACTORS":
 
 - `BQTLS`: CSV file containing binding quantitative trait loci.
 - `TRANS_ACTORS`: CSV file containing quantitative trait loci potentially interacting with the previous bqtls.
