@@ -1,5 +1,5 @@
 process UKBFieldsList {
-    container "olivierlabayle/ukbmain:0.3.0"
+    container "olivierlabayle/ukbmain:v0.3.1"
 
     input:
         path traits_config
@@ -16,7 +16,7 @@ process UKBFieldsList {
 }
 
 process UKBConv {
-    container "olivierlabayle/ukbmain:0.3.0"
+    container "olivierlabayle/ukbmain:v0.3.1"
 
     input:
         path fields_list
@@ -32,7 +32,7 @@ process UKBConv {
 
 process TraitsFromUKB {
     publishDir "$params.OUTDIR/traits", mode: 'symlink'
-    container "olivierlabayle/ukbmain:0.3.0"
+    container "olivierlabayle/ukbmain:v0.3.1"
     label "bigmem"
     label "multithreaded"
 
