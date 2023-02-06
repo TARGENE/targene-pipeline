@@ -1,0 +1,16 @@
+# For the estimation of E[Y|W, T]: continuous target
+Q_continuous:
+  model: InteractionGLMNetRegressor
+  nfolds: 3
+  order: 2
+
+# For the estimation of E[Y|W, T]: binary target
+Q_binary:
+  model: InteractionGLMNetClassifier
+  nfolds: 3
+  order: 2
+  
+# For the estimation of p(T| W)
+G:
+  model: GLMNetClassifier
+  nfolds: 3
