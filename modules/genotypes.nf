@@ -1,6 +1,6 @@
 process filterBED{
     label 'bigmem'
-    container "olivierlabayle/tl-core:v0.3.0"
+    container "olivierlabayle/tl-core:brh_data_source"
     publishDir "$params.OUTDIR/qc_filtered_chromosomes", mode: 'symlink'
 
     input:
@@ -14,12 +14,23 @@ process filterBED{
 
     script:
         prefix = bedfiles[0].toString().minus('.bed')
-        """
-        TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
-        --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --traits $traits filter
-        """
+        
+        script="TEMPD=\$(mktemp -d)\n"
+        if (params.QC_FILE == "NO_QC_FILE") {
+            script += """
+                JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
+                    --input $prefix --output filtered.$prefix --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --traits $traits filter
+                """
+                .stripIndent()
+        } else {
+            script += """
+                JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
+                    --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --traits $traits filter
+                """
+                .stripIndent()
+        }
 
+        script
 }
 
 
