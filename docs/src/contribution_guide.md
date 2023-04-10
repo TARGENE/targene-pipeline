@@ -14,7 +14,7 @@ Following our previous UKBMain.jl example, there are two repositories tha need t
     - UKBMain.jl
         - Create a new git branch for your change
         - Develop and test
-        - Release an image for your branch by selecting it after clicking the [Run workflow button](https://github.com/TARGENE/UKBMain.jl/actions/workflows/Release.yml). If the tests pass, a new docker image will be generated and hosted on Dockerhub with your branch's name.
+        - Release an image for your branch by selecting it after clicking the [Run workflow button](https://github.com/TARGENE/UKBMain.jl/actions/workflows/Release.yml). If the tests pass, a new docker image will be generated and hosted on Docker hub with your branch's name (see [Note on Docker images](@ref)).
     - targene-pipeline
         - Create a new git branch for your change
         - For each Nextflow process using the UKBMain.jl's docker image, update to the branch's image name.
@@ -26,6 +26,16 @@ Following our previous UKBMain.jl example, there are two repositories tha need t
 4. Release TarGene
     - For each Nextflow process using the UKBMain.jl's docker image, update to the released image name (as before).
     - Create a new Github release
+
+## Note on Docker images
+
+Currently, all TarGene building blocks (executables) are provided as docker images. The following table provides a map linking each TarGene repository to the associated Docker image tags.
+
+| Repository | Docker tag |
+| --- | --- |
+| [TargeneCore.jl](https://github.com/TARGENE/TargeneCore.jl) | [tl-core](https://hub.docker.com/r/olivierlabayle/tl-core/tags) |
+| [UKBMain.jl](https://github.com/TARGENE/UKBMain.jl) | [ukbmain](https://hub.docker.com/r/olivierlabayle/ukbmain/tags) |
+| [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | [targeted-estimation](https://hub.docker.com/r/olivierlabayle/targeted-estimation/tags) |
 
 ## Note on the pipeline's tests
 
