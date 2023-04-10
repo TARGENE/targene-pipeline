@@ -18,7 +18,7 @@ Following our previous UKBMain.jl example, there are two repositories tha need t
     - targene-pipeline
         - Create a new git branch for your change
         - For each Nextflow process using the UKBMain.jl's docker image, update to the branch's image name.
-        - Develop further required changes and run the tests (see the note below).
+        - Develop further required changes and run/add the tests (see [Note on the pipeline's tests](@ref)).
 2. Review: When everything is working, ask for a review
 3. Release UKBMain.jl:
     - Merge your branch into main
@@ -26,3 +26,19 @@ Following our previous UKBMain.jl example, there are two repositories tha need t
 4. Release TarGene
     - For each Nextflow process using the UKBMain.jl's docker image, update to the released image name (as before).
     - Create a new Github release
+
+## Note on the pipeline's tests
+
+Currently the pipeline's end to end tests are not automated, which means you have to run them manually. Furthermore they only check that the pipeline terminates. We have a suite of two tests that can be run on Eddie by the following:
+
+```bash
+nextflow run main.nf -c conf/ci_jobs/from_actors.config -profile eddie -resume
+```
+
+and
+
+```bash
+nextflow run main.nf -c conf/ci_jobs/from_param_files.config -profile eddie -resume
+```
+
+Further functionalities should be accompanied with further test configurations.
