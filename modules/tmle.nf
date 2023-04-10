@@ -104,6 +104,7 @@ process TMLEInputsFromActors {
         extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
         extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
         extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $extra_covariates" : ''
+        genotypes_as_int = params.GENOTYPES_AS_INT == false ? "" : "--genotypes-as-int"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
@@ -113,6 +114,6 @@ process TMLEInputsFromActors {
         --pcs $genetic_confounders \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
         $batch_size \
-        from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS}
+        from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS} ${genotypes_as_int}
         """
 }

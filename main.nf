@@ -25,6 +25,7 @@ params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
 params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
 params.ORDERS = "1,2"
+params.GENOTYPES_AS_INT = false
 
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
