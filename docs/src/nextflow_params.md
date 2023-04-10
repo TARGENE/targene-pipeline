@@ -2,51 +2,56 @@
 
 Here is a list of all the pipeline parameters:
 
-## UK-Biobank Data
+## [Setting a data source](@ref)
 
-- `ENCRYPTED_DATASET`: Path to a UK-Biobank encrypted main dataset.
-- `ENCODING_FILE`: If an encrypted dataset is provided, an encoding file must accompany it.
-- `DECRYPTED_DATASET`: Path to a UK-Biobank decrypted main dataset. If set, `ENCRYPTED_DATASET` is ignored.
-- `TRAITS_CONFIG`: Configuration file describing which traits should be extracted from the main dataset.
-- `WITHDRAWAL_LIST`: List of participants withdrawn from the study.
-- `QC_FILE`: Genotyping quality control file from the UK-Biobank study.
-- `UKBB_BED_FILES`: Path expression to PLINK BED files.
-- `UKBB_BGEN_FILES`: Path expression to iputed BGEN files.
+- **`ENCRYPTED_DATASET` (required unless a `DECRYPTED_DATASET` is given)**: Path to a UK-Biobank encrypted main dataset.
+- **`ENCODING_FILE` (required unless a `DECRYPTED_DATASET` is given)**: If an encrypted dataset is provided, an encoding file must accompany it.
+- `DECRYPTED_DATASET` (optional): Path to a UK-Biobank decrypted main dataset. If set, `ENCRYPTED_DATASET` is ignored.
+- **`TRAITS_CONFIG` (required)**: Configuration file describing which traits should be extracted from the main dataset.
+- **`WITHDRAWAL_LIST` (required)**: List of participants withdrawn from the study.
+- **`QC_FILE` (required)**: Genotyping quality control file from the UK-Biobank study.
+- **`UKBB_BED_FILES` (required)**: Path expression to PLINK BED files.
+- **`UKBB_BGEN_FILES` (required)**: Path expression to iputed BGEN files.
 
-## Statistical Parameters
+## [Adjusting for confounders](@ref)
 
-- `PARAMETER_PLAN`: One of "FROM_PARAM_FILES", "FROM_ACTORS". See the section.
+- **`LD_BLOCKS` (required)**: A path to pre-identified linkage desequlibrium blocks around the variants that will be queried for causal effect estimation. Those will be removed from the data.
+- **`FLASHPCA_EXCLUSION_REGIONS` (required)**: A path to the flashpca special exclusion regions which is provided in their repository.
+- `MAF_THRESHOLD` (optional): Only variants with that minor allele frequency are considered
+- `NB_PCS` (optional, default: 6): The number of PCA components to extract.
+
+## [Describing the causal parameters of interest](@ref)
+
+- **`PARAMETER_PLAN` (required, default: "FROM_PARAM_FILES")**: One of "FROM_PARAM_FILES", "FROM_ACTORS".
 
 If `PARAMETER_PLAN`="FROM_PARAM_FILES":
 
-- `PARAMETER_FILES`: Path expression to the parameter files.
+- `PARAMETER_FILES` (required): Path expression to the parameter files.
 
 If `PARAMETER_PLAN`="FROM_ACTORS":
 
-- `BQTLS`: CSV file containing binding quantitative trait loci.
-- `TRANS_ACTORS`: CSV file containing quantitative trait loci potentially interacting with the previous bqtls.
-- `EXTRA_CONFOUNDERS`: Path to additional confounders file, one per line, no header.
-- `EXTRA_COVARIATES`: Path to additional covariates file, one per line, no header.
-- `ENVIRONMENTALS`: Path to additional environmental treatments file, one per line, no header.
-- `ORDERS`: Comma separated list describing the order of desired interaction parameters, 1 for the ATE (no interaction), 2 for pairwise interactions etc... e.g. "1,2"
+- **`BQTLS` (required)**: A CSV file containing binding quantitative trait loci.
+- **`TRANS_ACTORS` (required)**: A prefix to CSV files containing quantitative trait loci potentially interacting with the previous bqtls.
+- `EXTRA_CONFOUNDERS` (optional, default: nothing): Path to additional confounders file, one per line, no header.
+- `EXTRA_COVARIATES` (optional, default: nothing): Path to additional covariates file, one per line, no header.
+- `ENVIRONMENTALS` (optional, default: nothing): Path to additional environmental treatments file, one per line, no header.
+- `ORDERS` (optional, default: "1,2"): Comma separated list describing the order of desired interaction parameters, 1 for the ATE (no interaction), 2 for pairwise interactions etc... e.g. "1,2"
 
-## TMLE
+## [Specifying a Targeted Estimator](@ref)
 
-- `ESTIMATORFILE`: YAML configuration file describing the nuisance parameters learners.
-- `PHENOTYPES_BATCH_SIZE`: For a given causal model, phenotypes can be batched to save computational time. Setting this value to 0 will result in max size batches.
+- **`ESTIMATORFILE` (required)**: YAML configuration file describing the nuisance parameters learners.
+- `POSITIVITY_CONSTRAINT` (optional, default: 0.01): Treatment variables rarest configuration should have at least that frequency.
 
-## Sieve Variance Correction
+## [Correcting for population relatedness](@ref)
 
-- `GRM_NSPLITS`: To fasten GRM computation, it is typically split in batches.
-- `NB_VAR_ESTIMATORS`: Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
-- `MAX_TAU`: Variance estimates are computed for tau ranging from 0 to MAX_TAU
-- `PVAL_SIEVE`: To save computation time and disk, only parameters with a p-value below this threshold are considered for sieve variance correction.
+- `GRM_NSPLITS` (optional, default: 100): To fasten GRM computation, it is typically split in batches.
+- `NB_VAR_ESTIMATORS` (optional, default: 0): Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
+- `MAX_TAU` (optional, default: 0.9): Variance estimates are computed for tau ranging from 0 to MAX_TAU
+- `PVAL_SIEVE` (optional, default: 0.05): To save computation time and disk, only parameters with a p-value below this threshold are considered for sieve variance correction.
 
-## Miscellaneous
+## [Tweaking additional behaviour](@ref)
 
-- `CALL_THRESHOLD`: Variants from BGEN files are called beyond that threhsold.
-- `POSITIVITY_CONSTRAINT`: Treatment variables rarest configuration should have at least that frequency.
-- `MAF_THRESHOLD`: Only variants with that minor allele frequency are considered
-- `NB_PCS`: Number of principal components to include in confouding adjustment
-- `FLASHPCA_EXCLUSION_REGIONS`: Special file from [flashpca](https://github.com/gabraham/flashpca) repository.
-- `OUTDIR`: Output directory
+- `CALL_THRESHOLD` (optional, default: 0.9): For putative causal variants (listed in the parameter files described in the [Describing the causal parameters of interest](@ref) section). If a individual's allele's probability is greater than the threshold, then it is called, otherwise it is considered missing.
+- `PHENOTYPES_BATCH_SIZE` (optional, default: 0): Depending on the size of your study and constraints of your HPC platform, it may be advantageous to parallelize the TMLE processes further. This can be done by batching phenotypes under study together. Setting this value to 0 will result in max size batches (i.e. no batching).
+- `GENOTYPES_AS_INT` (optional, default: false): If the genotypes should be encoded as a count of the minor allele (0, 1, 2), otherwise the string representation is used.
+- `OUTDIR` (optional, default: "results"): Output directory

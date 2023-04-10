@@ -1,4 +1,4 @@
-# Targeted Maximum Likelihood Estimation
+# Specifying a Targeted Estimator
 
 The estimator configuration file describes the TMLE specification for the estimation of the parameters defined in the previous section. This YAML configuration file is provided to the pipeline via the `ESTIMATORFILE` parameter.
 A set of predifined estimator files are available from [https://github.com/TARGENE/targene-pipeline/estimators/](https://github.com/TARGENE/targene-pipeline/estimators).
