@@ -83,7 +83,7 @@ Note: Since this decrypted dataset is a plain CSV file, one may build and add ex
 
 ### Genetic Data
 
-We are currently using both .bgen and .bed files. Those are respectively provided with the `UKBB_BGEN_FILES` and `UKBB_BED_FILES` parameters. Since the UK-Biobank genotypic data is split in chromosomes, it should be of the form `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bgen,sample,bgen.bgi}` and `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bed,bim,fam}` respectively.
+We are currently using both .bgen and .bed files, furthermore, we assume that the data is **unphased**. Those are respectively provided with the `UKBB_BGEN_FILES` and `UKBB_BED_FILES` parameters. Since the UK-Biobank genotyping data is split in chromosomes, it should be of the form `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bgen,sample,bgen.bgi}` and `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bed,bim,fam}` respectively.
 
 ### Additional Files
 
