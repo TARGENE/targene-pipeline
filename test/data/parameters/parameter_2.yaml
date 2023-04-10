@@ -4,13 +4,7 @@ T:
 Parameters:
    - name: ATE     
      2:14983:G:A:
-      control: 0 
-      case: 1
-   - name: ATE
-     2:14983:G:A:
-      control: 1
+      control: 1 
       case: 2
-   - name: ATE
-     2:14983:G:A:
-      control: 0
-      case: 2
+   - name: CM
+     2:14983:G:A: 1
