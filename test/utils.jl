@@ -1,7 +1,6 @@
 using Test
 using CSV
 using DataFrames
-using StatsBase
 using YAML
 
 # Move to the project's root
