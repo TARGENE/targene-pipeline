@@ -6,8 +6,7 @@ end
 include("utils.jl")
 
 @testset "Test from_param_files.config" begin
-    cmd_option = join(default_args, " ")
-    cmd = `nextflow run main.nf -c conf/ci_jobs/from_param_files.config $cmd_option`
+    cmd = `nextflow run main.nf -c conf/ci_jobs/from_param_files.config $default_args`
     @info string("The following command will be run:\n", cmd)
     @test r.exitcode == 0
     output = CSV.read(joinpath("results", "summary.csv"), DataFrame)

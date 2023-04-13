@@ -6,8 +6,7 @@ end
 include("utils.jl")
 
 @testset "Test from_actors.config" begin
-    cmd_option = join(default_args, " ")
-    cmd = `nextflow run main.nf -c conf/ci_jobs/from_actors.config $cmd_option`
+    cmd = `nextflow run main.nf -c conf/ci_jobs/from_actors.config $default_args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
