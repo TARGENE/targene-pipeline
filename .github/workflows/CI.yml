@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 jobs:
   test:
-    name: Julia ${{ github.event_name }} -- ${{ matrix.testrun }}
+    name: Test ${{ matrix.testrun }} -- ${{ github.event_name }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -34,6 +34,8 @@ jobs:
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@v1
       - uses: nf-core/setup-nextflow@v1.2.0
+      - name: Instantiate test environment
+        run: julia --project=test --startup-file=no -e'using Pkg;Pkg.instantiate()'
       - name: Run tests
         run: julia --project=test --startup-file=no test/${{ matrix.testrun }} ci
   docs:
