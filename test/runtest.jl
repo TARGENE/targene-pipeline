@@ -2,6 +2,7 @@ using Test
 using CSV
 using DataFrames
 using StatsBase
+using YAML
 
 # Move to the project's root
 cd(dirname(pwd()))
@@ -23,11 +24,9 @@ the dataset is quite degenerate.
 function check_fails_are_extremely_rare_traits(output, dataset)
     groups = groupby(output, :TREATMENTS)
     for (treatment, group) in pairs(groups)
-        println(treatment)
         treatment = treatment.TREATMENTS
         fails = filter(x -> x.LOG !== missing, group)
         for target in unique(fails.TARGET)
-            println(target)
             @test eltype(dataset[!, target]) == Bool
             nomissing = dropmissing(dataset, Symbol.([target, split(treatment, "_&_")...]))
             @test sum(nomissing[!, target]) <= 3
@@ -61,6 +60,16 @@ end
     
     check_fails_are_extremely_rare_traits(output, dataset)
     test_n_success_more_than_threshold(output, 20)
+
+    ## Checking parameter files correspond to either bQTL only or bQTL/eQTL
+    param_dict = YAML.load_file(joinpath("results", "parameters", "final.param_1.yaml"))
+    @test param_dict["T"] == ["1:238411180:T:C"]
+    param_dict = YAML.load_file(joinpath("results", "parameters", "final.param_2.yaml"))
+    @test param_dict["T"] == ["3:3502414:T:C"]
+    param_dict = YAML.load_file(joinpath("results", "parameters", "final.param_3.yaml"))
+    @test param_dict["T"] == ["1:238411180:T:C", "2:14983:G:A"]
+    param_dict = YAML.load_file(joinpath("results", "parameters", "final.param_4.yaml"))
+    @test param_dict["T"] == ["3:3502414:T:C", "2:14983:G:A"]
 end
 
 
