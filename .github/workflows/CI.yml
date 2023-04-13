@@ -37,7 +37,7 @@ jobs:
       - name: Instantiate test environment
         run: julia --project=test --startup-file=no -e'using Pkg;Pkg.instantiate()'
       - name: Run tests
-        run: julia --project=test --startup-file=no test/${{ matrix.testrun }} ci
+        run: julia --project=test --startup-file=no test/${{ matrix.testrun }} -profile ci
   docs:
     name: Documentation
     runs-on: ubuntu-latest
