@@ -9,17 +9,11 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 jobs:
   test:
-    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
-    runs-on: ${{ matrix.os }}
+    name: Julia ${{ github.event_name }} -- ${{ matrix.testrun }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        version:
-          - '1'
-        os:
-          - ubuntu-latest
-        arch:
-          - x64
         testrun:
           - "from_actors.jl"
           - "from_param_files.jl"
@@ -27,8 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
         with:
-          version: ${{ matrix.version }}
-          arch: ${{ matrix.arch }}
+          version: 1
       - uses: actions/cache@v1
         env:
           cache-name: cache-artifacts
@@ -42,7 +35,7 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       - uses: nf-core/setup-nextflow@v1.2.0
       - name: Run tests
-        run: julia --project=test --startup-file=no test/${{ testrun }} ci
+        run: julia --project=test --startup-file=no test/${{ matrix.testrun }} ci
   docs:
     name: Documentation
     runs-on: ubuntu-latest
