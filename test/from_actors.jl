@@ -1,12 +1,9 @@
-default_args = ["eddie", "-resume"] 
-for (i, arg) in enumerate(ARGS)
-    default_args[i] = arg
-end
+args = length(ARGS) > 0 ? ARGS : ["eddie", "-resume"] 
 
 include("utils.jl")
 
 @testset "Test from_actors.config" begin
-    cmd = `nextflow run main.nf -c conf/ci_jobs/from_actors.config $default_args`
+    cmd = `nextflow run main.nf -c conf/ci_jobs/from_actors.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
