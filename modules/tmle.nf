@@ -33,7 +33,7 @@ process TMLE {
         path "${outprefix}.hdf5", optional: true, emit: inf_curve
     
     script:
-        save_ic = params.NB_VAR_ESTIMATORS !== 0 ? '--save-ic' : ''
+        save_ic = params.SAVE_IC == true ? '--save-ic' : ''
         outprefix = "tmle." + parameterfile.getName().replace(".yaml", "")
         """
         TEMPD=\$(mktemp -d)
