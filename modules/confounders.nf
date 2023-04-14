@@ -14,7 +14,7 @@ process FlashPCA {
 }
 
 process AdaptFlashPCA {
-    container "olivierlabayle/tl-core:ate_with_fixed_eqtl"
+    container "olivierlabayle/tl-core:0.4"
     publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
     label 'bigmem'
     

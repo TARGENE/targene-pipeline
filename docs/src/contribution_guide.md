@@ -22,10 +22,10 @@ Following our previous UKBMain.jl example, there are two repositories tha need t
 2. Review: When everything is working, ask for a review
 3. Release UKBMain.jl:
     - Merge your branch into main
-    - Create a new Github release, this will create a new docker image with your release name.
+    - Create a new Github release following semantic versioning, this will create a new docker image with your release name.
 4. Release TarGene
     - For each Nextflow process using the UKBMain.jl's docker image, update to the released image name (as before).
-    - Create a new Github release
+    - Create a new Github release following semantic versioning
 
 ## Note on Docker images
 
@@ -39,16 +39,18 @@ Currently, all TarGene building blocks (executables) are provided as docker imag
 
 ## Note on the pipeline's tests
 
-Currently the pipeline's end to end tests are not automated, which means you have to run them manually. Furthermore they only check that the pipeline terminates. We have a suite of two tests that can be run on Eddie by the following:
+The pipeline is automatically testing for every push/pull-request made to the github repository. The tests will require that Julia and the container engine of your choice be installed (see below). We currently have a suite of two tests corresponding to the two main usages of the pipeline. They can be run locally as follows:
 
 ```bash
-nextflow run main.nf -c conf/ci_jobs/from_actors.config -profile eddie -resume
+julia --project=test --startup-file=no test/from_param_files.jl -profile PROFILE -resume
 ```
 
 and
 
 ```bash
-nextflow run main.nf -c conf/ci_jobs/from_param_files.config -profile eddie -resume
+julia --project=test --startup-file=no test/from_actors.jl -profile PROFILE -resume
 ```
 
-Further functionalities should be accompanied with further test configurations.
+where `PROFILE` is one of: 'local' (local with singularity engine), 'ci' (local with singularity engine), 'eddie' (SGE with singularity engine.).
+
+The tests can also be run interactively via the Julia REPL.
