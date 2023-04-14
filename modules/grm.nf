@@ -1,5 +1,5 @@
 process GRMPart {
-    container "olivierlabayle/tl-core:ate_with_fixed_eqtl"
+    container "olivierlabayle/tl-core:0.4"
     label "bigmem"
     label "multithreaded"
 

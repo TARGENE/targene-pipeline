@@ -1,5 +1,5 @@
 process SieveVarianceEstimation {
-    container "olivierlabayle/targeted-estimation:up_tmle_dep"
+    container "olivierlabayle/targeted-estimation:0.4"
     publishDir "$params.OUTDIR/hdf5files/sieve", mode: 'symlink', pattern: "*.hdf5"
     publishDir "$params.OUTDIR/csvs", mode: 'symlink', pattern: "*.csv"
 
@@ -22,7 +22,7 @@ process SieveVarianceEstimation {
 }
 
 process MergeOutputs {
-    container "olivierlabayle/targeted-estimation:up_tmle_dep"
+    container "olivierlabayle/targeted-estimation:0.4"
     publishDir "$params.OUTDIR", mode: 'symlink'
 
     input:
