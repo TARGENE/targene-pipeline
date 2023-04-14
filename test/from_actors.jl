@@ -1,4 +1,4 @@
-args = length(ARGS) > 0 ? ARGS : ["eddie", "-resume"] 
+args = length(ARGS) > 0 ? ARGS : ["-profile", "eddie", "-resume"] 
 
 include("utils.jl")
 
