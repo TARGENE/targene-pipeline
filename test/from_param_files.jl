@@ -1,10 +1,11 @@
-args = length(ARGS) > 0 ? ARGS : ["eddie", "-resume"] 
+args = length(ARGS) > 0 ? ARGS : ["-profile", "eddie", "-resume"] 
 
 include("utils.jl")
 
 @testset "Test from_param_files.config" begin
     cmd = `nextflow run main.nf -c conf/ci_jobs/from_param_files.config $args`
     @info string("The following command will be run:\n", cmd)
+    r = run(cmd)
     @test r.exitcode == 0
     output = CSV.read(joinpath("results", "summary.csv"), DataFrame)
     dataset = CSV.read(joinpath("results", "tmle_inputs", "final.data.csv"), DataFrame)
