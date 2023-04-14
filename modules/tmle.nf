@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:v0.3.1"
+    container "olivierlabayle/targeted-estimation:0.4"
     publishDir "$params.OUTDIR/csvs",  mode: 'symlink', pattern: "*.csv"
     publishDir "$params.OUTDIR/hdf5files/inf_curves",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
@@ -33,7 +33,7 @@ process TMLE {
         path "${outprefix}.hdf5", optional: true, emit: inf_curve
     
     script:
-        save_ic = params.NB_VAR_ESTIMATORS !== 0 ? '--save-ic' : ''
+        save_ic = params.SAVE_IC == true ? '--save-ic' : ''
         outprefix = "tmle." + parameterfile.getName().replace(".yaml", "")
         """
         TEMPD=\$(mktemp -d)
@@ -45,7 +45,7 @@ process TMLE {
 }
 
 process TMLEInputsFromParamFiles {
-    container "olivierlabayle/tl-core:v0.3.0"
+    container "olivierlabayle/tl-core:0.4"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
@@ -78,7 +78,7 @@ process TMLEInputsFromParamFiles {
 }
 
 process TMLEInputsFromActors {
-    container "olivierlabayle/tl-core:v0.3.0"
+    container "olivierlabayle/tl-core:0.4"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
@@ -104,6 +104,7 @@ process TMLEInputsFromActors {
         extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
         extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
         extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $extra_covariates" : ''
+        genotypes_as_int = params.GENOTYPES_AS_INT == false ? "" : "--genotypes-as-int"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
@@ -113,6 +114,6 @@ process TMLEInputsFromActors {
         --pcs $genetic_confounders \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
         $batch_size \
-        from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS}
+        from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS} ${genotypes_as_int}
         """
 }
