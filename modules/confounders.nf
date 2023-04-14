@@ -16,7 +16,7 @@ process FlashPCA {
 process AdaptFlashPCA {
     container "olivierlabayle/tl-core:ate_with_fixed_eqtl"
     publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
-    memory '16 GB'
+    label 'bigmem'
     
     input:
         path flashpca_out
