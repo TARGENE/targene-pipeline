@@ -1,5 +1,5 @@
 process FlashPCA {
-    cpus 8
+    label "multithreaded"
     container "ktetleycampbell/flashpca:1.0"
 
     input:
