@@ -1,4 +1,5 @@
-args = length(ARGS) > 0 ? ARGS : ["-profile", "eddie", "-resume"] 
+# "local" profile assumes singularity is installed
+args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
 include("utils.jl")
 
