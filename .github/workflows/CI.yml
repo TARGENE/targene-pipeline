@@ -34,8 +34,6 @@ jobs:
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@v1
       - uses: nf-core/setup-nextflow@v1.2.0
-      - name: Nextflow cmd
-        run: nextflow run main.nf -c conf/ci_jobs/from_param_files.config -profile ci
       - name: Instantiate test environment
         run: julia --project=test --startup-file=no -e'using Pkg;Pkg.instantiate()'
       - name: Run tests
