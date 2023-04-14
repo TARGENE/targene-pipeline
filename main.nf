@@ -6,6 +6,7 @@ params.PARAMETER_PLAN = "FROM_PARAM_FILES"
 params.PARAMETER_FILES = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
+params.SAVE_IC = true
 
 params.MAF_THRESHOLD = 0.01
 params.NB_PCS = 6
@@ -25,6 +26,7 @@ params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
 params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
 params.ORDERS = "1,2"
+params.GENOTYPES_AS_INT = false
 
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
