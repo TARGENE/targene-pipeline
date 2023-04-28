@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:0.4"
+    container "olivierlabayle/targeted-estimation:up_param_read"
     publishDir "$params.OUTDIR/csvs",  mode: 'symlink', pattern: "*.csv"
     publishDir "$params.OUTDIR/hdf5files/inf_curves",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
@@ -29,23 +29,25 @@ process TMLE {
         path estimatorfile
     
     output:
-        path "${outprefix}.csv", emit: tmle_csv
-        path "${outprefix}.hdf5", optional: true, emit: inf_curve
+        path "${csvout}", emit: tmle_csv
+        path "${hdf5out}", optional: true, emit: inf_curve
     
     script:
-        save_ic = params.SAVE_IC == true ? '--save-ic' : ''
-        outprefix = "tmle." + parameterfile.getName().replace(".yaml", "")
+        csvout = "tmle." + parameterfile.getName().replace("yaml", "csv")
+        hdf5out = "tmle." + parameterfile.getName().replace("yaml", "hdf5")
+        hdf5option = params.SAVE_IC == true ? "--hdf5-out=${hdf5out}" : ""
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
-        $data $parameterfile $estimatorfile $outprefix \
-        $save_ic \
+        $data $parameterfile $estimatorfile $csvout \
+        $hdf5option \
+        --chunksize=100 \
         --pval-threshold=${params.PVAL_SIEVE}
         """
 }
 
-process TMLEInputsFromParamFiles {
-    container "olivierlabayle/tl-core:0.4"
+process TMLEInputsFromParamFile {
+    container "olivierlabayle/tl-core:up_tmle_dep"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
@@ -54,7 +56,7 @@ process TMLEInputsFromParamFiles {
         path bgenfiles
         path traits
         path genetic_confounders
-        path parameters
+        path parameter
 
     output:
         path "final.data.csv", emit: traits
@@ -62,8 +64,7 @@ process TMLEInputsFromParamFiles {
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
-        params_prefix = longest_prefix(parameters)
-        batch_size = params.PHENOTYPES_BATCH_SIZE == 0 ? "" :  "--phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}"
+        batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
@@ -73,12 +74,12 @@ process TMLEInputsFromParamFiles {
         --pcs $genetic_confounders \
         $batch_size \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
-        from-param-files $params_prefix
+        from-param-file $parameter
         """
 }
 
 process TMLEInputsFromActors {
-    container "olivierlabayle/tl-core:0.4"
+    container "olivierlabayle/tl-core:up_tmle_dep"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
     label "bigmem"
@@ -100,7 +101,7 @@ process TMLEInputsFromActors {
     script:
         bgen_prefix = longest_prefix(bgenfiles)
         trans_actors_prefix = longest_prefix(trans_actors)
-        batch_size = params.PHENOTYPES_BATCH_SIZE == 0 ? "" :  "--phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}"
+        batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
         extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
         extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
         extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $extra_covariates" : ''

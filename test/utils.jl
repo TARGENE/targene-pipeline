@@ -2,6 +2,7 @@ using Test
 using CSV
 using DataFrames
 using YAML
+using TMLE
 
 # Move to the project's root
 cd(dirname(dirname(@__FILE__)))

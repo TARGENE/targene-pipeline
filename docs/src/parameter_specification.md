@@ -89,4 +89,4 @@ Let us now turn to the pipeline specification for this parameter plan:
 
 ## Parallelization
 
-Since the same estimator for `p(T|W)` can be used for multiple target parameters, it may be useful to batch phenotypes using `PHENOTYPES_BATCH_SIZE`(default: 1) in order to reduce the computational burden.
+Since the same estimator for `p(T|W)` can be used for multiple target parameters, it may be useful to batch phenotypes using `BATCH_SIZE`(default: 1) in order to reduce the computational burden.
