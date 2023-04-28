@@ -13,6 +13,7 @@ include("utils.jl")
     ## Checking main output
     output = CSV.read(joinpath("results", "summary.csv"), DataFrame)
     dataset = CSV.read(joinpath("results", "tmle_inputs", "final.data.csv"), DataFrame)
+    bQTLs = Symbol.(CSV.read(joinpath("test", "data", "actors", "bqtls.csv"), DataFrame).ID)
 
     @test names(output) == vcat(SUMMARY_COLUMNS, SIEVE_COLUMNS)
     # 2 bQTLs and 1 trans-actor
@@ -22,12 +23,16 @@ include("utils.jl")
     test_n_success_more_than_threshold(output, 20)
 
     ## Checking parameter files correspond to either bQTL only or bQTL/eQTL
-    param_dict = YAML.load_file(joinpath("results", "parameters", "final.param_1.yaml"))
-    @test param_dict["T"] == ["1:238411180:T:C"]
-    param_dict = YAML.load_file(joinpath("results", "parameters", "final.param_2.yaml"))
-    @test param_dict["T"] == ["3:3502414:T:C"]
-    param_dict = YAML.load_file(joinpath("results", "parameters", "final.param_3.yaml"))
-    @test param_dict["T"] == ["1:238411180:T:C", "2:14983:G:A"]
-    param_dict = YAML.load_file(joinpath("results", "parameters", "final.param_4.yaml"))
-    @test param_dict["T"] == ["3:3502414:T:C", "2:14983:G:A"]
+    parameters_1 = parameters_from_yaml(joinpath("results", "parameters", "final.param_1.yaml"))
+    @test size(parameters_1, 1) == 400
+    for Ψ in parameters_1
+        @test keys(Ψ.treatment)[1] ∈ bQTLs
+    end
+
+    parameters_2 = parameters_from_yaml(joinpath("results", "parameters", "final.param_2.yaml"))
+    @test size(parameters_2, 1) == 44
+    for Ψ in parameters_2
+        @test keys(Ψ.treatment)[1] ∈ bQTLs
+    end
+
 end

@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 
 params.DECRYPTED_DATASET = "NO_FILE"
 params.PARAMETER_PLAN = "FROM_PARAM_FILES"
-params.PARAMETER_FILES = "NO_PARAMETER_FILE"
+params.PARAMETER_FILE = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
 params.SAVE_IC = true
@@ -21,7 +21,7 @@ params.OUTDIR = "$launchDir/results"
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
 
-params.PHENOTYPES_BATCH_SIZE = 0
+params.BATCH_SIZE = 400
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
 params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
@@ -31,7 +31,7 @@ params.GENOTYPES_AS_INT = false
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
 include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
-include { TMLE; TMLEInputsFromParamFiles; TMLEInputsFromActors } from './modules/tmle.nf'
+include { TMLE; TMLEInputsFromParamFile; TMLEInputsFromActors } from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation ; MergeOutputs } from './modules/sieve_variance.nf'
 
@@ -109,13 +109,13 @@ workflow generateTMLEEstimates {
                 bqtls,
                 trans_actors)
         }
-        else if (params.PARAMETER_PLAN == "FROM_PARAM_FILES"){
-            parameter_files = Channel.fromPath("$params.PARAMETER_FILES").collect()
-            tmle_inputs = TMLEInputsFromParamFiles(
+        else if (params.PARAMETER_PLAN == "FROM_PARAM_FILE"){
+            parameter_file = Channel.value(file("$params.PARAMETER_FILE"))
+            tmle_inputs = TMLEInputsFromParamFile(
                 bgen_files,
                 traits,
                 genetic_confounders,
-                parameter_files)
+                parameter_file)
         }
         else { 
             throw new Exception("This PARAMETER_PLAN is not available.")
