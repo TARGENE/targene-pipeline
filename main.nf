@@ -16,7 +16,7 @@ params.NB_VAR_ESTIMATORS = 0
 params.MAX_TAU = 0.9
 params.PVAL_SIEVE = 0.05
 
-params.OUTDIR = "$launchDir/results"
+params.OUTDIR = "${launchDir}/results"
 
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
