@@ -33,8 +33,9 @@ process TMLE {
         path "${hdf5out}", optional: true, emit: inf_curve
     
     script:
-        csvout = "tmle." + parameterfile.getName().replace("yaml", "csv")
-        hdf5out = "tmle." + parameterfile.getName().replace("yaml", "hdf5")
+        basename = "tmle." + parameterfile.getName().take(parameterfile.getName().lastIndexOf('.'))
+        csvout = basename + ".csv"
+        hdf5out = basename + ".hdf5"
         hdf5option = params.SAVE_IC == true ? "--hdf5-out=${hdf5out}" : ""
         """
         TEMPD=\$(mktemp -d)
@@ -42,7 +43,7 @@ process TMLE {
         $data $parameterfile $estimatorfile $csvout \
         $hdf5option \
         --chunksize=100 \
-        --pval-threshold=${params.PVAL_SIEVE}
+        --pval-threshold=${params.PVAL_THRESHOLD}
         """
 }
 
