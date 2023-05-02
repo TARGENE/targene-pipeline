@@ -14,9 +14,12 @@ params.NB_PCS = 6
 params.GRM_NSPLITS = 100
 params.NB_VAR_ESTIMATORS = 0
 params.MAX_TAU = 0.9
-params.PVAL_SIEVE = 0.05
+params.PVAL_THRESHOLD = 0.05
 
+params.VERBOSITY = 1
 params.OUTDIR = "${launchDir}/results"
+params.RESULTS_FILE = "${launchDir}/summary.csv"
+params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.csv"
 
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
@@ -28,13 +31,20 @@ params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
 params.ORDERS = "1,2"
 params.GENOTYPES_AS_INT = false
 
+// Permutation Tests Parameters
+params.MAX_PERMUTATION_TESTS = null
+params.PVAL_COL = "TMLE_PVALUE"
+params.PERMUTATION_ORDERS = "1"
+params.RNG = 123
+
+
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
 include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
 include { TMLE; TMLEInputsFromParamFile; TMLEInputsFromActors } from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation ; MergeOutputs } from './modules/sieve_variance.nf'
-
+include { GeneratePermutationTestsData; GenerateRandomVariantsTestsData } from './modules/negative_control.nf'
 
 workflow extractTraits {
     traits_config = Channel.value(file("$params.TRAITS_CONFIG"))
@@ -148,6 +158,25 @@ workflow generateSieveEstimates {
     emit:
         csv_file = SieveVarianceEstimation.out.csv_file
         hdf5_file = SieveVarianceEstimation.out.hdf5_file
+}
+
+workflow negativeControl {
+    results_file = Channel.value(file("${params.RESULTS_FILE}"))
+
+    // Permutation Tests
+    dataset = Channel.value(file("${params.TMLE_INPUT_DATASET}"))
+    estimatorfile = Channel.value(file("${params.ESTIMATORFILE}"))
+    GeneratePermutationTestsData(dataset, results_file)
+    TMLE(
+        GeneratePermutationTestsData.output.dataset, 
+        GeneratePermutationTestsData.output.parameters, 
+        estimatorfile
+    )
+    
+    // Random Variants parameter files generation
+    bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
+    trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
+    GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
 }
 
 workflow {
