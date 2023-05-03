@@ -12,7 +12,7 @@ include("utils.jl")
     
     output = CSV.read(joinpath("results", "summary.csv"), DataFrame)
     dataset = CSV.read(joinpath("results", "tmle_inputs", "final.data.csv"), DataFrame)
-    @test names(output) == SUMMARY_COLUMNS
+    @test names(output) == vcat(SUMMARY_COLUMNS, ADJUTMENT_COL)
     # 2 bQTLs and 1 trans-actor
     @test Set(unique(output.TREATMENTS)) == Set(["1:238411180:T:C_&_3:3502414:T:C", "2:14983:G:A"])
     
