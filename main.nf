@@ -18,7 +18,7 @@ params.PVAL_THRESHOLD = 0.05
 
 params.VERBOSITY = 1
 params.OUTDIR = "${launchDir}/results"
-params.RESULTS_FILE = "${launchDir}/summary.csv"
+params.RESULTS_FILE = "${params.OUTDIR}/summary.csv"
 params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.csv"
 
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
@@ -36,6 +36,8 @@ params.MAX_PERMUTATION_TESTS = null
 params.PVAL_COL = "TMLE_PVALUE"
 params.PERMUTATION_ORDERS = "1"
 params.RNG = 123
+params.MAF_MATCHING_RELTOL = 0.05
+params.N_RANDOM_VARIANTS = 10
 
 
 include { IIDGenotypes } from './modules/genotypes.nf'
@@ -176,9 +178,11 @@ workflow negativeControl {
     MergeOutputs(TMLE.out.tmle_csv.collect(), sieve_csv, "permutation_summary.csv")
     
     // Random Variants parameter files generation
-    bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
-    trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
-    GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
+    if (params.PARAMETER_PLAN == "FROM_ACTORS") {
+        bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
+        trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
+        GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
+    }
 }
 
 workflow {
