@@ -26,7 +26,7 @@ Here is a list of all the pipeline parameters:
 
 If `PARAMETER_PLAN`="FROM_PARAM_FILES":
 
-- `PARAMETER_FILES` (required): Path expression to the parameter files.
+- `PARAMETER_FILE` (required): Path expression to the parameter files.
 
 If `PARAMETER_PLAN`="FROM_ACTORS":
 
