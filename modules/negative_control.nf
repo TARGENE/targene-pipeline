@@ -47,7 +47,7 @@ process GeneratePermutationTestsData {
 
 process GenerateRandomVariantsTestsData {
     container "olivierlabayle/negative-controls:initial_pipeline"
-    publishDir "${params.OUTDIR}/random_variants_parameters", mode: 'symlink'
+    publishDir "${params.OUTDIR}", mode: 'symlink'
     label "bigmem"
     
     input:
@@ -56,7 +56,7 @@ process GenerateRandomVariantsTestsData {
         path results
 
     output:
-        path "*.bin", emit: parameters
+        path "random_variants_parameters.yaml"
 
     script:
         trans_actors_prefix = longest_prefix(trans_actors)
@@ -65,11 +65,11 @@ process GenerateRandomVariantsTestsData {
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl  --startup-file=no /NegativeControl/bin/generate_random_variant_parameters.jl \
         ${trans_actors_prefix} ${results} ${bgen_prefix} \
+        --out=random_variants_parameters.yaml \
         --p=${params.N_RANDOM_VARIANTS} \
         --reltol=${params.MAF_MATCHING_RELTOL} \
         --pval-col=${params.PVAL_COL} \
         --pval-threshold=${params.PVAL_THRESHOLD} \
-        --chunksize=${params.BATCH_SIZE} \
         --rng=${params.RNG} \
         --verbosity=${params.VERBOSITY}
         """

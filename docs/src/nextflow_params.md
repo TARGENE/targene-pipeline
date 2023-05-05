@@ -22,9 +22,9 @@ Here is a list of all the pipeline parameters:
 
 ## [Describing the causal parameters of interest](@ref)
 
-- **`PARAMETER_PLAN` (required, default: "FROM_PARAM_FILES")**: One of "FROM_PARAM_FILES", "FROM_ACTORS".
+- **`PARAMETER_PLAN`** (required, default: "FROM\_PARAM\_FILES"): One of "FROM\_PARAM\_FILES", "FROM\_ACTORS".
 
-If `PARAMETER_PLAN`="FROM_PARAM_FILES":
+If `PARAMETER_PLAN`="FROM\_PARAM\_FILES":
 
 - `PARAMETER_FILE` (required): Path expression to the parameter files.
 
@@ -56,3 +56,12 @@ If `PARAMETER_PLAN`="FROM_ACTORS":
 - `BATCH_SIZE` (optional, default: 400): The set of parameters to be estimated is batched and the TMLE processes will run in parallel across batches on your platform.
 - `GENOTYPES_AS_INT` (optional, default: false): If the genotypes should be encoded as a count of the minor allele (0, 1, 2), otherwise the string representation is used.
 - `OUTDIR` (optional, default: "results"): Output directory
+- `RNG` (optional, default: 123): General random seed used where appropriate.
+
+## [Running negative control checks](@ref)
+
+- `MAX_PERMUTATION_TESTS` (optional, default: null): Arbitrarily limits the number of permutation tests performed.
+- `PVAL_COL` (optional, default: TMLE_PVALUE): In the output `summary.csv`, the p-value column used to define significant hits.
+- `PERMUTATION_ORDERS` (optional, default: "1"): A comma separating string defining the permutation test orders to be performed. (see [Permutation tests](@ref))
+- `MAF_MATCHING_RELTOL`(optional, default:0.05): Random variants are chosen with a similar MAF matched with the given relative tolerance.
+- `N_RANDOM_VARIANTS`(optional, default: 10): For each hit, that many variants are randomly picked.
