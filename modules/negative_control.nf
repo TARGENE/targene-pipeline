@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process GeneratePermutationTestsData {
-    container "olivierlabayle/negative-controls:initial_pipeline"
+    container "olivierlabayle/negative-controls:0.1"
     publishDir "${params.OUTDIR}/permutation_data", mode: 'symlink'
     label "bigmem"
     
@@ -46,7 +46,7 @@ process GeneratePermutationTestsData {
 }
 
 process GenerateRandomVariantsTestsData {
-    container "olivierlabayle/negative-controls:initial_pipeline"
+    container "olivierlabayle/negative-controls:0.1"
     publishDir "${params.OUTDIR}", mode: 'symlink'
     label "bigmem"
     
