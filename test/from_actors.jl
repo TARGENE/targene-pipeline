@@ -64,7 +64,7 @@ end
     @test length(collect(skipmissing(results.TMLE_PVALUE))) > 20
 
     # Check random variants data
-    parameters = deserialize(joinpath("results", "random_variants_parameters", "random_variants_param_1.bin"))
+    parameters = parameters_from_yaml(joinpath("results", "random_variants_parameters.yaml"))
     @test size(parameters, 1) > 200
     @test all(Ψ isa IATE for Ψ in parameters)
 end
