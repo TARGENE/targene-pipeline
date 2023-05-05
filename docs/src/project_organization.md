@@ -10,6 +10,6 @@ The following diagram presents a high level perspective of the project's organiz
 
 ```@raw html
 <div style="text-align:center">
-<img src="assets/targene_organization.png" alt="TarGene Organization" style="width:800px;"/>
+<img src="../assets/targene_organization.png" alt="TarGene Organization" style="width:800px;"/>
 </div>
 ```

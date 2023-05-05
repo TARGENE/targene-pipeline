@@ -6,7 +6,7 @@ In this section, by parameter, we mean the statistical parameter that represents
 
 ```@raw html
 <div style="text-align:center">
-<img src="assets/causal_graph.png" alt="Causal Model" style="width:600px;"/>
+<img src="../assets/causal_graph.png" alt="Causal Model" style="width:600px;"/>
 </div>
 ```
 
@@ -57,7 +57,7 @@ In this setting the goal is to infer the interaction effect between multiple var
 
 ```@raw html
 <div style="text-align:center">
-<img src="assets/from_actors.png" alt="FromActors" style="width:600px;"/>
+<img src="../assets/from_actors.png" alt="FromActors" style="width:600px;"/>
 </div>
 ```
 
