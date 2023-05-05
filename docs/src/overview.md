@@ -1,5 +1,7 @@
 # Overview
 
+## Running the pipeline
+
 Since TarGene is a Nextflow pipeline, it can be run with a simple command line similar to the following:
 
 ```bash
@@ -19,4 +21,9 @@ All arguments are optional but encouraged. Here `-r vX` describes the version to
     - [Tweaking additional behaviour](@ref)
     - [Running negative control checks](@ref)
 
-Finally, a list of all TarGene's parameters is available in the [Index of the pipeline parameters](@ref).
+A list of all TarGene's parameters is available in the [Index of the pipeline parameters](@ref).
+
+## Outputs
+
+All outputs are generated in the `$(OUTDIR)` (default: `results`) directory. The main output file of the pipeline is the `summary.csv`, which contains all summary statistics for each parameter of interest: effect size, p-value, trait-adjusted p-value...
+Other sub-directories contain intermediate results that may still be of interest, for instance, influence curves are stored in `hdf5files/inf_curves`.
