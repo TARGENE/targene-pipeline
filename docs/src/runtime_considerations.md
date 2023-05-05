@@ -1,6 +1,6 @@
 # Some Runtime considerations
 
-If you are running a large scale analysis using TarGene, it is likely that you will need to make some trade offs about the estimation of nuisance parameters to keep the runtime under control. This runtime is mostly driven by the [Targeted Maximum Likelihood Estimation](@ref) process which will scale with the size of the study.
+If you are running a large scale analysis using TarGene, it is likely that you will need to make some trade offs about the estimation of nuisance parameters to keep the runtime under control. This runtime is mostly driven by the Targeted Maximum Likelihood Estimation process which will scale with the size of the study.
 
 ## Unit of work
 
