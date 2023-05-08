@@ -39,7 +39,7 @@ Currently, all TarGene building blocks (executables) are provided as docker imag
 
 ## Note on the pipeline's tests
 
-The pipeline is automatically testing for every push/pull-request made to the github repository. The tests will require that Julia and the container engine of your choice be installed (see below). We currently have a suite of two tests corresponding to the two main usages of the pipeline. They can be run locally as follows:
+The pipeline is automatically tested for every push/pull-request made to the github repository. The tests will require that Julia and the container engine of your choice be installed (see below). We currently have a suite of two tests corresponding to the two main usages of the pipeline. They can be run locally as follows:
 
 ```bash
 julia --project=test --startup-file=no test/from_param_files.jl -profile PROFILE -resume

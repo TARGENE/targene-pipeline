@@ -6,67 +6,50 @@ In this section, by parameter, we mean the statistical parameter that represents
 
 ```@raw html
 <div style="text-align:center">
-<img src="assets/causal_graph.png" alt="Causal Model" style="width:800px;"/>
+<img src="../assets/causal_graph.png" alt="Causal Model" style="width:600px;"/>
 </div>
 ```
 
-Parameters are specified by a YAML file with one section for each variable in the causal model and a section for the parameters that need to be estimated from this causal model. Here is a succinct description for each section and the behaviour of the pipeline for each variable:
+Parameters are specified by a YAML file containing the list of parameters to be estimated. Each parameter is fully determined by four fields:
 
-- `Treatments`: The treatment variables, typically one or multiple SNPs and potential environmental exposures.
-- `Confounders`: Confounding variables, typically the principal components which are computed by the pipeline. This section can (must) be ommited.
-- `Covariates`: Additional covariates for the prediction of the traits. Not yet working and must be omitted.
-- `Targets`: The traits of interest. The algorithm will loop through all traits in this section for the given treatments, confounders and covariates. This enables the reuse of the propensity score estimation. If this section is omitted (usually the case) all traits will be used.
-- `Parameters`: For each target in `Targets` multiple parameters may be of interest depending on the exact case/control scenario of the treatment variables. For instance, since each genotyped locus can take up to 3 different values there could be up to 3 Average treatment Effect parameters if the treatment section consists of only one SNP.
+- `type`: The parameter type, one of:
+  - ATE: Average Treatment Effect
+  - IATE: Interaction Average Treatment Effect
+  - CM: Conditional Mean
+- `target`: The trait of interest, as specified in the `TRAITS_CONFIG` file in the `phenotypes/name` field. You can also use the wildcard "*" to signify that you want to estimate this parameter accross all traits in the dataset.
+- `treatment`: The treatment variables and associated control/case settings (see example below).
+- `confounders`: A list of confounding variables. Note that principal components will be added to that list by default and must not be provided here. You can provide an empty list.
+- `covariates`: This is optional and correspond to a list of additional covariates for the prediction of the trait.
 
-Since an example may be worth a thousand words, here are a couple of such files.
-
-### Average Treatment Effect
-
-One SNP `RSID_10` and 2 ATEs for all traits under study.
-
-```yaml
-Treatments:
-  - RSID_10
-Parameters:
-  - name: GG_TO_AG
-    RSID_10:
-      control: GG
-      case: AG
-  - name: GG_TO_AA
-    RSID_10:
-      control: GG
-      case: AA
-```
-
-### Interaction Average Treatment Effect
-
-Two interacting SNPs `RSID_10` and `RSID_100` with only one target `PHENOTYPE_1` and only one parameter.
+Here is an example parameter file:
 
 ```yaml
-Treatments:
-  - RSID_10
-  - RSID_100
-
-Targets:
-  - PHENOTYPE_1
 
 Parameters:
-  - name: IATE
-    RSID_10:
-      control: GG
-      case: AG
-    RSID_100:
-      control: GG
-      case: AG
+  - type: IATE
+    target: "*"
+    treatment: (RSID_10 = (control = "AA", case = "AC), Sun_Exposure = (control = 1, case = 0))
+    confounders: [Economic_background]
+    covariates: [Age]
+  - type: ATE
+    target: PHENOTYPE_2
+    treatment: (RSID_10 = (control = "AA", case = "CC"), RSID_100 = (control = "GC", case = "CC"))
+    confounders: []
+  - type: CM
+    target: PHENOTYPE_2
+    treatment: (RSID_10 = "AA",)
+    confounders: []
 ```
+
+Note that variants can be encoded either with an explicit string representation (e.g. "AC") or via an integer (0, 1, 2) representing the number of minor alleles in the genotype. All variants in a parameter file should however respect the same encoding. String encoded variants are later one-hot-encoded during the TMLE step.
 
 ## Parameter Plans
 
-There are two main ways one can specify parameters that need to be estimated during a targene-pipeline run. This is done via the `MODE` parameter.
+At the moment, there are two main ways one can specify parameters that need to be estimated during a targene-pipeline run. This is done via the `MODE` parameter.
 
-### `PARAMETER_PLAN` = `FROM_PARAM_FILES`
+### `PARAMETER_PLAN` = `FROM_PARAM_FILE`
 
-This is the most general setting and should match the needs of any project, however it requires some preliminary work. In this setting, one typically provides a set of parameter files as described above. The path to those parameters is then provided with the `PARAMETER_FILES` nextflow parameter. It is not necessary to declare the principal components (from PCA) in the `W` section of those parameter files, they will dynamically be added. The same is true for the target section (`Y`), all variables from the traits dataset that are not part of other sections will be added to the target section. If the `Y` is provided for some parameter file, only those targets will be considered for this specific parameter file.
+This is the most general setting and should match the needs of any project, however it requires some preliminary work. In this setting, one typically provides a set of parameter files as described above. If you are interested in only a few parameters it may be acceptable to write them by hand. Otherwise it is best to generate them using a programming language (for instance using [TMLE.jl](https://targene.github.io/TMLE.jl/stable/)). The path to those parameters is then provided with the `PARAMETER_FILE` nextflow parameter. See the previous section on [Parameter Files](@ref).
 
 ### `PARAMETER_PLAN` = `FROM_ACTORS`
 
@@ -74,7 +57,7 @@ In this setting the goal is to infer the interaction effect between multiple var
 
 ```@raw html
 <div style="text-align:center">
-<img src="assets/from_actors.png" alt="FromActors" style="width:800px;"/>
+<img src="../assets/from_actors.png" alt="FromActors" style="width:600px;"/>
 </div>
 ```
 
@@ -83,10 +66,12 @@ Let us now turn to the pipeline specification for this parameter plan:
 - `BQTLS`: A path to a `.csv` file containing at least an `ID` column for each rsID and an optional `CHR` column for the chromosome on which the SNP is located.
 - `TRANS_ACTORS`: A path prefix to a set of `.csv` files identifying different trans-acting variants. Each file has the same format as for the `bQTLs`.
 - `ENVIRONMENTALS`: A path to a `.txt` file containing a list of environmental exposures with no header and one exposure per line. Each exposure should be available from the trait dataset.
+- `EXTRA_COVARIATES`: A path to a `.txt` file containing a list of extra covariate variables with no header and one variable per line. Each variable should be available from the trait dataset.
+- `EXTRA_CONFOUNDERS`: A path to a `.txt` file containing a list of extra confounding variables with no header and one variable per line. Each variable should be available from the trait dataset.
 - `ORDERS`: A comma separated string that specifies the various interaction orders of interest. All combinations satisfying the positivity constraint will be generated. The order 1 corresponds to the Average Treatment Effect (ATE) for `bQTLs`, any higher order corresponds to the Interaction Average Treatment Effect (IATE) for the various actors. For example, in the previous scenario, assume we provided `ORDERS`=`1,2`. This would generate parameter files for the estimation of all:
   - ATEs parameters for all bQTLs
   - IATEs parameters for all (bQTLs, xQTLs), (bQTLs, yQTLs), (bQTLs, Envs) pairs.
 
 ## Parallelization
 
-Since the same estimator for `p(T|W)` can be used for multiple target parameters, it may be useful to batch phenotypes using `PHENOTYPES_BATCH_SIZE`(default: 1) in order to reduce the computational burden.
+Since the same estimator for `p(T|W)` can be used for multiple target parameters, it may be useful to batch phenotypes using `BATCH_SIZE`(default: 400) in order to reduce the computational burden.

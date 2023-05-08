@@ -13,3 +13,4 @@ test/sandbox.jl
 docs/Manifest.toml
 *.DS_Store
 test/Manifest.toml
+trace.txt

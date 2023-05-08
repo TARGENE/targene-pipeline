@@ -2,6 +2,9 @@ using Test
 using CSV
 using DataFrames
 using YAML
+using TMLE
+using Arrow
+using Serialization
 
 # Move to the project's root
 cd(dirname(dirname(@__FILE__)))
@@ -14,6 +17,7 @@ const SUMMARY_COLUMNS = [
 
 const SIEVE_COLUMNS = ["SIEVE_STD", "SIEVE_PVALUE", "SIEVE_LWB", "SIEVE_UPB"]
 
+const ADJUTMENT_COL = "TRAIT_ADJUSTED_TMLE_PVALUE"
 """
     check_fails_are_extremely_rare_traits(output, dataset)
 

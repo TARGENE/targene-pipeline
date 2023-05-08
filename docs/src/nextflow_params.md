@@ -22,11 +22,11 @@ Here is a list of all the pipeline parameters:
 
 ## [Describing the causal parameters of interest](@ref)
 
-- **`PARAMETER_PLAN` (required, default: "FROM_PARAM_FILES")**: One of "FROM_PARAM_FILES", "FROM_ACTORS".
+- **`PARAMETER_PLAN`** (required, default: "FROM\_PARAM\_FILES"): One of "FROM\_PARAM\_FILES", "FROM\_ACTORS".
 
-If `PARAMETER_PLAN`="FROM_PARAM_FILES":
+If `PARAMETER_PLAN`="FROM\_PARAM\_FILES":
 
-- `PARAMETER_FILES` (required): Path expression to the parameter files.
+- `PARAMETER_FILE` (required): Path expression to the parameter files.
 
 If `PARAMETER_PLAN`="FROM_ACTORS":
 
@@ -41,18 +41,27 @@ If `PARAMETER_PLAN`="FROM_ACTORS":
 
 - **`ESTIMATORFILE` (required)**: YAML configuration file describing the nuisance parameters learners.
 - `POSITIVITY_CONSTRAINT` (optional, default: 0.01): Treatment variables rarest configuration should have at least that frequency.
-- `SAVE_IC` (optional, default: true): For all parameters with an p-value below `PVAL_SIEVE`, the influence curve is saved. Make sure to keep to `true` if you want to use sieve variance correction, i.e. if `NB_VAR_ESTIMATORS` != 0.
+- `SAVE_IC` (optional, default: true): For all parameters with an p-value below `PVAL_THRESHOLD`, the influence curve is saved. Make sure to keep to `true` if you want to use sieve variance correction, i.e. if `NB_VAR_ESTIMATORS` != 0.
 
 ## [Correcting for population relatedness](@ref)
 
 - `GRM_NSPLITS` (optional, default: 100): To fasten GRM computation, it is typically split in batches.
 - `NB_VAR_ESTIMATORS` (optional, default: 0): Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
 - `MAX_TAU` (optional, default: 0.9): Variance estimates are computed for tau ranging from 0 to MAX_TAU
-- `PVAL_SIEVE` (optional, default: 0.05): To save computation time and disk, only parameters with a p-value below this threshold are considered for sieve variance correction.
+- `PVAL_THRESHOLD` (optional, default: 0.05): To save computation time and disk, only parameters with a p-value below this threshold are considered for sieve variance correction.
 
 ## [Tweaking additional behaviour](@ref)
 
 - `CALL_THRESHOLD` (optional, default: 0.9): For putative causal variants (listed in the parameter files described in the [Describing the causal parameters of interest](@ref) section). If a individual's allele's probability is greater than the threshold, then it is called, otherwise it is considered missing.
-- `PHENOTYPES_BATCH_SIZE` (optional, default: 0): Depending on the size of your study and constraints of your HPC platform, it may be advantageous to parallelize the TMLE processes further. This can be done by batching phenotypes under study together. Setting this value to 0 will result in max size batches (i.e. no batching).
+- `BATCH_SIZE` (optional, default: 400): The set of parameters to be estimated is batched and the TMLE processes will run in parallel across batches on your platform.
 - `GENOTYPES_AS_INT` (optional, default: false): If the genotypes should be encoded as a count of the minor allele (0, 1, 2), otherwise the string representation is used.
 - `OUTDIR` (optional, default: "results"): Output directory
+- `RNG` (optional, default: 123): General random seed used where appropriate.
+
+## [Running negative control checks](@ref)
+
+- `MAX_PERMUTATION_TESTS` (optional, default: null): Arbitrarily limits the number of permutation tests performed.
+- `PVAL_COL` (optional, default: TMLE_PVALUE): In the output `summary.csv`, the p-value column used to define significant hits.
+- `PERMUTATION_ORDERS` (optional, default: "1"): A comma separating string defining the permutation test orders to be performed. (see [Permutation tests](@ref))
+- `MAF_MATCHING_RELTOL`(optional, default:0.05): Random variants are chosen with a similar MAF matched with the given relative tolerance.
+- `N_RANDOM_VARIANTS`(optional, default: 10): For each hit, that many variants are randomly picked.
