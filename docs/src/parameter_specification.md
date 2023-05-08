@@ -66,6 +66,8 @@ Let us now turn to the pipeline specification for this parameter plan:
 - `BQTLS`: A path to a `.csv` file containing at least an `ID` column for each rsID and an optional `CHR` column for the chromosome on which the SNP is located.
 - `TRANS_ACTORS`: A path prefix to a set of `.csv` files identifying different trans-acting variants. Each file has the same format as for the `bQTLs`.
 - `ENVIRONMENTALS`: A path to a `.txt` file containing a list of environmental exposures with no header and one exposure per line. Each exposure should be available from the trait dataset.
+- `EXTRA_COVARIATES`: A path to a `.txt` file containing a list of extra covariate variables with no header and one variable per line. Each variable should be available from the trait dataset.
+- `EXTRA_CONFOUNDERS`: A path to a `.txt` file containing a list of extra confounding variables with no header and one variable per line. Each variable should be available from the trait dataset.
 - `ORDERS`: A comma separated string that specifies the various interaction orders of interest. All combinations satisfying the positivity constraint will be generated. The order 1 corresponds to the Average Treatment Effect (ATE) for `bQTLs`, any higher order corresponds to the Interaction Average Treatment Effect (IATE) for the various actors. For example, in the previous scenario, assume we provided `ORDERS`=`1,2`. This would generate parameter files for the estimation of all:
   - ATEs parameters for all bQTLs
   - IATEs parameters for all (bQTLs, xQTLs), (bQTLs, yQTLs), (bQTLs, Envs) pairs.
