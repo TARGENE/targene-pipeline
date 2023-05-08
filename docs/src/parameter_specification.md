@@ -47,7 +47,7 @@ Note that variants can be encoded either with an explicit string representation 
 
 At the moment, there are two main ways one can specify parameters that need to be estimated during a targene-pipeline run. This is done via the `MODE` parameter.
 
-### `PARAMETER_PLAN` = `FROM_PARAM_FILES`
+### `PARAMETER_PLAN` = `FROM_PARAM_FILE`
 
 This is the most general setting and should match the needs of any project, however it requires some preliminary work. In this setting, one typically provides a set of parameter files as described above. If you are interested in only a few parameters it may be acceptable to write them by hand. Otherwise it is best to generate them using a programming language (for instance using [TMLE.jl](https://targene.github.io/TMLE.jl/stable/)). The path to those parameters is then provided with the `PARAMETER_FILE` nextflow parameter. See the previous section on [Parameter Files](@ref).
 
