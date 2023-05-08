@@ -3,7 +3,6 @@
 The estimator configuration file describes the TMLE specification for the estimation of the parameters defined in the previous section. This YAML configuration file is provided to the pipeline via the `ESTIMATORFILE` parameter.
 A set of predifined estimator files are available from [https://github.com/TARGENE/targene-pipeline/estimators/](https://github.com/TARGENE/targene-pipeline/estimators).
 
-
 That being said, you may need to use a custom set of learning algorithms for your project and write your own and contains 4 sections:
 
 - The `threshold` section is a simple floating point number that specifies the minimum allowed value for p(Treatments|Confounders).

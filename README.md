@@ -11,3 +11,14 @@ Please refer to the main [NextFlow](https://www.nextflow.io/) documentation for 
 ```bash
 nextflow run TARGENE/targene-pipeline -profile myprofile -resume
 ```
+
+## Live Server
+
+```bash
+]activate doc
+```
+
+```julia
+using LiveServer
+servedocs()
+```

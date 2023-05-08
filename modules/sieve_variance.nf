@@ -1,5 +1,5 @@
 process SieveVarianceEstimation {
-    container "olivierlabayle/targeted-estimation:0.4"
+    container "olivierlabayle/targeted-estimation:0.5"
     publishDir "$params.OUTDIR/hdf5files/sieve", mode: 'symlink', pattern: "*.hdf5"
     publishDir "$params.OUTDIR/csvs", mode: 'symlink', pattern: "*.csv"
 
@@ -22,15 +22,16 @@ process SieveVarianceEstimation {
 }
 
 process MergeOutputs {
-    container "olivierlabayle/targeted-estimation:0.4"
+    container "olivierlabayle/targeted-estimation:0.5"
     publishDir "$params.OUTDIR", mode: 'symlink'
 
     input:
         path tmle_files
         path sieve_files
+        val outpath
 
     output:
-        path "summary.csv"
+        path "${outpath}"
 
     script:
         tmle_prefix = "tmle"
@@ -38,6 +39,6 @@ process MergeOutputs {
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/scripts/merge_summaries.jl \
-        $tmle_prefix summary.csv $sieve_prefix
+        ${tmle_prefix} ${outpath} ${sieve_prefix}
         """
 }

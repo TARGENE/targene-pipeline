@@ -1,12 +1,14 @@
 # Overview
 
+## Running the pipeline
+
 Since TarGene is a Nextflow pipeline, it can be run with a simple command line similar to the following:
 
 ```bash
 nextflow run https://github.com/TARGENE/targene-pipeline -r vX -profile P -resume -with-trace -with-report
 ```
 
-All arguments are optional but encouraged. Here `-r vX` describes the version to be used and should be provided for reproducibility purposes, e.g. `-r v0.3.7`. If left unspecified, the latest development version will be used. The `-resume` option tells Nextflow to try resume the pipeline if an error occured during the execution (if you misspecified a parameter for instance) and the `-with-trace` and `-with-report` provide additional reporting. The `-profile P` option is described below and implicit, is the existence of a `nextflow.config` file, the content of which is also described here:
+All arguments are optional but encouraged. Here `-r vX` describes the version to be used and should be provided for reproducibility purposes, e.g. `-r v0.3.7`. If left unspecified, the latest development version will be used. The `-resume` option tells Nextflow to try to resume the pipeline if an error occured during the execution (if you misspecified a parameter for instance) and the `-with-trace` and `-with-report` generate additional report files. The `-profile P` option is described below and implicit, is the existence of a `nextflow.config` file, the content of which is also described here:
 
 1. It is likely that you will run TarGene on a HPC platform, in particular the [Executors](https://www.nextflow.io/docs/latest/executor.html) and [Singularity](https://www.nextflow.io/docs/latest/container.html#singularity) configurations are required. Since Nextflow is so widespread, it is probable that such a configuration file is already available from your HPC administrators. Since this configuration only describes de computing platform and not your project, it is often described as a [Profile](https://www.nextflow.io/docs/latest/config.html#config-profiles). If your HPC uses the SGE executor, the `-profile eddie` may work with no, or minor adjustment (it can also serve as a template for other executors [see file](https://github.com/TARGENE/targene-pipeline/blob/main/conf/eddie.config)).
 
@@ -17,5 +19,11 @@ All arguments are optional but encouraged. Here `-r vX` describes the version to
     - [Specifying a Targeted Estimator](@ref)
     - [Correcting for population relatedness](@ref)
     - [Tweaking additional behaviour](@ref)
+    - [Running negative control checks](@ref)
 
-Finally, a list of all TarGene's parameters is available in the [Index of the pipeline parameters](@ref).
+A list of all TarGene's parameters is available in the [Index of the pipeline parameters](@ref).
+
+## Outputs
+
+All outputs are generated in the `$(OUTDIR)` (default: `results`) directory. The main output file of the pipeline is the `summary.csv`, which contains all summary statistics for each parameter of interest: effect size, p-value, trait-adjusted p-value...
+Other sub-directories contain intermediate results that may still be of interest, for instance, influence curves are stored in `hdf5files/inf_curves`.
