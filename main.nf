@@ -172,7 +172,7 @@ workflow negativeControl {
     GeneratePermutationTestsData(dataset, results_file)
     TMLE(
         GeneratePermutationTestsData.output.dataset, 
-        GeneratePermutationTestsData.output.parameters, 
+        GeneratePermutationTestsData.output.parameters.flatten(), 
         estimatorfile
     )
     MergeOutputs(TMLE.out.tmle_csv.collect(), sieve_csv, "permutation_summary.csv")
