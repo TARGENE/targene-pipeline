@@ -39,7 +39,7 @@ process TMLE {
         hdf5option = params.SAVE_IC == true ? "--hdf5-out=${hdf5out}" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --procs=${task.cpus} --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
         $data $parameterfile $estimatorfile $csvout \
         $hdf5option \
         --chunksize=100 \
