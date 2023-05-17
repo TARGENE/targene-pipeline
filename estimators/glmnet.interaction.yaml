@@ -2,18 +2,15 @@
 Q_continuous:
   model: RestrictedInteractionGLMNetRegressor
   nfolds: 3
-  parallel: true
   order: 2
 
 # For the estimation of E[Y|W, T]: binary target
 Q_binary:
   model: RestrictedInteractionGLMNetClassifier
   nfolds: 3
-  parallel: true
   order: 2
   
 # For the estimation of p(T| W)
 G:
   model: GLMNetClassifier
-  parallel: true
   nfolds: 3
