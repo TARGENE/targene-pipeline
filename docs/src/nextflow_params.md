@@ -22,9 +22,9 @@ Here is a list of all the pipeline parameters:
 
 ## [Describing the causal parameters of interest](@ref)
 
-- **`PARAMETER_PLAN`** (required, default: "FROM\_PARAM\_FILES"): One of "FROM\_PARAM\_FILES", "FROM\_ACTORS".
+- **`PARAMETER_PLAN`** (required, default: "FROM\_PARAM\_FILE"): One of "FROM\_PARAM\_FILE", "FROM\_ACTORS".
 
-If `PARAMETER_PLAN`="FROM\_PARAM\_FILES":
+If `PARAMETER_PLAN`="FROM\_PARAM\_FILE":
 
 - `PARAMETER_FILE` (required): Path expression to the parameter files.
 

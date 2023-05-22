@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process GeneratePermutationTestsData {
-    container "olivierlabayle/negative-controls:0.1"
+    container "olivierlabayle/negative-controls:0.2"
     publishDir "${params.OUTDIR}/permutation_data", mode: 'symlink'
     label "bigmem"
     
@@ -27,7 +27,7 @@ process GeneratePermutationTestsData {
 
     output:
         path "permutation_dataset.arrow", emit: dataset
-        path "*.bin", emit: parameters
+        path "*.yaml", emit: parameters
 
     script:
         limit = params.MAX_PERMUTATION_TESTS == null ? "" : "--limit=${params.MAX_PERMUTATION_TESTS}"
