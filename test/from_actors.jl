@@ -55,7 +55,7 @@ end
     end
     @test n_permuted_cols > 20
 
-    parameters = deserialize(joinpath("results", "permutation_data", "permutation_param_1.bin"))
+    parameters = parameters_from_yaml(joinpath("results", "permutation_data", "permutation_param_1.yaml"))
     @test size(parameters, 1) == 100
     @test all(Ψ isa IATE for Ψ in parameters)
     
