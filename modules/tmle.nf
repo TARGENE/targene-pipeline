@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:0.6"
+    container "olivierlabayle/targeted-estimation:0.7"
     publishDir "$params.OUTDIR/csvs",  mode: 'symlink', pattern: "*.csv"
     publishDir "$params.OUTDIR/hdf5files/inf_curves",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
@@ -40,7 +40,8 @@ process TMLE {
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
-        $data $parameterfile $estimatorfile $csvout \
+        $data $parameterfile $csvout \
+        --estimator-file=$estimatorfile \
         $hdf5option \
         --chunksize=100 \
         --pval-threshold=${params.PVAL_THRESHOLD}
