@@ -40,7 +40,8 @@ process TMLE {
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
-        $data $parameterfile $estimatorfile $csvout \
+        $data $parameterfile $csvout \
+        --estimator-file=$estimatorfile
         $hdf5option \
         --chunksize=100 \
         --pval-threshold=${params.PVAL_THRESHOLD}
