@@ -8,7 +8,7 @@ nextflow run https://github.com/TARGENE/targene-pipeline -entry negativeControl 
 
 see the [Overview](@ref) section for more info on the command line options.
 
-At the moment, there are two types of analyses you can perform with this sub-pipeline: permutation tests and comparisons with "non-functional" random variants drawn from the genome. Furthermore, this is restricted to interaction parameters (IATE). In both cases, you will need to define positive hits. This is traditionally done via p-value filtering, you will thus need to specify both a pvalue column (from the "summary.csv" file) and a threshold `PVAL_COL` and `PVAL_THRESHOLD` parameters.
+At the moment, there are two types of analyses you can perform with this sub-pipeline: permutation tests and comparisons with "non-functional" random variants drawn from the genome. Furthermore, this is restricted to interaction parameters (IATE). In both cases, you will need to define positive hits. This is traditionally done via p-value filtering, you will thus need to specify both a pvalue column (from the "summary.csv" file) and a threshold: `PVAL_COL` and `PVAL_THRESHOLD` parameters.
 
 ## Permutation tests
 
