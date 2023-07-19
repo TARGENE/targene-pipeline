@@ -1,6 +1,6 @@
 # Setting a data source
 
-Currently, only the UK-Biobank is supported, stay tuned for further data sources!
+Currently, only the UK-Biobank is supported, work is under way to enable custom data sources!
 
 ## UK-Biobank
 
@@ -10,7 +10,9 @@ The UK-Biobank is composed of both genetic data (.bed and .bgen files) and trait
 
 The trait dataset is often called the "main dataset" and consists of an encrypted file containing individuals' trait information accessible via your project. The first option is thus to provide this dataset using the `ENCRYPTED_DATASET` parameter. Since the data is encrypted, the pipeline will also need the encoding file that you can provide with `ENCODING_FILE`.
 
-A "main dataset" is typically very large and only a few traits will be of interest to a given study. To extract those relevant traits from the dataset, a `TRAITS_CONFIG` YAML file must be provided. The structure of a file is composed of extraction rules that convert UK-Biobank fields to traits of interest. An example is presented below:
+A "main dataset" is typically very large and only a few traits will be of interest to a given study. To extract those relevant traits from the dataset, a `TRAITS_CONFIG` YAML file must be provided. Since, writing by hand such a file for large scale study can quickly become tenuous, we provide a configuration file corresponding to the [GeneAtlas](http://geneatlas.roslin.ed.ac.uk/) study [here](https://github.com/TARGENE/UKBMain.jl/blob/main/config/geneatlas_config.yaml).
+
+The structure of a file is composed of extraction rules that convert UK-Biobank fields to traits of interest. An example is presented below:
 
 ```yaml
 traits:
@@ -68,7 +70,7 @@ subset:
           codings: [1001]
 ```
 
-A file consists of two sections, a `traits` section and a `subset` section. Each section is further divided in a list of `fields` items. Each `fields` item is itself decomposed in multiple `phenotypes` items that are identified by a `name` and an optional list of `codings`. Alltogether, a phenotype element defines an extraction rule from a list of fields. The previous configuration file would thus restrict the analysis to white females and extract 5 traits. Since, writing by hand such a file for large scale study can quickly become tenuous, we provide a configuration file corresponding to the [GeneAtlas](http://geneatlas.roslin.ed.ac.uk/) study [here](https://github.com/TARGENE/UKBMain.jl/blob/main/config/geneatlas_config.yaml).
+A file consists of two sections, a `traits` section and a `subset` section. Each section is further divided in a list of `fields` items. Each `fields` item is itself decomposed in multiple `phenotypes` items that are identified by a `name` and an optional list of `codings`. Alltogether, a phenotype element defines an extraction rule from a list of fields. The previous configuration file would thus restrict the analysis to white females and extract 5 traits.
 
 We now describe the currently available extraction rules based on variable types. Not that a variable type is determined by the [metadata](https://biobank.ndph.ox.ac.uk/ukb/schema.cgi?id=1) provided by the UK-Biobank and not a programmatic rule.
 
@@ -89,5 +91,5 @@ We are currently using both .bgen and .bed files, furthermore, we assume that th
 
 Additional UK-Biobank required files for preprocessing and filtering are:
 
-- `QC_FILE`: A path to the UK-Biobank SNP quaility control `ukb_snp_qc.txt` file.
+- `QC_FILE`: A path to the UK-Biobank SNP quaility control [`ukb_snp_qc.txt`](https://biobank.ctsu.ox.ac.uk/crystal/refer.cgi?id=1955) file.
 - `WITHDRAWAL_LIST`: A path to the withdrawal sample list to exclude removed participants from the study.
