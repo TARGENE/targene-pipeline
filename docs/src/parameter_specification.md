@@ -2,7 +2,7 @@
 
 ## Parameter Files
 
-In this section, by parameter, we mean the statistical parameter that represents the scientific quantity of interest and will be estimated via TarGene. The complete specification of a parameter requires the description of a causal model which can be represented by the following graph.
+In this section, by parameter, we mean a statistical estimand that represents a scientific quantity of interest and will be estimated via TarGene. The complete specification of a parameter requires the description of a causal model which can be represented by the following graph.
 
 ```@raw html
 <div style="text-align:center">
@@ -28,7 +28,7 @@ Here is an example parameter file:
 Parameters:
   - type: IATE
     target: "*"
-    treatment: (RSID_10 = (control = "AA", case = "AC), Sun_Exposure = (control = 1, case = 0))
+    treatment: (RSID_10 = (control = "AA", case = "AC"), Sun_Exposure = (control = 1, case = 0))
     confounders: [Economic_background]
     covariates: [Age]
   - type: ATE
@@ -41,7 +41,7 @@ Parameters:
     confounders: []
 ```
 
-Note that variants can be encoded either with an explicit string representation (e.g. "AC") or via an integer (0, 1, 2) representing the number of minor alleles in the genotype. All variants in a parameter file should however respect the same encoding. String encoded variants are later one-hot-encoded during the TMLE step.
+Note that variants must be encoded via an explicit genotype string representation (e.g. "AC"), the order of the alleles in the genotype is not important.
 
 ## Parameter Plans
 
@@ -49,7 +49,7 @@ At the moment, there are two main ways one can specify parameters that need to b
 
 ### `PARAMETER_PLAN` = `FROM_PARAM_FILE`
 
-This is the most general setting and should match the needs of any project, however it requires some preliminary work. In this setting, one typically provides a set of parameter files as described above. If you are interested in only a few parameters it may be acceptable to write them by hand. Otherwise it is best to generate them using a programming language (for instance using [TMLE.jl](https://targene.github.io/TMLE.jl/stable/)). The path to those parameters is then provided with the `PARAMETER_FILE` nextflow parameter. See the previous section on [Parameter Files](@ref).
+This is the most general setting and should match the needs of any project, however it requires some preliminary work. In this setting, one typically provides a set of parameter files as described above. If you are interested in only a few parameters it may be acceptable to write them by hand. Otherwise it is best to generate them using a programming language (for instance using [TMLE.jl](https://targene.github.io/TMLE.jl/stable/api/#TMLE.parameters_to_yaml-Tuple{Any,%20Any})). The path to those parameters is then provided with the `PARAMETER_FILE` nextflow parameter. See the previous section on [Parameter Files](@ref).
 
 ### `PARAMETER_PLAN` = `FROM_ACTORS`
 
@@ -74,4 +74,4 @@ Let us now turn to the pipeline specification for this parameter plan:
 
 ## Parallelization
 
-Since the same estimator for `p(T|W)` can be used for multiple target parameters, it may be useful to batch phenotypes using `BATCH_SIZE`(default: 400) in order to reduce the computational burden.
+Depending on the available resources, you can achieve further speed by batching the parameters to be estimated. The batch size can be controled via `BATCH_SIZE`(default: 400).

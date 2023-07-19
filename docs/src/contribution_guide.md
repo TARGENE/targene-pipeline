@@ -36,6 +36,7 @@ Currently, all TarGene building blocks (executables) are provided as docker imag
 | [TargeneCore.jl](https://github.com/TARGENE/TargeneCore.jl) | [tl-core](https://hub.docker.com/r/olivierlabayle/tl-core/tags) |
 | [UKBMain.jl](https://github.com/TARGENE/UKBMain.jl) | [ukbmain](https://hub.docker.com/r/olivierlabayle/ukbmain/tags) |
 | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | [targeted-estimation](https://hub.docker.com/r/olivierlabayle/targeted-estimation/tags) |
+| [NegativeControl.jl](https://github.com/TARGENE/NegativeControl.jl) | [negative-controls](https://hub.docker.com/r/olivierlabayle/negative-controls/tags) |
 
 ## Note on the pipeline's tests
 
