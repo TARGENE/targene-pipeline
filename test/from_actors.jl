@@ -12,7 +12,7 @@ include("utils.jl")
 
     ## Checking main output
     output = CSV.read(joinpath("results", "summary.csv"), DataFrame)
-    dataset = CSV.read(joinpath("results", "tmle_inputs", "final.data.csv"), DataFrame)
+    dataset = DataFrame(Arrow.Table(joinpath("results", "tmle_inputs", "final.data.csv")))
     bQTLs = Symbol.(CSV.read(joinpath("test", "data", "actors", "bqtls.csv"), DataFrame).ID)
 
     @test names(output) == vcat(SUMMARY_COLUMNS, SIEVE_COLUMNS, ADJUTMENT_COL)
