@@ -97,7 +97,7 @@ process TMLEInputsFromActors {
         path trans_actors
 
     output:
-        path "final.data.csv", emit: traits
+        path "final.data.arrow", emit: traits
         path "final.*.yaml", emit: parameters
 
     script:
