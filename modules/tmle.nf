@@ -51,7 +51,7 @@ process TMLE {
 process TMLEInputsFromParamFile {
     container "olivierlabayle/tl-core:remove_asint"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
-    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
+    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
 
     input:
@@ -61,7 +61,7 @@ process TMLEInputsFromParamFile {
         path parameter
 
     output:
-        path "final.data.csv", emit: traits
+        path "final.data.arrow", emit: traits
         path "final.*.yaml", emit: parameters
 
     script:
@@ -83,7 +83,7 @@ process TMLEInputsFromParamFile {
 process TMLEInputsFromActors {
     container "olivierlabayle/tl-core:remove_asint"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
-    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
+    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
 
     input:
