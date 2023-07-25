@@ -19,7 +19,7 @@ params.PVAL_THRESHOLD = 0.05
 params.VERBOSITY = 1
 params.OUTDIR = "${launchDir}/results"
 params.RESULTS_FILE = "${params.OUTDIR}/summary.csv"
-params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.csv"
+params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.arrow"
 
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
