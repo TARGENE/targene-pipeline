@@ -49,7 +49,7 @@ process TMLE {
 }
 
 process TMLEInputsFromParamFile {
-    container "olivierlabayle/tl-core:remove_asint"
+    container "olivierlabayle/tl-core:0.6"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
@@ -81,7 +81,7 @@ process TMLEInputsFromParamFile {
 }
 
 process TMLEInputsFromActors {
-    container "olivierlabayle/tl-core:remove_asint"
+    container "olivierlabayle/tl-core:0.6"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
     publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
