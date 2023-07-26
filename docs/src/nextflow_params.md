@@ -54,7 +54,6 @@ If `PARAMETER_PLAN`="FROM_ACTORS":
 
 - `CALL_THRESHOLD` (optional, default: 0.9): For putative causal variants (listed in the parameter files described in the [Describing the causal parameters of interest](@ref) section). If a individual's allele's probability is greater than the threshold, then it is called, otherwise it is considered missing.
 - `BATCH_SIZE` (optional, default: 400): The set of parameters to be estimated is batched and the TMLE processes will run in parallel across batches on your platform.
-- `GENOTYPES_AS_INT` (optional, default: false): If the genotypes should be encoded as a count of the minor allele (0, 1, 2), otherwise the string representation is used.
 - `OUTDIR` (optional, default: "results"): Output directory
 - `RNG` (optional, default: 123): General random seed used where appropriate.
 

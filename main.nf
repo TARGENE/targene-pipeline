@@ -19,7 +19,7 @@ params.PVAL_THRESHOLD = 0.05
 params.VERBOSITY = 1
 params.OUTDIR = "${launchDir}/results"
 params.RESULTS_FILE = "${params.OUTDIR}/summary.csv"
-params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.csv"
+params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.arrow"
 
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
@@ -29,7 +29,6 @@ params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
 params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
 params.ORDERS = "1,2"
-params.GENOTYPES_AS_INT = false
 
 // Permutation Tests Parameters
 params.MAX_PERMUTATION_TESTS = null
