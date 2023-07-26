@@ -1,6 +1,6 @@
 process filterBED{
     label 'bigmem'
-    container "olivierlabayle/tl-core:remove_asint"
+    container "olivierlabayle/tl-core:0.6"
     publishDir "$params.OUTDIR/qc_filtered_chromosomes", mode: 'symlink'
 
     input:
@@ -46,7 +46,7 @@ process thinByLD{
 
 process mergeBEDS{
     label 'bigmem'
-    container "olivierlabayle/tl-core:remove_asint"
+    container "olivierlabayle/tl-core:0.6"
     publishDir "$params.OUTDIR/merged_genotypes", mode: 'symlink'
     
     input:
