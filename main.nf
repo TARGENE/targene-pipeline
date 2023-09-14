@@ -2,10 +2,11 @@
 nextflow.enable.dsl = 2
 
 params.DECRYPTED_DATASET = "NO_FILE"
-params.PARAMETER_PLAN = "FROM_PARAM_FILES"
-params.PARAMETER_FILES = "NO_PARAMETER_FILE"
+params.PARAMETER_PLAN = "FROM_PARAM_FILE"
+params.PARAMETER_FILE = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
+params.SAVE_IC = true
 
 params.MAF_THRESHOLD = 0.01
 params.NB_PCS = 6
@@ -13,28 +14,40 @@ params.NB_PCS = 6
 params.GRM_NSPLITS = 100
 params.NB_VAR_ESTIMATORS = 0
 params.MAX_TAU = 0.9
-params.PVAL_SIEVE = 0.05
+params.PVAL_THRESHOLD = 0.05
 
-params.OUTDIR = "$launchDir/results"
+params.VERBOSITY = 1
+params.OUTDIR = "${launchDir}/results"
+params.RESULTS_FILE = "${params.OUTDIR}/summary.csv"
+params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.arrow"
 
 params.COHORT = "UKBB"
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
 params.QC_FILE = "NO_QC_FILE"
 
-params.PHENOTYPES_BATCH_SIZE = 0
+params.BATCH_SIZE = 400
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
 params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
 params.ORDERS = "1,2"
 
+// Permutation Tests Parameters
+params.MAX_PERMUTATION_TESTS = null
+params.PVAL_COL = "TMLE_PVALUE"
+params.PERMUTATION_ORDERS = "1"
+params.RNG = 123
+params.MAF_MATCHING_RELTOL = 0.05
+params.N_RANDOM_VARIANTS = 10
+
+
 include { IIDGenotypes } from './modules/genotypes.nf'
 include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
 include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
-include { TMLE; TMLEInputsFromParamFiles; TMLEInputsFromActors } from './modules/tmle.nf'
+include { TMLE; TMLEInputsFromParamFile; TMLEInputsFromActors } from './modules/tmle.nf'
 include { GRMPart; AggregateGRM } from './modules/grm.nf'
 include { SieveVarianceEstimation ; MergeOutputs } from './modules/sieve_variance.nf'
-
+include { GeneratePermutationTestsData; GenerateRandomVariantsTestsData } from './modules/negative_control.nf'
 
 workflow extractTraits {
     traits_config = Channel.value(file("$params.TRAITS_CONFIG"))
@@ -109,13 +122,13 @@ workflow generateTMLEEstimates {
                 bqtls,
                 trans_actors)
         }
-        else if (params.PARAMETER_PLAN == "FROM_PARAM_FILES"){
-            parameter_files = Channel.fromPath("$params.PARAMETER_FILES").collect()
-            tmle_inputs = TMLEInputsFromParamFiles(
+        else if (params.PARAMETER_PLAN == "FROM_PARAM_FILE"){
+            parameter_file = Channel.value(file("$params.PARAMETER_FILE"))
+            tmle_inputs = TMLEInputsFromParamFile(
                 bgen_files,
                 traits,
                 genetic_confounders,
-                parameter_files)
+                parameter_file)
         }
         else { 
             throw new Exception("This PARAMETER_PLAN is not available.")
@@ -150,6 +163,29 @@ workflow generateSieveEstimates {
         hdf5_file = SieveVarianceEstimation.out.hdf5_file
 }
 
+workflow negativeControl {
+    results_file = Channel.value(file("${params.RESULTS_FILE}"))
+
+    // Permutation Tests
+    dataset = Channel.value(file("${params.TMLE_INPUT_DATASET}"))
+    estimatorfile = Channel.value(file("${params.ESTIMATORFILE}"))
+    sieve_csv = Channel.value(file("NO_SIEVE_FILE"))
+    GeneratePermutationTestsData(dataset, results_file)
+    TMLE(
+        GeneratePermutationTestsData.output.dataset, 
+        GeneratePermutationTestsData.output.parameters.flatten(), 
+        estimatorfile
+    )
+    MergeOutputs(TMLE.out.tmle_csv.collect(), sieve_csv, "permutation_summary.csv")
+    
+    // Random Variants parameter files generation
+    if (params.PARAMETER_PLAN == "FROM_ACTORS") {
+        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
+        trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
+        GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
+    }
+}
+
 workflow {
     // Extract traits for UKBB
     if (params.COHORT == "UKBB") {
@@ -180,5 +216,5 @@ workflow {
         sieve_csv = Channel.value(file("NO_SIEVE_FILE"))
     }
 
-    MergeOutputs(generateTMLEEstimates.out.tmle_csvs.collect(), sieve_csv)
+    MergeOutputs(generateTMLEEstimates.out.tmle_csvs.collect(), sieve_csv, "summary.csv")
 }

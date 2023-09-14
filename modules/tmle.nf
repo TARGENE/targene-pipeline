@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:v0.3.1"
+    container "olivierlabayle/targeted-estimation:0.7"
     publishDir "$params.OUTDIR/csvs",  mode: 'symlink', pattern: "*.csv"
     publishDir "$params.OUTDIR/hdf5files/inf_curves",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
@@ -29,41 +29,44 @@ process TMLE {
         path estimatorfile
     
     output:
-        path "${outprefix}.csv", emit: tmle_csv
-        path "${outprefix}.hdf5", optional: true, emit: inf_curve
+        path "${csvout}", emit: tmle_csv
+        path "${hdf5out}", optional: true, emit: inf_curve
     
     script:
-        save_ic = params.NB_VAR_ESTIMATORS !== 0 ? '--save-ic' : ''
-        outprefix = "tmle." + parameterfile.getName().replace(".yaml", "")
+        basename = "tmle." + parameterfile.getName().take(parameterfile.getName().lastIndexOf('.'))
+        csvout = basename + ".csv"
+        hdf5out = basename + ".hdf5"
+        hdf5option = params.SAVE_IC == true ? "--hdf5-out=${hdf5out}" : ""
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
-        $data $parameterfile $estimatorfile $outprefix \
-        $save_ic \
-        --pval-threshold=${params.PVAL_SIEVE}
+        $data $parameterfile $csvout \
+        --estimator-file=$estimatorfile \
+        $hdf5option \
+        --chunksize=100 \
+        --pval-threshold=${params.PVAL_THRESHOLD}
         """
 }
 
-process TMLEInputsFromParamFiles {
-    container "olivierlabayle/tl-core:v0.3.0"
+process TMLEInputsFromParamFile {
+    container "olivierlabayle/tl-core:0.6"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
-    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
+    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
 
     input:
         path bgenfiles
         path traits
         path genetic_confounders
-        path parameters
+        path parameter
 
     output:
-        path "final.data.csv", emit: traits
+        path "final.data.arrow", emit: traits
         path "final.*.yaml", emit: parameters
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
-        params_prefix = longest_prefix(parameters)
-        batch_size = params.PHENOTYPES_BATCH_SIZE == 0 ? "" :  "--phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}"
+        batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
@@ -73,14 +76,14 @@ process TMLEInputsFromParamFiles {
         --pcs $genetic_confounders \
         $batch_size \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
-        from-param-files $params_prefix
+        from-param-file $parameter
         """
 }
 
 process TMLEInputsFromActors {
-    container "olivierlabayle/tl-core:v0.3.0"
+    container "olivierlabayle/tl-core:0.6"
     publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
-    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.csv"
+    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
 
     input:
@@ -94,13 +97,13 @@ process TMLEInputsFromActors {
         path trans_actors
 
     output:
-        path "final.data.csv", emit: traits
+        path "final.data.arrow", emit: traits
         path "final.*.yaml", emit: parameters
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
         trans_actors_prefix = longest_prefix(trans_actors)
-        batch_size = params.PHENOTYPES_BATCH_SIZE == 0 ? "" :  "--phenotype-batch-size ${params.PHENOTYPES_BATCH_SIZE}"
+        batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
         extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
         extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
         extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $extra_covariates" : ''

@@ -23,6 +23,10 @@ makedocs(;
             "parameter_specification.md",
             "tmle.md",
             "sieve_variance.md",
+            "miscellaneous.md",
+            "negative_control.md"
+        ],
+        "Miscellaneous" => [
             "nextflow_params.md",
             "runtime_considerations.md"
         ],
