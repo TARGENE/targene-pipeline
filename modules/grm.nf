@@ -1,5 +1,5 @@
 process GRMPart {
-    container "olivierlabayle/tl-core:v0.3.0"
+    container "olivierlabayle/tl-core:0.6"
     label "bigmem"
     label "multithreaded"
 

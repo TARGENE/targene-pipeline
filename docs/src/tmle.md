@@ -1,138 +1,45 @@
-# Targeted Maximum Likelihood Estimation
+# Specifying a Targeted Estimator
 
-The estimator configuration file describes the TMLE specification for the estimation of the parameters defined in the previous section. This YAML configuration file is provided to the pipeline via the `ESTIMATORFILE` parameter.
-A set of predifined estimator files are available from [https://github.com/TARGENE/targene-pipeline/estimators/](https://github.com/TARGENE/targene-pipeline/estimators).
+TMLE is an adaptive procedure that depends on the specification of learning algorithms for the estimation of the nuisance parameters (see [TMLE.jl](https://targene.github.io/TMLE.jl/stable/) for a description of the assumed setting). In our case, there are two nuisance parameters for which we need to specify learning algorithms:
 
+- `E[Y|T, W, C]`: The mean outcome given the treatment, confounders and extra covariates. It is commonly denoted by `Q` in the Targeted Learning litterature.
+- `p(T|W)`: The propensity score. It is commonly denoted by `G` in the Targeted Learning litterature.
 
-That being said, you may need to use a custom set of learning algorithms for your project and write your own and contains 4 sections:
+The estimator configuration file describes the TMLE specification for the estimation of the parameters defined in the previous section. In order to provide maximum flexibility, this is provided as a plain [Julia](https://julialang.org/) file via the `ESTIMATORFILE` parameter.
+### Description of the file
 
-- The `threshold` section is a simple floating point number that specifies the minimum allowed value for p(Treatments|Confounders).
-- The `Q_binary`, `Q_continuous` and `G` sections describe the learners for the nuisance parameters. Each of them contains a `model` that corresponds to a valid MLJ model constructor and further keyword hyperparameters. For instance, a Stack can be provided a `measures` argument to evaluate internal algorithms during cross validation. It can also be provided a potentially adaptive `resampling` strategy and the library of `models`. Each of those models can specify a grid of hyperparameters that will individually define a learning algorithm.
-  - `Q_binary` corresponds to E[Target| Confounders, Covariates] when the targets are binary variables.
-  - `Q_continuous` corresponds to E[Target| Confounders, Covariates] when the targets are continuous variables.
-  - `G` corresponds to the joint distribution p(Treatments|Confounders).
+In order to provide maximum flexibility as to the choice of learning algorithms, the estimator file is a plain [Julia](https://julialang.org/) file. This file is optional and omitting it defaults to using generalized linear models. If provided, it must define a [NamedTuple](https://docs.julialang.org/en/v1/base/base/#Core.NamedTuple) called `tmle_spec` containing any of the following fields as follows (default configuration):
 
-Here are two example estimator configurations that can serve as a template.
+```julia
 
-## Example 1
-
-In this example, Super Learners are used for both `Q` and `G` models. To perform a grid search across model hyperparameters, one can use a list of hyper-parameters. For instance, for the following `Q_continuous` learner, two EvoTreeRegressors will be part of the Super Learner with respectively 10 and 20 trees. The cross-validation procedure can be made adaptive based on the outcome class balance by using the `adaptive: true` option.
-
-```yaml
-threshold: 1e-8
-# For the estimation of E[Y|W, T]: continuous target
-Q_continuous:
-  model: Stack
-  # Description of the resampling strategy
-  resampling:
-    type: CV
-    # The number of folds is determined based on the data
-    adaptive: true
-  # List all models and hyperparameters
-  models: 
-    - type: GLMNetRegressor
-
-    - type: EvoTreeRegressor
-      nrounds: [10, 20]
-
-    - type: ConstantRegressor
-
-    - type: HALRegressor
-      max_degree: 1
-      smoothness_orders: 1
-      num_knots: [[10, 5]]
-      lambda: 10
-      cv_select: false
-
-# For the estimation of E[Y|W, T]: binary target
-Q_binary:
-  model: Stack
-  # Description of the resampling strategy
-  resampling:
-    type: "StratifiedCV"
-    # The number of folds is determined based on the data
-    adaptive: true
-  # List all models and hyperparameters
-  models:
-    - type: GLMNetClassifier
-
-    - type: ConstantClassifier
-
-    - type: HALClassifier
-      max_degree: 1
-      smoothness_orders: 1
-      num_knots: [[10, 5]]
-      lambda: 10
-      cv_select: false
-
-    - type: EvoTreeClassifier
-      nrounds: 10
-
-# For the estimation of p(T| W)
-G:
-  model: Stack
-  # Description of the resampling strategy
-  resampling:
-    type: "StratifiedCV"
-    # The number of folds is determined based on the data
-    adaptive: true
-    # List all models and hyperparameters
-  models:
-    - type: LogisticClassifier
-      fit_intercept: true
-    - type: ConstantClassifier
-    - type: EvoTreeClassifier
-      nrounds: 10
+tmle_spec = (
+  Q_continuous = LinearRegressor(),
+  Q_binary     = LogisticClassifier(lambda=0.),
+  G            = LogisticClassifier(lambda=0.),
+  threshold    = 1e-8,
+  cache        = false,
+  weighted_fluctuation = false
+)
 ```
 
-## Example 2
+where:
 
-While Super Learning is encouraged it is not strictly necessary, here for instance the propensity score is a simple gradient boosting tree and the outcome mode is a logistic regression when the outcome is binary.
+- `Q_continuous`: is a MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is continuous.
+- `Q_binary`: is a MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is binary.
+- `G`: is a MLJ model used for the estimation of `p(T|W)`.
+- `threshold`: is the minimum value the propensity score `G` is allowed to take.
+- `cache`: controls caching of data by [MLJ machines](https://alan-turing-institute.github.io/MLJ.jl/dev/machines/). Setting it to `true` may result in faster runtime but higher memory usage.
+- `weighted_fluctuation`: controls whether the fluctuation for `Q` is a weighted glm or not. If some of the treatment values are rare it may lead to more robust estimation.
 
-```yaml
-threshold: 0.001
-# For the estimation of E[Y|W, T]: continuous target
-Q_continuous:
-  model: Stack
-  # Description of the resampling strategy
-  resampling:
-    type: CV
-    # The number of folds is determined based on the data
-    adaptive: true
-  # List all models and hyperparameters
-  models: 
-    - type: InteractionGLMNetRegressor
+Typically, `Q_continuous`, `Q_binary` and `G` will be adjusted and other fields can be left unspecified.
 
-    - type: EvoTreeRegressor
-      nrounds: [10, 20]
-      λ: [0., 1.]
-      γ: [0.3]
+### Ready to use estimator files
 
-    - type: ConstantRegressor
+We recognize not everyone will be familiar with [Julia](https://julialang.org/). We thus provide a set of ready to use estimator files that can be simplified or extended as needed:
 
-# For the estimation of E[Y|W, T]: binary target
-Q_binary:
-  model: LogisticClassifier
-  lambda: 10.
-
-# For the estimation of p(T| W)
-G:
-  model: EvoTreeClassifier
-  nrounds: 10
-```
-
-## List of supported models
-
-Here is a list of currently supported models, get in touch if you need more:
-
-| Model       | Regression  | Classification  | Source Package  | Comment |
-| ----------- | ----------- | --------------- | --------------- | ------- |
-| Gradient Boosting Trees | EvoTreeRegressor | EvoTreeClassifier | [EvoTrees.jl](https://github.com/Evovest/EvoTrees.jl) | Pure Julia implementation of histogram based gradient boosting trees|
-| Self Tuning EvoTree | GridSearchEvoTreeRegressor | GridSearchEvoTreeClassifier | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | Performs a grid search cross-validation over specified hyper parameters|
-| XGBoost | XGBoostRegressor | XGBoostClassifier | [XGBoost](https://xgboost.readthedocs.io/en/stable/) | Julia wrapper around the original libxgboost |
-| Self Tuning XGBoost | GridSearchXGBoostRegressor | GridSearchXGBoostClassifier | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | Performs a grid search cross-validation over specified hyper parameters|
-| Linear Models | LinearRegressor | LogisticClassifier | [MLJLinearModels.jl](https://github.com/JuliaAI/MLJLinearModels.jl) | More models available, see: [the docs](https://juliaai.github.io/MLJLinearModels.jl/stable/api/#MLJ-Interface-1) |
-| GLM with penalization constant tuning | GLMNetRegressor | GLMNetClassifier | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | This is a simple MLJ API around [GLMNet.jl](https://github.com/JuliaStats/GLMNet.jl) |
-| Same as above with interaction terms | InteractionGLMNetRegressor | InteractionGLMNetClassifier | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | order of interaction is specified with `order` |
-| Highly Adaptive Lasso | HALRegressor | HALClassifier | [HighlyAdaptiveLasso.jl](https://github.com/olivierlabayle/HighlyAdaptiveLasso.jl) | Simple wrapper around the original [R package](https://github.com/tlverse/hal9001) |
-| Constant model | ConstantRegressor | ConstantClassifier | [MLJModels.jl](https://github.com/JuliaAI/MLJModels.jl) | Always outputs the target's mean |
+- Super Learning: [with](./estimators/superlearning-with-interactions-for-Q.jl) and [without](./estimators/superlearning.jl) interaction terms in the GLM models for Q.
+- Super Learning for G and GLMNet for Q: [here](./estimators/G-superlearning-Q-glmnet.jl).
+- Super Learning for G and GLM for Q: [here](./estimators/G-superlearning-Q-glm.jl).
+- GLMNet: [with](./estimators/glmnet-with-interactions-for-Q.jl) and [without](./estimators/glmnet.jl) interaction terms in the GLM models for Q.
+- GLM: [with](./estimators/glm-with-interactions-for-Q.jl) and [without](./estimators/glm.jl) interaction terms in the GLM models for Q.
+- XGBoost: [with tuning](./estimators/tuned-xgboost.jl).

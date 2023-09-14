@@ -1,5 +1,5 @@
 process FlashPCA {
-    cpus 8
+    label "multithreaded"
     container "ktetleycampbell/flashpca:1.0"
 
     input:
@@ -14,9 +14,9 @@ process FlashPCA {
 }
 
 process AdaptFlashPCA {
-    container "olivierlabayle/tl-core:v0.3.0"
+    container "olivierlabayle/tl-core:0.6"
     publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
-    memory '16 GB'
+    label 'bigmem'
     
     input:
         path flashpca_out
