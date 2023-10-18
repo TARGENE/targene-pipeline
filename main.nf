@@ -97,6 +97,23 @@ workflow geneticConfounders {
 
 }
 
+workflow runPCA {
+    // Extract traits for UKBB
+    if (params.COHORT == "UKBB") {
+        extractTraits()
+        phenoInput = extractTraits.out
+    } else {
+        phenoInput = Channel.fromPath("$params.DECRYPTED_DATASET", checkIfExists: true)
+    }
+
+    // Generate IID Genotypes
+    generateIIDGenotypes(phenoInput)
+
+    // Genetic confounders up to NB_PCS
+    geneticConfounders(generateIIDGenotypes.out) 
+
+}
+
 workflow generateTMLEEstimates {
     take:
         traits
