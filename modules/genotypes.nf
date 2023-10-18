@@ -14,23 +14,14 @@ process filterBED{
 
     script:
         prefix = bedfiles[0].toString().minus('.bed')
-        
-        script="TEMPD=\$(mktemp -d)\n"
-        if (params.QC_FILE == "NO_QC_FILE") {
-            script += """
-                JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
-                    --input $prefix --output filtered.$prefix --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --traits $traits filter
-                """
-                .stripIndent()
-        } else {
-            script += """
-                JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
-                    --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --traits $traits filter
-                """
-                .stripIndent()
-        }
+        qc_file = params.QC_FILE !== 'NO_QC_FILE' ? "--qc-file $qcfile" : '' 
 
-        script
+        """
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
+                    --input $prefix --output filtered.$prefix $qc_file --maf-threshold $params.MAF_THRESHOLD \
+                    --ld-blocks $ld_blocks --traits $traits filter
+        """
 }
 
 
@@ -57,7 +48,7 @@ process thinByLD{
 
 process mergeBEDS{
     label 'bigmem'
-    container "olivierlabayle/tl-core:0.6"
+    container "olivierlabayle/tl-core:brh_data_source"
     publishDir "$params.OUTDIR/merged_genotypes", mode: 'symlink'
     
     input:
