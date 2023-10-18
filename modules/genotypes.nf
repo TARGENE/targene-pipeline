@@ -14,7 +14,7 @@ process filterBED{
 
     script:
         prefix = bedfiles[0].toString().minus('.bed')
-        qc_file = params.QC_FILE !== 'NO_QC_FILE' ? "--qc-file $qcfile" : '' 
+        qc_file = params.QC_FILE !== 'NO_QC_FILE' ? "--qcfile $qcfile" : '' 
 
         """
         TEMPD=\$(mktemp -d)
