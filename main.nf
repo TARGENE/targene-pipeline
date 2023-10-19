@@ -25,6 +25,7 @@ params.COHORT = "UKBB"
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
 params.QC_FILE = "NO_QC_FILE"
+params.LD_BLOCKS = "NO_LD_BLOCKS"
 
 params.BATCH_SIZE = 400
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
@@ -90,7 +91,7 @@ workflow geneticConfounders {
 
     main:
         FlashPCA(iid_genotypes)
-        AdaptFlashPCA(FlashPCA.out)
+        AdaptFlashPCA(FlashPCA.out.pcs)
 
     emit:
         AdaptFlashPCA.out
