@@ -91,7 +91,7 @@ workflow geneticConfounders {
 
     main:
         FlashPCA(iid_genotypes)
-        AdaptFlashPCA(FlashPCA.out.pcs)
+        AdaptFlashPCA(FlashPCA.out)
 
     emit:
         AdaptFlashPCA.out
