@@ -41,8 +41,8 @@ process thinByLD{
     script:
         prefix = bedfiles[0].toString().minus('.bed')
         """
-        plink2 --bfile $prefix --indep-pairwise 1000 50 0.05 --exclude range $flashpca_excl_reg
-        plink2 --bfile $prefix --extract plink2.prune.in --make-bed --out LDpruned.$prefix
+        plink2 --memory ${task.memory.toMega()} --bfile $prefix --indep-pairwise 1000 50 0.05 --exclude range $flashpca_excl_reg
+        plink2 --memory ${task.memory.toMega()} --bfile $prefix --extract plink2.prune.in --make-bed --out LDpruned.$prefix
         """
 }
 
