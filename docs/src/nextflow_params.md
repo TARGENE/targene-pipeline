@@ -39,7 +39,7 @@ If `PARAMETER_PLAN`="FROM_ACTORS":
 
 ## [Specifying a Targeted Estimator](@ref)
 
-- **`ESTIMATORFILE` (required)**: YAML configuration file describing the nuisance parameters learners.
+- **`ESTIMATORFILE` (required)**: Julia configuration file describing the nuisance parameters learners.
 - `POSITIVITY_CONSTRAINT` (optional, default: 0.01): Treatment variables rarest configuration should have at least that frequency.
 - `SAVE_IC` (optional, default: true): For all parameters with an p-value below `PVAL_THRESHOLD`, the influence curve is saved. Make sure to keep to `true` if you want to use sieve variance correction, i.e. if `NB_VAR_ESTIMATORS` != 0.
 
