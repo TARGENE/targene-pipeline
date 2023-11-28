@@ -39,6 +39,22 @@ end
 
 """
 
+This function checks the number of failed traits in the non-UKBB setting.
+"""
+
+function check_n_failed_traits(output)
+    groups = groupby(output, :TREATMENTS)
+    n_fails = []
+    for (treatment, group) in pairs(groups)
+        treatment = treatment.TREATMENTS
+        fails = filter(x -> x.LOG !== missing, group)
+        push!(n_fails, size(unique(fails.TARGET))[1])
+    end
+    @test n_fails == [14,7]
+end
+
+"""
+
 This is more of a non-regression test where we check that at least a certain amount of
 estimates are a success.
 """
