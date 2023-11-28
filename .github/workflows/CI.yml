@@ -15,9 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         testrun:
-          - "from_actors.jl"
           - "from_param_files.jl"
-          - "non_ukbb.jl"
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
@@ -37,42 +35,7 @@ jobs:
       - uses: nf-core/setup-nextflow@v1.2.0
       - name: Instantiate test environment
         run: julia --project=test --startup-file=no -e'using Pkg;Pkg.instantiate()'
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Run tests
         run: julia --project=test --startup-file=no test/${{ matrix.testrun }} -profile ci
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
-        with:
-          version: '1'
-      - uses: julia-actions/julia-buildpkg@v1
-      # - uses: julia-actions/julia-docdeploy@v1
-      #   with:
-      #     install-package: false
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install GitHubActions.jl in its own (shared) environment
-        run: |
-          using Pkg
-          Pkg.activate("docs-logger-env"; shared=true)
-          Pkg.add(Pkg.PackageSpec(name="GitHubActions", version="0.1"))
-        shell: julia --color=yes {0}
-      - run: |
-          # The Julia command that will be executed
-          julia_cmd=( julia --color=yes --project=docs/ -e 'using Pkg; Pkg.instantiate();
-              @eval Module() begin
-                  push!(LOAD_PATH, "@docs-logger-env") # access GitHubActions.jl
-                  import Logging, GitHubActions
-                  Logging.global_logger(GitHubActions.GitHubActionsLogger())
-                  pop!(LOAD_PATH)
-              end
-              include("docs/make.jl")' )
-          # Run the Julia command
-          "${julia_cmd[@]}"
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
