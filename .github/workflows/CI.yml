@@ -17,6 +17,7 @@ jobs:
         testrun:
           - "from_actors.jl"
           - "from_param_files.jl"
+          - "non_ukbb.jl"
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
