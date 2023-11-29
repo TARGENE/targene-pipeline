@@ -37,6 +37,5 @@ jobs:
         run: julia --project=test --startup-file=no -e'using Pkg;Pkg.instantiate()'
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       - name: Run tests
         run: julia --project=test --startup-file=no test/${{ matrix.testrun }} -profile ci
