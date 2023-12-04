@@ -63,10 +63,15 @@ workflow extractTraits {
         decrypted_dataset = Channel.value(file("$params.DECRYPTED_DATASET"))
     }
 
-    TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
+    if (params.COHORT == "UKBB") {
+        extracted_traits = TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
+    } 
+    else {
+        extracted_traits = decrypted_dataset 
+    }
 
     emit:
-        TraitsFromUKB.out
+        extracted_traits
 }
 
 workflow generateIIDGenotypes {
@@ -100,15 +105,10 @@ workflow geneticConfounders {
 
 workflow runPCA {
     // Extract traits for UKBB
-    if (params.COHORT == "UKBB") {
-        extractTraits()
-        phenoInput = extractTraits.out
-    } else {
-        phenoInput = Channel.fromPath("$params.DECRYPTED_DATASET", checkIfExists: true)
-    }
+    extractTraits()
 
     // Generate IID Genotypes
-    generateIIDGenotypes(phenoInput)
+    generateIIDGenotypes(extractTraits.out)
 
     // Genetic confounders up to NB_PCS
     geneticConfounders(generateIIDGenotypes.out) 
@@ -206,22 +206,17 @@ workflow negativeControl {
 
 workflow {
     // Extract traits for UKBB
-    if (params.COHORT == "UKBB") {
-        extractTraits()
-        phenoInput = extractTraits.out
-    } else {
-        phenoInput = Channel.fromPath("$params.DECRYPTED_DATASET", checkIfExists: true)
-    }
+    extractTraits()
 
     // Generate IID Genotypes
-    generateIIDGenotypes(phenoInput)
+    generateIIDGenotypes(extractTraits.out)
 
     // Genetic confounders
     geneticConfounders(generateIIDGenotypes.out)
 
     // generate estimates
     generateTMLEEstimates(
-        phenoInput,
+        extractTraits.out,
         geneticConfounders.out,
     )
 
