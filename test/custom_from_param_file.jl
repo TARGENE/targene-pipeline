@@ -17,4 +17,9 @@ include("utils.jl")
     @test Set(unique(output.TREATMENTS)) == Set(["1:238411180:T:C_&_3:3502414:T:C", "2:14983:G:A"])
     
     test_n_success_more_than_threshold(output, 20)
+
+    # Here we test that the process generateIIDGenotypes has been run once for each chromosome
+    n_chr_files = filter(x -> startswith(x, "LDpruned.filtered.ukb_chr"), readdir(joinpath("results","ld_pruned_chromosomes")))
+    # There should be 4 files for each chromosome
+    @test length(n_chr_files) == 4*3
 end
