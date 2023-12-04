@@ -12,5 +12,6 @@ LocalPreferences.toml
 test/sandbox.jl
 docs/Manifest.toml
 *.DS_Store
+trace.txt*
 test/Manifest.toml
 trace.txt

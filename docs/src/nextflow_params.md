@@ -4,18 +4,19 @@ Here is a list of all the pipeline parameters:
 
 ## [Setting a data source](@ref)
 
+- **`COHORT` (required):** Current default for this is UKBB. If set to a value other than UKBB, this will not run UKBB-specific trait extraction. If `COHORT` is not UKBB, you must specify your trait data in the `DECRYPTED_DATASET` parameter.
 - **`ENCRYPTED_DATASET` (required unless a `DECRYPTED_DATASET` is given)**: Path to a UK-Biobank encrypted main dataset.
 - **`ENCODING_FILE` (required unless a `DECRYPTED_DATASET` is given)**: If an encrypted dataset is provided, an encoding file must accompany it.
-- `DECRYPTED_DATASET` (optional): Path to a UK-Biobank decrypted main dataset. If set, `ENCRYPTED_DATASET` is ignored.
+- `DECRYPTED_DATASET` (optional): Path to a UK-Biobank decrypted main dataset. If set, `ENCRYPTED_DATASET` is ignored. **If you are running this for a non-UKBB cohort, your sample IDs must be specified in the first column of this CSV file, with the column name `SAMPLE_ID`.**
 - **`TRAITS_CONFIG` (required)**: Configuration file describing which traits should be extracted from the main dataset.
 - **`WITHDRAWAL_LIST` (required)**: List of participants withdrawn from the study.
-- **`QC_FILE` (required)**: Genotyping quality control file from the UK-Biobank study.
-- **`UKBB_BED_FILES` (required)**: Path expression to PLINK BED files.
-- **`UKBB_BGEN_FILES` (required)**: Path expression to iputed BGEN files.
+- `QC_FILE` (optional): Genotyping quality control file from the UK-Biobank study. This is **required** when `COHORT`="UKBB".
+- **`BED_FILES` (required)**: Path expression to PLINK BED files.
+- **`BGEN_FILES` (required)**: Path expression to imputed BGEN files.
 
 ## [Adjusting for confounders](@ref)
 
-- **`LD_BLOCKS` (required)**: A path to pre-identified linkage desequlibrium blocks around the variants that will be queried for causal effect estimation. Those will be removed from the data.
+- **`LD_BLOCKS` (optional)**: A path to pre-identified linkage disequlibrium blocks around the variants that will be queried for causal effect estimation. Those will be removed from the data. It is good practice to specify `LD_BLOCKS`, as it will remove SNPs correlated with your variants-of-interest before running PCA. 
 - **`FLASHPCA_EXCLUSION_REGIONS` (required)**: A path to the flashpca special exclusion regions which is provided in their repository.
 - `MAF_THRESHOLD` (optional): Only variants with that minor allele frequency are considered
 - `NB_PCS` (optional, default: 6): The number of PCA components to extract.
@@ -30,8 +31,8 @@ If `PARAMETER_PLAN`="FROM\_PARAM\_FILE":
 
 If `PARAMETER_PLAN`="FROM_ACTORS":
 
-- **`BQTLS` (required)**: A CSV file containing binding quantitative trait loci.
-- **`TRANS_ACTORS` (required)**: A prefix to CSV files containing quantitative trait loci potentially interacting with the previous bqtls.
+- **`BQTLS` (required)**: A CSV file containing binding quantitative trait loci (bQTLs). If multiple transcription factors (TFs) are included in a single run, you must include a column called `TF`, which specifies the TF associated with each bQTL.
+- **`TRANS_ACTORS` (required)**: A prefix to CSV files containing quantitative trait loci potentially interacting with the previous bqtls. If multiple transcription factors (TFs) are included in a single run, you must include a column called `TF`, which specifies the TF associated with each transactor.
 - `EXTRA_CONFOUNDERS` (optional, default: nothing): Path to additional confounders file, one per line, no header.
 - `EXTRA_COVARIATES` (optional, default: nothing): Path to additional covariates file, one per line, no header.
 - `ENVIRONMENTALS` (optional, default: nothing): Path to additional environmental treatments file, one per line, no header.

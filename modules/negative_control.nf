@@ -46,7 +46,7 @@ process GeneratePermutationTestsData {
 }
 
 process GenerateRandomVariantsTestsData {
-    container "olivierlabayle/negative-controls:0.1"
+    container "olivierlabayle/negative-controls:0.2"
     publishDir "${params.OUTDIR}", mode: 'symlink'
     label "bigmem"
     

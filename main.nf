@@ -21,8 +21,12 @@ params.OUTDIR = "${launchDir}/results"
 params.RESULTS_FILE = "${params.OUTDIR}/summary.csv"
 params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.arrow"
 
+params.COHORT = "UKBB"
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
+params.QC_FILE = "NO_QC_FILE"
+params.LD_BLOCKS = "NO_LD_BLOCKS"
+params.FLASHPCA_EXCLUSION_REGIONS = "data/exclusion_regions_hg19.txt"
 
 params.BATCH_SIZE = 400
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
@@ -60,10 +64,15 @@ workflow extractTraits {
         decrypted_dataset = Channel.value(file("$params.DECRYPTED_DATASET"))
     }
 
-    TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
+    if (params.COHORT == "UKBB") {
+        extracted_traits = TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
+    } 
+    else {
+        extracted_traits = decrypted_dataset 
+    }
 
     emit:
-        TraitsFromUKB.out
+        extracted_traits
 }
 
 workflow generateIIDGenotypes {
@@ -74,7 +83,7 @@ workflow generateIIDGenotypes {
         qc_file = Channel.value(file("$params.QC_FILE"))
         flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
         ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
-        bed_files_ch = Channel.fromFilePairs("$params.UKBB_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+        bed_files_ch = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
 
         IIDGenotypes(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file, traits)
 
@@ -95,6 +104,18 @@ workflow geneticConfounders {
 
 }
 
+workflow runPCA {
+    // Extract traits
+    extractTraits()
+
+    // Generate IID Genotypes
+    generateIIDGenotypes(extractTraits.out)
+
+    // Genetic confounders up to NB_PCS
+    geneticConfounders(generateIIDGenotypes.out) 
+
+}
+
 workflow generateTMLEEstimates {
     take:
         traits
@@ -102,7 +123,7 @@ workflow generateTMLEEstimates {
 
     main:
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
-        bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
+        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
 
         if (params.PARAMETER_PLAN == "FROM_ACTORS") {
             bqtls = Channel.value(file("$params.BQTLS"))
@@ -178,16 +199,16 @@ workflow negativeControl {
     
     // Random Variants parameter files generation
     if (params.PARAMETER_PLAN == "FROM_ACTORS") {
-        bgen_files = Channel.fromPath("$params.UKBB_BGEN_FILES", checkIfExists: true).collect()
+        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
         trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
         GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
     }
 }
 
 workflow {
-    // Extract traits
+    // Extract traits for UKBB
     extractTraits()
-
+    
     // Generate IID Genotypes
     generateIIDGenotypes(extractTraits.out)
 
