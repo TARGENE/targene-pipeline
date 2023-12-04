@@ -2,13 +2,13 @@
 
 The following section will describe the data sources that are currently supported by TarGene.
 
+## Custom Dataset
+
+TarGene supports custom datasets which must include both genetic data (see [Genetic Data](@ref)) and trait data (a .csv file). Please ensure that the annotation of SNPs in your .bgen files matches the annotation used when speicfying the parameters. When running a custom dataset, you must set the `COHORT` parameter in the nextflow configuration file to the name of your cohort or custom dataset (anything **else** than "UKBB"). The trait data for this mode must also be specified in the `DECRYPTED_DATASET` parameter in the nextflow configuration file. Please ensure the Sample IDs that map the genetic data to the trait data are included as the first column of your trait data, with the column name `SAMPLE_ID`.
+
 ## UK-Biobank
 
 The UK-Biobank is composed of both genetic data (.bed and .bgen files) and trait data. While there is a plan to use only bgen and trait data, the pipeline currently uses all sources of information. Below we explain how to specify those arguments to TarGene. For more information on the structure of the UK-Biobank data, please refer to their [User Guide](https://biobank.ndph.ox.ac.uk/crystal/exinfo.cgi?src=accessing_data_guide).
-
-## Custom Dataset
-
-TarGene now supports custom datasets outside of the UK-BioBank. This should still include both genetic data (.bed and .bgen files) and trait data. Please ensure that the annotation of SNPs in your .bgen files matches the annotation used when targeting a set of SNPs in TarGene. When running a custom dataset, you must set the `COHORT` parameter in the nextflow configuration file to the name of your cohort or custom dataset. The trait data for this mode must also be specified in the `DECRYPTED_DATASET` parameter in the nextflow configuration file. Please ensure the Sample IDs that map the genetic data to the trait data are included as the first column of your trait data, with the column name `SAMPLE_ID`.
 
 ### Main Dataset
 
@@ -87,13 +87,13 @@ To come back to the pipeline specification, if a "typical" main dataset has alre
 
 Note: Since this decrypted dataset is a plain CSV file, one may build and add extra columns to it. Any column in the decrypted dataset which does not correspond to a UK-Biobank field will be considered as such.
 
-### Genetic Data
-
-We are currently using both .bgen and .bed files, furthermore, we assume that the data is **unphased**. Those are respectively provided with the `BGEN_FILES` and `BED_FILES` parameters. Since the UK-Biobank genotyping data is split in chromosomes, it should be of the form `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bgen,sample,bgen.bgi}` and `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bed,bim,fam}` respectively.
-
 ### Additional Files
 
 Additional UK-Biobank required files for preprocessing and filtering are:
 
 - `QC_FILE`: A path to the UK-Biobank SNP quaility control [`ukb_snp_qc.txt`](https://biobank.ctsu.ox.ac.uk/crystal/refer.cgi?id=1955) file.
 - `WITHDRAWAL_LIST`: A path to the withdrawal sample list to exclude removed participants from the study.
+
+## Genetic Data
+
+We are currently using both .bgen and .bed files, furthermore, we assume that the data is **unphased**. Those are respectively provided with the `BGEN_FILES` and `BED_FILES` parameters. It is also assumed that the genotyping data is split in chromosomes, it should be of the form `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bgen,sample,bgen.bgi}` and `PREFIX_TO_CHROMOSOMES{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22}.{bed,bim,fam}` respectively.
