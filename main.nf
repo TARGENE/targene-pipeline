@@ -68,7 +68,7 @@ workflow extractTraits {
         extracted_traits = TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
     } 
     else {
-        extracted_traits = decrypted_dataset 
+        extracted_traits = Channel.fromPath("$params.DECRYPTED_DATASET", checkIfExists: true)
     }
 
     emit:
