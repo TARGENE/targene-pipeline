@@ -105,7 +105,7 @@ workflow geneticConfounders {
 }
 
 workflow runPCA {
-    // Extract traits for UKBB
+    // Extract traits
     extractTraits()
 
     // Generate IID Genotypes

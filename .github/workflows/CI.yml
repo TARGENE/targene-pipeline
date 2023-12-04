@@ -17,7 +17,7 @@ jobs:
         testrun:
           - "ukb_from_actors.jl"
           - "ukb_from_param_file.jl"
-          - "custom_from_param_file.jl"
+          - "custom_from_actors.jl"
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
