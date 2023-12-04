@@ -1,3 +1,4 @@
 
-include("from_actors.jl")
-include("from_param_files.jl")
+include("ukb_from_actors.jl")
+include("ukb_from_param_file.jl")
+include("custom_from_actors.jl")

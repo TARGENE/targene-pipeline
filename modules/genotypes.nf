@@ -14,12 +14,15 @@ process filterBED{
 
     script:
         prefix = bedfiles[0].toString().minus('.bed')
+        qc_file = params.QC_FILE !== 'NO_QC_FILE' ? "--qcfile $qcfile" : '' 
+        ld_blocks = params.LD_BLOCKS !== 'NO_LD_BLOCKS' ? "--ld-blocks $ld_blocks" : ''
+
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
-        --input $prefix --output filtered.$prefix --qcfile $qcfile --maf-threshold $params.MAF_THRESHOLD --ld-blocks $ld_blocks --traits $traits filter
+                    --input $prefix --output filtered.$prefix $qc_file --maf-threshold $params.MAF_THRESHOLD \
+                    $ld_blocks --traits $traits filter
         """
-
 }
 
 

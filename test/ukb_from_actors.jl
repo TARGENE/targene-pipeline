@@ -3,8 +3,8 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 
 include("utils.jl")
 
-@testset "Test from_actors.config" begin
-    cmd = `nextflow run main.nf -c conf/ci_jobs/from_actors.config $args`
+@testset "Test ukb_from_actors.config" begin
+    cmd = `nextflow run main.nf -c conf/ci_jobs/ukb_from_actors.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
@@ -38,7 +38,7 @@ include("utils.jl")
 end
 
 @testset "Test negative controls" begin
-    cmd = `nextflow run main.nf -entry negativeControl -c conf/ci_jobs/from_actors.config $args`
+    cmd = `nextflow run main.nf -entry negativeControl -c conf/ci_jobs/ukb_from_actors.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
