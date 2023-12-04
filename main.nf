@@ -68,7 +68,7 @@ workflow extractTraits {
         extracted_traits = TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
     } 
     else {
-        extracted_traits = Channel.fromPath("$params.DECRYPTED_DATASET", checkIfExists: true)
+        extracted_traits = decrypted_dataset 
     }
 
     emit:
@@ -208,7 +208,7 @@ workflow negativeControl {
 workflow {
     // Extract traits for UKBB
     extractTraits()
-
+    
     // Generate IID Genotypes
     generateIIDGenotypes(extractTraits.out)
 
