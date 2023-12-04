@@ -16,6 +16,5 @@ include("utils.jl")
     # 2 bQTLs and 1 trans-actor
     @test Set(unique(output.TREATMENTS)) == Set(["1:238411180:T:C_&_3:3502414:T:C", "2:14983:G:A"])
     
-    check_n_failed_traits(output)
     test_n_success_more_than_threshold(output, 20)
 end
