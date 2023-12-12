@@ -1,6 +1,6 @@
 # Setting a data source
 
-The following section will describe the data sources that are currently supported by TarGene.
+The following section describes the data sources that are currently supported by TarGene.
 
 ## Custom Dataset
 
