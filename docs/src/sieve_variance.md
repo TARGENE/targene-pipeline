@@ -6,6 +6,6 @@ In brief, the SVP estimator computes a variance estimate for a range of threshol
 The following arguments can be changed to control the behaviour of the pipeline:
 
 - `GRM_NSPLITS` (default: 100): This is a purely computational argument. The GRM is typically very large and splitting enables a good memory/parallelization tradeoff.
-- `MAX_TAU` (default: 0.8): Controls the maximum genetic distance considered.
-- `NB_VAR_ESTIMATORS` (default: 0): Controls the number of points in the interval [0, `MAX_TAU`]. If 0, the Sieve Variance Plateau method will not be applied.
+- `MAX_SVP_THRESHOLD` (default: 0.8): Controls the maximum genetic distance considered.
+- `NB_SVP_ESTIMATORS` (default: 0): Controls the number of points in the interval [0, `MAX_SVP_THRESHOLD`]. If 0, the Sieve Variance Plateau method will not be applied.
 - `PVAL_THRESHOLD` (default: 0.05): Only estimates with a p-value lower than `PVAL_THRESHOLD` will be considered for SVP correction. This is because SVP will only increase the variance of the estimator.
