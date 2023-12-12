@@ -2,37 +2,54 @@
 nextflow.enable.dsl = 2
 
 params.DECRYPTED_DATASET = "NO_FILE"
-params.PARAMETER_PLAN = "FROM_PARAM_FILE"
-params.PARAMETER_FILE = "NO_PARAMETER_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
-params.SAVE_IC = true
-
 params.MAF_THRESHOLD = 0.01
-params.NB_PCS = 6
-
-params.GRM_NSPLITS = 100
-params.NB_VAR_ESTIMATORS = 0
-params.MAX_TAU = 0.9
-params.PVAL_THRESHOLD = 0.05
-
 params.VERBOSITY = 1
-params.OUTDIR = "${launchDir}/results"
-params.RESULTS_FILE = "${params.OUTDIR}/summary.csv"
-params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.arrow"
-
 params.COHORT = "UKBB"
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
+
+// Confounding adjustment by PCA
+params.NB_PCS = 6
 params.QC_FILE = "NO_QC_FILE"
 params.LD_BLOCKS = "NO_LD_BLOCKS"
 params.FLASHPCA_EXCLUSION_REGIONS = "data/exclusion_regions_hg19.txt"
 
+// Estimands Generation 
 params.BATCH_SIZE = 400
+
+// FROM_PARAM_FILE
+params.PARAMETER_PLAN = "FROM_PARAM_FILE"
+params.PARAMETER_FILE = "NO_PARAMETER_FILE"
+
+// FROM_ACTORS
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
 params.EXTRA_COVARIATES = 'NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'NO_EXTRA_TREATMENT'
 params.ORDERS = "1,2"
+
+// Sieve Variance Plateau
+params.SVP = false
+params.GRM_NSPLITS = 100
+params.NB_SVP_ESTIMATORS = 100
+params.MAX_SVP_THRESHOLD = 0.9
+params.SVP_ESTIMATOR_KEY = "TMLE"
+
+// TMLE
+params.KEEP_IC = params.SVP == true ? true : false
+params.PVAL_THRESHOLD = 0.05
+params.TMLE_SAVE_EVERY = 100
+
+// Outputs
+params.ARROW_OUTPUT = "dataset.arrow"
+params.JSON_OUTPUT = "NO_JSON_OUTPUT"
+params.HDF5_OUTPUT = "results.hdf5"
+
+// Negative Control Default Inputs
+params.OUTDIR = "${launchDir}/results"
+params.RESULTS_FILE = "${params.OUTDIR}/summary.csv"
+params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.arrow"
 
 // Permutation Tests Parameters
 params.MAX_PERMUTATION_TESTS = null
@@ -155,14 +172,13 @@ workflow generateTMLEEstimates {
         // compute TMLE estimates for continuous targets
         TMLE(
             tmle_inputs.traits,
-            tmle_inputs.parameters.flatten(),
+            tmle_inputs.estimands.flatten(),
             estimator_file,
         )
         
 
     emit:
-        tmle_csvs = TMLE.out.tmle_csv
-        inf_curves = TMLE.out.inf_curve
+        TMLE.out
 }
 
 
@@ -178,15 +194,14 @@ workflow generateSieveEstimates {
         // Sieve estimation
         SieveVarianceEstimation(tmle_files.collect(), AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
     emit:
-        csv_file = SieveVarianceEstimation.out.csv_file
-        hdf5_file = SieveVarianceEstimation.out.hdf5_file
+        SieveVarianceEstimation.out
 }
 
 workflow negativeControl {
-    results_file = Channel.value(file("${params.RESULTS_FILE}"))
+    results_file = Channel.value(file("${params.HDF5_OUTPUT}"))
 
     // Permutation Tests
-    dataset = Channel.value(file("${params.TMLE_INPUT_DATASET}"))
+    dataset = Channel.value(file("${params.OUTDIR}/${params.ARROW_OUTPUT}"))
     estimatorfile = Channel.value(file("${params.ESTIMATORFILE}"))
     sieve_csv = Channel.value(file("NO_SIEVE_FILE"))
     GeneratePermutationTestsData(dataset, results_file)
@@ -221,14 +236,10 @@ workflow {
         geneticConfounders.out,
     )
 
-    // generate sieve estimates
-    if (params.NB_VAR_ESTIMATORS != 0){
-        sieve_results = generateSieveEstimates(generateTMLEEstimates.out.inf_curves, generateIIDGenotypes.out)
-        sieve_csv = sieve_results.csv_file
-    }
-    else {
-        sieve_csv = Channel.value(file("NO_SIEVE_FILE"))
+    // Generate sieve estimates
+    if (params.SVP == true){
+        sieve_results = generateSieveEstimates(generateTMLEEstimates.out, generateIIDGenotypes.out)
     }
 
-    MergeOutputs(generateTMLEEstimates.out.tmle_csvs.collect(), sieve_csv, "summary.csv")
+    MergeOutputs(generateTMLEEstimates.out.collect(), "summary.csv")
 }
