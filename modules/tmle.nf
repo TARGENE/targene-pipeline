@@ -25,14 +25,14 @@ process TMLE {
 
     input:
         path data
-        path estimandsfile
-        path estimatorfile
+        path estimands_file
+        path estimator_file
     
     output:
         path "${hdf5out}"
     
     script:
-        basename = "result." + estimandsfile.getName().take(estimandsfile.getName().lastIndexOf('.'))
+        basename = "result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
         pval_threshold = KEEP_IC == true ? "--outputs.hdf5.pval_threshold=${params.PVAL_THRESHOLD}" : ""
         sample_ids = SVP == true ? "--outputs.hdf5.sample_ids=true" : ""
@@ -40,8 +40,8 @@ process TMLE {
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no tmle tmle \
         $data \
-        --estimands=$estimandsfile \
-        --estimators=$estimatorfile \
+        --estimands=$estimands_file \
+        --estimators=$estimator_file \
         --outputs.hdf5.filename=$hdf5out \
         $pval_threshold \
         $sample_ids \

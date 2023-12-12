@@ -135,7 +135,7 @@ workflow generateTMLEEstimates {
         genetic_confounders
 
     main:
-        estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
+        estimator_file = Channel.value(file("$params.ESTIMATOR_FILE", checkIfExists: true))
         bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
 
         if (params.STUDY_DESIGN == "FROM_ACTORS") {
@@ -198,13 +198,13 @@ workflow negativeControl {
 
     // Permutation Tests
     dataset = Channel.value(file("${params.OUTDIR}/${params.ARROW_OUTPUT}"))
-    estimatorfile = Channel.value(file("${params.ESTIMATORFILE}"))
+    estimator_file = Channel.value(file("${params.ESTIMATOR_FILE}"))
     sieve_csv = Channel.value(file("NO_SIEVE_FILE"))
     GeneratePermutationTestsData(dataset, results_file)
     TMLE(
         GeneratePermutationTestsData.output.dataset, 
         GeneratePermutationTestsData.output.parameters.flatten(), 
-        estimatorfile
+        estimator_file
     )
     MergeOutputs(TMLE.out.tmle_csv.collect(), sieve_csv, "permutation_summary.csv")
     
