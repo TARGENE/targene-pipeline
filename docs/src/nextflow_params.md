@@ -42,13 +42,13 @@ If `STUDY_DESIGN`="FROM_ACTORS":
 
 - **`ESTIMATORFILE` (required)**: Julia configuration file describing the nuisance parameters learners.
 - `POSITIVITY_CONSTRAINT` (optional, default: 0.01): Treatment variables rarest configuration should have at least that frequency.
-- `SAVE_IC` (optional, default: true): For all parameters with an p-value below `PVAL_THRESHOLD`, the influence curve is saved. Make sure to keep to `true` if you want to use sieve variance correction, i.e. if `NB_VAR_ESTIMATORS` != 0.
+- `SAVE_IC` (optional, default: true): For all parameters with an p-value below `PVAL_THRESHOLD`, the influence curve is saved. Make sure to keep to `true` if you want to use sieve variance correction, i.e. if `NB_SVP_ESTIMATORS` != 0.
 
 ## [Correcting for population relatedness](@ref)
 
 - `GRM_NSPLITS` (optional, default: 100): To fasten GRM computation, it is typically split in batches.
-- `NB_VAR_ESTIMATORS` (optional, default: 0): Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
-- `MAX_TAU` (optional, default: 0.9): Variance estimates are computed for tau ranging from 0 to MAX_TAU
+- `NB_SVP_ESTIMATORS` (optional, default: 0): Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
+- `MAX_SVP_THRESHOLD` (optional, default: 0.9): Variance estimates are computed for tau ranging from 0 to MAX_SVP_THRESHOLD
 - `PVAL_THRESHOLD` (optional, default: 0.05): To save computation time and disk, only parameters with a p-value below this threshold are considered for sieve variance correction.
 
 ## [Tweaking additional behaviour](@ref)
