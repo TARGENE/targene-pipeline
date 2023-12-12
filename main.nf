@@ -199,14 +199,13 @@ workflow negativeControl {
     // Permutation Tests
     dataset = Channel.value(file("${params.OUTDIR}/${params.ARROW_OUTPUT}"))
     estimator_file = Channel.value(file("${params.ESTIMATOR_FILE}"))
-    sieve_csv = Channel.value(file("NO_SIEVE_FILE"))
     GeneratePermutationTestsData(dataset, results_file)
     TMLE(
         GeneratePermutationTestsData.output.dataset, 
-        GeneratePermutationTestsData.output.parameters.flatten(), 
+        GeneratePermutationTestsData.output.estimands.flatten(), 
         estimator_file
     )
-    MergeOutputs(TMLE.out.tmle_csv.collect(), sieve_csv, "permutation_summary.csv")
+    MergeOutputs(TMLE.out.tmle_csv.collect(), "permutation_summary.csv")
     
     // Random Variants parameter files generation
     if (params.STUDY_DESIGN == "FROM_ACTORS") {

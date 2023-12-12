@@ -38,3 +38,35 @@ function test_n_success_more_than_threshold(output, threshold)
     n_succeses_per_treatment = DataFrames.combine(groupby(successes, :TREATMENTS),  nrow)
     @test all(x > threshold for x in n_succeses_per_treatment.nrow)
 end
+
+
+function write_custom_configuration()
+    config = Configuration(estimands=[
+        ATE(
+            outcome = "ALL",
+            treatment_values = NamedTuple{(Symbol("1:238411180:T:C"), Symbol("3:3502414:T:C"))}([(control = "TT", case = "TC"), (control = "CT", case = "TT")]),
+            treatment_confounders = []
+        ),
+      IATE(
+        outcome = "ALL",
+        treatment_values = NamedTuple{(Symbol("1:238411180:T:C"), Symbol("3:3502414:T:C"))}([(control = "TT", case = "TC"), (control = "CT", case = "TT")]),
+        treatment_confounders = []
+      ),
+      CM(
+        outcome = "ALL",
+        treatment_values = NamedTuple{(Symbol("1:238411180:T:C"), Symbol("3:3502414:T:C"))}(["TC", "CT"]),
+        treatment_confounders = []
+      ),
+        ATE(
+        outcome = "ALL",
+        treatment_values = NamedTuple{(Symbol("2:14983:G:A"),)}([(control = "AG", case = "GG")]),
+        treatment_confounders = []
+        ),
+      CM(
+        outcome = "ALL",
+        treatment_values = NamedTuple{(Symbol("2:14983:G:A"),)}(["AG"]),
+        treatment_confounders = []
+      )
+    ])
+    TMLE.write_yaml(joinpath("test", "data", "parameters", "parameters.yaml"), config)
+end
