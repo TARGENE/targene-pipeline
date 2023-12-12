@@ -5,7 +5,7 @@ TMLE is an adaptive procedure that depends on the specification of learning algo
 - `E[Y|T, W, C]`: The mean outcome given the treatment, confounders and extra covariates. It is commonly denoted by `Q` in the Targeted Learning litterature.
 - `p(T|W)`: The propensity score. It is commonly denoted by `G` in the Targeted Learning litterature.
 
-The estimator configuration file describes the TMLE specification for the estimation of the parameters defined in the previous section. In order to provide maximum flexibility, this is provided as a plain [Julia](https://julialang.org/) file via the `ESTIMATORFILE` parameter.
+The estimator configuration file describes the TMLE specification for the estimation of the parameters defined in the previous section. In order to provide maximum flexibility, this is provided as a plain [Julia](https://julialang.org/) file via the `ESTIMATOR_FILE` parameter.
 
 ### Description of the file
 
