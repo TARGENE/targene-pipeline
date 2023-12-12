@@ -8,6 +8,6 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 [compat]
 CSV = "0.10.9"
 DataFrames = "1.5.0"
-TMLE = "0.11"
+TMLE = "0.12"
 YAML = "0.4.8"
 Arrow = "2.5.0"

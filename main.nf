@@ -9,6 +9,7 @@ params.VERBOSITY = 1
 params.COHORT = "UKBB"
 params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
 params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
+params.OUTDIR = "${launchDir}/results"
 
 // Confounding adjustment by PCA
 params.NB_PCS = 6
@@ -19,9 +20,9 @@ params.FLASHPCA_EXCLUSION_REGIONS = "data/exclusion_regions_hg19.txt"
 // Estimands Generation 
 params.BATCH_SIZE = 400
 
-// FROM_PARAM_FILE
-params.PARAMETER_PLAN = "FROM_PARAM_FILE"
-params.PARAMETER_FILE = "NO_PARAMETER_FILE"
+// CUSTOM
+params.STUDY_DESIGN = "CUSTOM"
+params.ESTIMANDS_FILE = "NO_ESTIMANDS_FILE"
 
 // FROM_ACTORS
 params.EXTRA_CONFOUNDERS = 'NO_EXTRA_CONFOUNDER'
@@ -45,11 +46,6 @@ params.TMLE_SAVE_EVERY = 100
 params.ARROW_OUTPUT = "dataset.arrow"
 params.JSON_OUTPUT = "NO_JSON_OUTPUT"
 params.HDF5_OUTPUT = "results.hdf5"
-
-// Negative Control Default Inputs
-params.OUTDIR = "${launchDir}/results"
-params.RESULTS_FILE = "${params.OUTDIR}/summary.csv"
-params.TMLE_INPUT_DATASET = "${params.OUTDIR}/tmle_inputs/final.data.arrow"
 
 // Permutation Tests Parameters
 params.MAX_PERMUTATION_TESTS = null
@@ -142,7 +138,7 @@ workflow generateTMLEEstimates {
         estimator_file = Channel.value(file("$params.ESTIMATORFILE", checkIfExists: true))
         bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
 
-        if (params.PARAMETER_PLAN == "FROM_ACTORS") {
+        if (params.STUDY_DESIGN == "FROM_ACTORS") {
             bqtls = Channel.value(file("$params.BQTLS"))
             trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
             extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
@@ -158,16 +154,16 @@ workflow generateTMLEEstimates {
                 bqtls,
                 trans_actors)
         }
-        else if (params.PARAMETER_PLAN == "FROM_PARAM_FILE"){
-            parameter_file = Channel.value(file("$params.PARAMETER_FILE"))
+        else if (params.STUDY_DESIGN == "CUSTOM"){
+            estimands_file = Channel.value(file("$params.ESTIMANDS_FILE"))
             tmle_inputs = TMLEInputsFromParamFile(
                 bgen_files,
                 traits,
                 genetic_confounders,
-                parameter_file)
+                estimands_file)
         }
         else { 
-            throw new Exception("This PARAMETER_PLAN is not available.")
+            throw new Exception("This STUDY_DESIGN is not available.")
         }
         // compute TMLE estimates for continuous targets
         TMLE(
@@ -213,7 +209,7 @@ workflow negativeControl {
     MergeOutputs(TMLE.out.tmle_csv.collect(), sieve_csv, "permutation_summary.csv")
     
     // Random Variants parameter files generation
-    if (params.PARAMETER_PLAN == "FROM_ACTORS") {
+    if (params.STUDY_DESIGN == "FROM_ACTORS") {
         bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
         trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
         GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
