@@ -17,7 +17,7 @@ def longest_prefix(files){
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:0.7"
+    container "olivierlabayle/targeted-estimation:cv_tmle"
     publishDir "$params.OUTDIR/csvs",  mode: 'symlink', pattern: "*.csv"
     publishDir "$params.OUTDIR/hdf5files/inf_curves",  mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
@@ -25,33 +25,34 @@ process TMLE {
 
     input:
         path data
-        path parameterfile
+        path estimandsfile
         path estimatorfile
     
     output:
-        path "${csvout}", emit: tmle_csv
-        path "${hdf5out}", optional: true, emit: inf_curve
+        path "${hdf5out}"
     
     script:
-        basename = "tmle." + parameterfile.getName().take(parameterfile.getName().lastIndexOf('.'))
-        csvout = basename + ".csv"
+        basename = "result." + estimandsfile.getName().take(estimandsfile.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
-        hdf5option = params.SAVE_IC == true ? "--hdf5-out=${hdf5out}" : ""
+        pval_threshold = KEEP_IC == true ? "--outputs.hdf5.pval_threshold=${params.PVAL_THRESHOLD}" : ""
+        sample_ids = SVP == true ? "--outputs.hdf5.sample_ids=true" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/scripts/tmle.jl \
-        $data $parameterfile $csvout \
-        --estimator-file=$estimatorfile \
-        $hdf5option \
-        --chunksize=100 \
-        --pval-threshold=${params.PVAL_THRESHOLD}
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no tmle tmle \
+        $data \
+        --estimands=$estimandsfile \
+        --estimators=$estimatorfile \
+        --outputs.hdf5.filename=$hdf5out \
+        $pval_threshold \
+        $sample_ids \
+        --chunksize=$params.TMLE_SAVE_EVERY \
         """
 }
 
 process TMLEInputsFromParamFile {
-    container "olivierlabayle/tl-core:0.6"
-    publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
-    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.arrow"
+    container "olivierlabayle/tl-core:cvtmle"
+    publishDir "$params.OUTDIR/estimands", mode: 'symlink', pattern: "*.yaml"
+    publishDir "$params.OUTDIR", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
 
     input:
@@ -61,12 +62,12 @@ process TMLEInputsFromParamFile {
         path parameter
 
     output:
-        path "final.data.arrow", emit: traits
-        path "final.*.yaml", emit: parameters
+        path "${params.ARROW_OUTPUT}", emit: traits
+        path "final.*.jls", emit: estimands
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
-        batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
+        batch_size = params.BATCH_SIZE == 0 ? "" : "--batch-size ${params.BATCH_SIZE}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
@@ -81,9 +82,9 @@ process TMLEInputsFromParamFile {
 }
 
 process TMLEInputsFromActors {
-    container "olivierlabayle/tl-core:0.6"
-    publishDir "$params.OUTDIR/parameters", mode: 'symlink', pattern: "*.yaml"
-    publishDir "$params.OUTDIR/tmle_inputs", mode: 'symlink', pattern: "*.arrow"
+    container "olivierlabayle/tl-core:cvtmle"
+    publishDir "$params.OUTDIR/estimands", mode: 'symlink', pattern: "*.yaml"
+    publishDir "$params.OUTDIR", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
 
     input:
@@ -97,8 +98,8 @@ process TMLEInputsFromActors {
         path trans_actors
 
     output:
-        path "final.data.arrow", emit: traits
-        path "final.*.yaml", emit: parameters
+        path "${params.ARROW_OUTPUT}", emit: traits
+        path "final.*.jls", emit: estimands
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
