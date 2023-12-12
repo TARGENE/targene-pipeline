@@ -19,7 +19,7 @@ makedocs(;
             "overview.md",
             "data_sources.md",
             "confounding_adjustment.md",
-            "parameter_specification.md",
+            "study_designs.md",
             "tmle.md",
             "sieve_variance.md",
             "miscellaneous.md",

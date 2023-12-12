@@ -27,7 +27,7 @@ process GeneratePermutationTestsData {
 
     output:
         path "permutation_dataset.arrow", emit: dataset
-        path "*.yaml", emit: parameters
+        path "*.yaml", emit: estimands
 
     script:
         limit = params.MAX_PERMUTATION_TESTS == null ? "" : "--limit=${params.MAX_PERMUTATION_TESTS}"

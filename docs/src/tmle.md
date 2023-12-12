@@ -1,46 +1,55 @@
 # Specifying a Targeted Estimator
 
-TMLE is an adaptive procedure that depends on the specification of learning algorithms for the estimation of the nuisance parameters (see [TMLE.jl](https://targene.github.io/TMLE.jl/stable/) for a description of the assumed setting). In our case, there are two nuisance parameters for which we need to specify learning algorithms:
+TarGene is a flexible procedure that does not impose any constraint on the functional form of the relationship between genetic variants, environmental variables and traits. In practice, we rely on [MLJ](https://alan-turing-institute.github.io/MLJ.jl/dev/) to provide machine learning algorithms. In population genetics studies, there are two learning algorithms we need to specify:
 
-- `E[Y|T, W, C]`: The mean outcome given the treatment, confounders and extra covariates. It is commonly denoted by `Q` in the Targeted Learning litterature.
-- `p(T|W)`: The propensity score. It is commonly denoted by `G` in the Targeted Learning litterature.
+- `E[Y|T, W, C]`: The mean outcome given the treatment, confounders and extra covariates. It is commonly denoted by `Q` in the Targeted Learning litterature. In reality, we will need one specification for continuous outcomes and one specification for binary outcomes.
+- `p(T|W)`: The propensity score, which enables the targeting step of the estimation procedure. It is commonly denoted by `G` in the Targeted Learning litterature.
 
-The estimator configuration file describes the TMLE specification for the estimation of the parameters defined in the previous section. In order to provide maximum flexibility, this is provided as a plain [Julia](https://julialang.org/) file via the `ESTIMATOR_FILE` parameter.
+There are two main ways to define targeted estimators, from a predefined configuration or from a custom file.
 
-### Description of the file
+## Predefined estimators
 
-In order to provide maximum flexibility as to the choice of learning algorithms, the estimator file is a plain [Julia](https://julialang.org/) file. This file is optional and omitting it defaults to using generalized linear models. If provided, it must define a [NamedTuple](https://docs.julialang.org/en/v1/base/base/#Core.NamedTuple) called `tmle_spec` containing any of the following fields as follows (default configuration):
+A set of predefined estimators is readily available and can be accessed by using the configuration's name as the `ESTIMATOR_FILE` parameter. For instance, we provide the following:
+
+- G-superlearning-Q-glm
+- G-superlearning-Q-glmnet
+- glm-with-interactions-for-Q
+- glm
+- glmnet-with-interactions-for-Q
+- glmnet
+- superlearning-with-interactions-for-Q
+- superlearning
+- tuned-xgboost
+
+all using TMLE as the final statistical inference method. While these should cover most use cases, it may be useful to define a custom estimation strategy. This can be achieved by writing a small [Julia](https://julialang.org/) file.
+
+## Custom estimators from a file
+
+Writin a [Julia](https://julialang.org/) estimators file is the most flexible way to define an estimation strategy for your study.
+
+This file should simply define an `ESTIMATORS` [NamedTuple](https://docs.julialang.org/en/v1/base/base/#Core.NamedTuple) variable listing estimators to be used for inference. For example, the following:
 
 ```julia
-
-tmle_spec = (
+default_models = TMLE.default_models(
+  # For the estimation of E[Y|W, T]: continuous outcome
   Q_continuous = LinearRegressor(),
-  Q_binary     = LogisticClassifier(lambda=0.),
-  G            = LogisticClassifier(lambda=0.),
-  threshold    = 1e-8,
-  cache        = false,
-  weighted_fluctuation = false
+  # For the estimation of E[Y|W, T]: binary target
+  Q_binary = LogisticClassifier(lambda=0.),
+  # For the estimation of p(T| W)
+  G = LogisticClassifier(lambda=0.)
+)
+
+ESTIMATORS = (
+  TMLE_weighted = TMLEE(models=default_models, weighted=true),
+  TMLE_unweighted = TMLEE(models=default_models, weighted=false),
+  OSE  = OSE(models=default_models)
 )
 ```
 
-where:
+defines three estimators: a weighted fluctuation `TMLE` (Targeted Maximum Likelihood Estimator), an unweighted fluctuation `TMLE` and a `OSE` (One Step Estimator). All estimators will learn the nuisance functions `Q` and `G` with the provided defaults:
 
-- `Q_continuous`: is a MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is continuous.
-- `Q_binary`: is a MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is binary.
-- `G`: is a MLJ model used for the estimation of `p(T|W)`.
-- `threshold`: is the minimum value the propensity score `G` is allowed to take.
-- `cache`: controls caching of data by [MLJ machines](https://alan-turing-institute.github.io/MLJ.jl/dev/machines/). Setting it to `true` may result in faster runtime but higher memory usage.
-- `weighted_fluctuation`: controls whether the fluctuation for `Q` is a weighted glm or not. If some of the treatment values are rare it may lead to more robust estimation.
+- `Q_continuous`: A MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is continuous.
+- `Q_binary`: A MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is binary.
+- `G`: A MLJ model used for the estimation of `p(T|W)`.
 
-Typically, `Q_continuous`, `Q_binary` and `G` will be adjusted and other fields can be left unspecified.
-
-### Ready to use estimator files
-
-We recognize not everyone will be familiar with [Julia](https://julialang.org/). We thus provide a set of ready to use estimator files that can be simplified or extended as needed:
-
-- Super Learning: [with](./estimators/superlearning-with-interactions-for-Q.jl) and [without](./estimators/superlearning.jl) interaction terms in the GLM models for Q.
-- Super Learning for G and GLMNet for Q: [here](./estimators/G-superlearning-Q-glmnet.jl).
-- Super Learning for G and GLM for Q: [here](./estimators/G-superlearning-Q-glm.jl).
-- GLMNet: [with](./estimators/glmnet-with-interactions-for-Q.jl) and [without](./estimators/glmnet.jl) interaction terms in the GLM models for Q.
-- GLM: [with](./estimators/glm-with-interactions-for-Q.jl) and [without](./estimators/glm.jl) interaction terms in the GLM models for Q.
-- XGBoost: [with tuning](./estimators/tuned-xgboost.jl).
+For full details, visit the [TMLE.jl documentation](https://targene.github.io/TMLE.jl/stable/).

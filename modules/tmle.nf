@@ -34,11 +34,11 @@ process TMLE {
     script:
         basename = "result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
-        pval_threshold = KEEP_IC == true ? "--outputs.hdf5.pval_threshold=${params.PVAL_THRESHOLD}" : ""
-        sample_ids = SVP == true ? "--outputs.hdf5.sample_ids=true" : ""
+        pval_threshold = params.KEEP_IC == true ? "--outputs.hdf5.pval_threshold=${params.PVAL_THRESHOLD}" : ""
+        sample_ids = params.SVP == true ? "--outputs.hdf5.sample_ids=true" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no tmle tmle \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /opt/bin/tmle tmle \
         $data \
         --estimands=$estimands_file \
         --estimators=$estimator_file \
@@ -52,7 +52,7 @@ process TMLE {
 process TMLEInputsFromParamFile {
     container "olivierlabayle/tl-core:cvtmle"
     publishDir "$params.OUTDIR/estimands", mode: 'symlink', pattern: "*.yaml"
-    publishDir "$params.OUTDIR", mode: 'symlink', pattern: "*.arrow"
+    publishDir "$params.OUTDIR", mode: 'symlink', pattern: "*.arrow", saveAs: { filename -> "${params.ARROW_OUTPUT}" }
     label "bigmem"
 
     input:
@@ -62,7 +62,7 @@ process TMLEInputsFromParamFile {
         path parameter
 
     output:
-        path "${params.ARROW_OUTPUT}", emit: traits
+        path "final.data.arrow", emit: traits
         path "final.*.jls", emit: estimands
 
     script:
@@ -84,7 +84,7 @@ process TMLEInputsFromParamFile {
 process TMLEInputsFromActors {
     container "olivierlabayle/tl-core:cvtmle"
     publishDir "$params.OUTDIR/estimands", mode: 'symlink', pattern: "*.yaml"
-    publishDir "$params.OUTDIR", mode: 'symlink', pattern: "*.arrow"
+    publishDir "$params.OUTDIR", mode: 'symlink', pattern: "*.arrow", saveAs: { filename -> "${params.ARROW_OUTPUT}" }
     label "bigmem"
 
     input:
@@ -98,7 +98,7 @@ process TMLEInputsFromActors {
         path trans_actors
 
     output:
-        path "${params.ARROW_OUTPUT}", emit: traits
+        path "final.data.arrow", emit: traits
         path "final.*.jls", emit: estimands
 
     script:
