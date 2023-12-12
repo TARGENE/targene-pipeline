@@ -6,6 +6,7 @@ TMLE is an adaptive procedure that depends on the specification of learning algo
 - `p(T|W)`: The propensity score. It is commonly denoted by `G` in the Targeted Learning litterature.
 
 The estimator configuration file describes the TMLE specification for the estimation of the parameters defined in the previous section. In order to provide maximum flexibility, this is provided as a plain [Julia](https://julialang.org/) file via the `ESTIMATORFILE` parameter.
+
 ### Description of the file
 
 In order to provide maximum flexibility as to the choice of learning algorithms, the estimator file is a plain [Julia](https://julialang.org/) file. This file is optional and omitting it defaults to using generalized linear models. If provided, it must define a [NamedTuple](https://docs.julialang.org/en/v1/base/base/#Core.NamedTuple) called `tmle_spec` containing any of the following fields as follows (default configuration):

@@ -23,13 +23,13 @@ Here is a list of all the pipeline parameters:
 
 ## [Describing the causal parameters of interest](@ref)
 
-- **`PARAMETER_PLAN`** (required, default: "FROM\_PARAM\_FILE"): One of "FROM\_PARAM\_FILE", "FROM\_ACTORS".
+- **`STUDY_DESIGN`** (required, default: "FROM\_PARAM\_FILE"): One of "FROM\_PARAM\_FILE", "FROM\_ACTORS".
 
-If `PARAMETER_PLAN`="FROM\_PARAM\_FILE":
+If `STUDY_DESIGN`="FROM\_PARAM\_FILE":
 
-- `PARAMETER_FILE` (required): Path expression to the parameter files.
+- `ESTIMANDS_FILE` (required): Path expression to the parameter files.
 
-If `PARAMETER_PLAN`="FROM_ACTORS":
+If `STUDY_DESIGN`="FROM_ACTORS":
 
 - **`BQTLS` (required)**: A CSV file containing binding quantitative trait loci (bQTLs). If multiple transcription factors (TFs) are included in a single run, you must include a column called `TF`, which specifies the TF associated with each bQTL.
 - **`TRANS_ACTORS` (required)**: A prefix to CSV files containing quantitative trait loci potentially interacting with the previous bqtls. If multiple transcription factors (TFs) are included in a single run, you must include a column called `TF`, which specifies the TF associated with each transactor.
