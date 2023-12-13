@@ -18,8 +18,7 @@ def longest_prefix(files){
 
 process TMLE {
     container "olivierlabayle/targeted-estimation:cv_tmle"
-    publishDir "$params.OUTDIR/csvs",  mode: 'symlink', pattern: "*.csv"
-    publishDir "$params.OUTDIR/hdf5files/inf_curves",  mode: 'symlink', pattern: "*.hdf5"
+    publishDir "$params.OUTDIR/tmle_outputs/", mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
     label "multithreaded"
 
@@ -51,7 +50,7 @@ process TMLE {
 
 process TMLEInputsFromParamFile {
     container "olivierlabayle/tl-core:cvtmle"
-    publishDir "$params.OUTDIR/estimands", mode: 'symlink', pattern: "*.yaml"
+    publishDir "$params.OUTDIR/estimands", mode: 'symlink', pattern: "*.jls"
     publishDir "$params.OUTDIR", mode: 'symlink', pattern: "*.arrow", saveAs: { filename -> "${params.ARROW_OUTPUT}" }
     label "bigmem"
 
@@ -83,7 +82,7 @@ process TMLEInputsFromParamFile {
 
 process TMLEInputsFromActors {
     container "olivierlabayle/tl-core:cvtmle"
-    publishDir "$params.OUTDIR/estimands", mode: 'symlink', pattern: "*.yaml"
+    publishDir "$params.OUTDIR/estimands", mode: 'symlink', pattern: "*.jls"
     publishDir "$params.OUTDIR", mode: 'symlink', pattern: "*.arrow", saveAs: { filename -> "${params.ARROW_OUTPUT}" }
     label "bigmem"
 
