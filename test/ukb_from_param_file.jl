@@ -10,7 +10,7 @@ using TargetedEstimation
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 
-include(joinpath(@__DIR__, "test", "utils.jl"))
+include("utils.jl")
 
 @testset "Test ukb_from_param_files.config" begin
     cmd = `nextflow run main.nf -c conf/ci_jobs/ukb_from_param_file.config $args`
