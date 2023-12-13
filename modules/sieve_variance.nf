@@ -15,7 +15,7 @@ process SieveVarianceEstimation {
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /opt/bin/tmle sieve-variance-plateau \
-        result \
+        tmle_result \
         --nb-estimators=$params.NB_SVP_ESTIMATORS \
         --max-tau=$params.MAX_SVP_THRESHOLD \
         --estimator_key=$params.SVP_ESTIMATOR_KEY \
@@ -29,17 +29,19 @@ process MergeOutputs {
 
     input:
         path tmle_files
-        val outpath
+        val hdf5_output
+        val json_output
 
     output:
-        path "${outpath}"
+        path "${hdf5_output}"
+        path "${json_output}", optional: true
 
     script:
-        json_output = params.JSON_OUTPUT != "NO_JSON_OUTPUT" ? "--outputs.json.filename=$params.JSON_OUTPUT" : ""
+        json_output = json_output != "NO_JSON_OUTPUT" ? "--outputs.json.filename=${json_output}" : ""
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /opt/bin/tmle make-summary \
-        result \
+        tmle_result \
         --outputs.hdf5.filename=${params.HDF5_OUTPUT} \
         ${json_output}
         """

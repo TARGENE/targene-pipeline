@@ -21,14 +21,30 @@ include(joinpath(@__DIR__, "test", "utils.jl"))
     r = run(cmd)
     @test r.exitcode == 0
     
-    results = jldopen(joinpath("results", "results.hdf5"))
+    result_file = jldopen(joinpath("results", "results.hdf5"))
+    results = vcat(results["Batch_1"], result_file["Batch_2"])
     dataset = DataFrame(Arrow.Table(joinpath("results", "dataset.arrow")))
-    @test names(output) == vcat(SUMMARY_COLUMNS, ADJUTMENT_COL)
-    # 2 bQTLs and 1 trans-actor
-    @test Set(unique(output.TREATMENTS)) == Set(["1:238411180:T:C_&_3:3502414:T:C", "2:14983:G:A"])
-    
-    check_fails_are_extremely_rare_traits(results, dataset)
-    test_n_success_more_than_threshold(results, 20)
+
+    failed_results = (TMLE = [], OSE = [])
+    for result ∈ results
+        @test keys(result) == (:TMLE, :OSE)
+        @test result.TMLE isa Union{TMLE.TMLEstimate, TargetedEstimation.FailedEstimate}
+        @test result.OSE isa Union{TMLE.OSEstimate, TargetedEstimation.FailedEstimate}
+        if result.TMLE isa TargetedEstimation.FailedEstimate
+            push!(failed_results.TMLE, result.TMLE)
+        end
+        if result.OSE isa TargetedEstimation.FailedEstimate
+            push!(failed_results.OSE, result.OSE)
+        end
+    end
+    # All fails are due to fluctuation failure due non positive definite matrix
+    # This does not affect the OSE
+    @test isempty(failed_results.OSE)
+    # Less than 1/3 affected: this is still quite significant
+    @test length(failed_results.TMLE) / length(results) < 1/3
+    @test all(startswith(x.msg, "Could not fluctuate") for x ∈ failed_results.TMLE)
+
+    check_fails_are_extremely_rare_traits(failed_results.TMLE, dataset; ncases=3)
 end
 
 end
