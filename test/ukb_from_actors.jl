@@ -11,9 +11,21 @@ include("utils.jl")
     @test r.exitcode == 0
 
     ## Checking main output
-    output = CSV.read(joinpath("results", "summary.csv"), DataFrame)
-    dataset = DataFrame(Arrow.Table(joinpath("results", "tmle_inputs", "final.data.arrow")))
-    bQTLs = Symbol.(CSV.read(joinpath("test", "data", "actors", "bqtls.csv"), DataFrame).ID)
+    # Results
+    results_file = jldopen(joinpath("results", "results.hdf5"))
+    results = vcat((results_file[key] for key in keys(results_file))...)
+    @test length(results) > 300
+    failed_results = retrieve_failed_results(results; expected_keys=(:TMLE, :OSE, :SAMPLE_IDS))
+    # All fails are due to fluctuation failure due non positive definite matrix
+    # This does not affect the OSE
+    @test isempty(failed_results.OSE)
+    # Less than 1/3 affected: this is still quite significant
+    @test length(failed_results.TMLE) / length(results) < 1/3
+    @test all(startswith(x.msg, "Could not fluctuate") for x ∈ failed_results.TMLE)
+
+    dataset = Arrow.Table(joinpath("results", "dataset.arrow")) |> DataFrame
+
+    check_fails_are_extremely_rare_traits(failed_results.TMLE, dataset; ncases=3)
 
     @test names(output) == vcat(SUMMARY_COLUMNS, SIEVE_COLUMNS, ADJUTMENT_COL)
     # 2 bQTLs and 1 trans-actor
