@@ -12,7 +12,7 @@ using Serialization
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
-include(joinpath(@__DIR__, "test", "utils.jl"))
+include("utils.jl")
 
 @testset "Test custom_from_actors.config" begin
     cmd = `nextflow run main.nf -c conf/ci_jobs/custom_from_actors.config $args`
