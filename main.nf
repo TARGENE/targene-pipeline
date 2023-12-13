@@ -46,6 +46,8 @@ params.TMLE_SAVE_EVERY = 100
 params.ARROW_OUTPUT = "dataset.arrow"
 params.JSON_OUTPUT = "NO_JSON_OUTPUT"
 params.HDF5_OUTPUT = "results.hdf5"
+params.PERMUTATION_HDF5_OUTPUT = "permutation_results.hdf5"
+params.PERMUTATION_JSON_OUTPUT = "NO_JSON_OUTPUT"
 
 // Permutation Tests Parameters
 params.MAX_PERMUTATION_TESTS = null
@@ -205,7 +207,7 @@ workflow negativeControl {
         GeneratePermutationTestsData.output.estimands.flatten(), 
         estimator_file
     )
-    MergeOutputs(TMLE.out.tmle_csv.collect(), "permutation_summary.csv")
+    MergeOutputs(TMLE.out.collect(), params.PERMUTATION_HDF5_OUTPUT, params.PERMUTATION_JSON_OUTPUT)
     
     // Random Variants parameter files generation
     if (params.STUDY_DESIGN == "FROM_ACTORS") {
@@ -236,5 +238,5 @@ workflow {
         sieve_results = generateSieveEstimates(generateTMLEEstimates.out, generateIIDGenotypes.out)
     }
 
-    MergeOutputs(generateTMLEEstimates.out.collect(), "summary.csv")
+    MergeOutputs(generateTMLEEstimates.out.collect(), params.HDF5_OUTPUT, params.JSON_OUTPUT)
 }
