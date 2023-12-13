@@ -1,7 +1,7 @@
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
-include("utils.jl")
+include(joinpath(@__DIR__, "test", "utils.jl"))
 
 @testset "Test ukb_from_actors.config" begin
     cmd = `nextflow run main.nf -c conf/ci_jobs/ukb_from_actors.config $args`

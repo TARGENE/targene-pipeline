@@ -1,13 +1,11 @@
 module TestFromParamFile
 
 using Test
-using CSV
 using DataFrames
-using YAML
 using TMLE
 using Arrow
-using Serialization
 using JLD2
+using TargetedEstimation
 
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
@@ -25,18 +23,8 @@ include(joinpath(@__DIR__, "test", "utils.jl"))
     results = vcat(results["Batch_1"], result_file["Batch_2"])
     dataset = DataFrame(Arrow.Table(joinpath("results", "dataset.arrow")))
 
-    failed_results = (TMLE = [], OSE = [])
-    for result ∈ results
-        @test keys(result) == (:TMLE, :OSE)
-        @test result.TMLE isa Union{TMLE.TMLEstimate, TargetedEstimation.FailedEstimate}
-        @test result.OSE isa Union{TMLE.OSEstimate, TargetedEstimation.FailedEstimate}
-        if result.TMLE isa TargetedEstimation.FailedEstimate
-            push!(failed_results.TMLE, result.TMLE)
-        end
-        if result.OSE isa TargetedEstimation.FailedEstimate
-            push!(failed_results.OSE, result.OSE)
-        end
-    end
+    failed_results = retrieve_failed_results(results)
+
     # All fails are due to fluctuation failure due non positive definite matrix
     # This does not affect the OSE
     @test isempty(failed_results.OSE)
