@@ -20,7 +20,7 @@ include("utils.jl")
     @test r.exitcode == 0
     
     result_file = jldopen(joinpath("results", "results.hdf5"))
-    results = vcat(results["Batch_1"], result_file["Batch_2"])
+    results = vcat(result_file["Batch_1"], result_file["Batch_2"])
     dataset = DataFrame(Arrow.Table(joinpath("results", "dataset.arrow")))
 
     failed_results = retrieve_failed_results(results)
