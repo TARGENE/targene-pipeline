@@ -17,8 +17,9 @@ def longest_prefix(files){
 }
 
 process GeneratePermutationTestsData {
-    container "olivierlabayle/negative-controls:0.2"
-    publishDir "${params.OUTDIR}/permutation_data", mode: 'symlink'
+    container "olivierlabayle/negative-controls:cvtmle"
+    publishDir "${params.OUTDIR}/permutation_tests", mode: 'symlink', pattern: '*.arrow'
+    publishDir "${params.OUTDIR}/permutation_tests/estimands", mode: 'symlink', pattern: '*.jls'
     label "bigmem"
     
     input:
@@ -27,7 +28,7 @@ process GeneratePermutationTestsData {
 
     output:
         path "permutation_dataset.arrow", emit: dataset
-        path "*.yaml", emit: estimands
+        path "*.jls", emit: estimands
 
     script:
         limit = params.MAX_PERMUTATION_TESTS == null ? "" : "--limit=${params.MAX_PERMUTATION_TESTS}"
@@ -36,7 +37,6 @@ process GeneratePermutationTestsData {
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl  --startup-file=no /NegativeControl/bin/generate_permutation_data.jl \
         ${dataset} ${results} \
         ${limit} \
-        --pval-col=${params.PVAL_COL} \
         --pval-threshold=${params.PVAL_THRESHOLD} \
         --orders=${params.PERMUTATION_ORDERS} \
         --chunksize=${params.BATCH_SIZE} \
@@ -46,7 +46,7 @@ process GeneratePermutationTestsData {
 }
 
 process GenerateRandomVariantsTestsData {
-    container "olivierlabayle/negative-controls:0.2"
+    container "olivierlabayle/negative-controls:cvtmle"
     publishDir "${params.OUTDIR}", mode: 'symlink'
     label "bigmem"
     
@@ -56,7 +56,7 @@ process GenerateRandomVariantsTestsData {
         path results
 
     output:
-        path "random_variants_parameters.yaml"
+        path "random_variants_estimands.jls"
 
     script:
         trans_actors_prefix = longest_prefix(trans_actors)
@@ -65,10 +65,9 @@ process GenerateRandomVariantsTestsData {
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl  --startup-file=no /NegativeControl/bin/generate_random_variant_parameters.jl \
         ${trans_actors_prefix} ${results} ${bgen_prefix} \
-        --out=random_variants_parameters.yaml \
+        --out=random_variants_estimands.jls \
         --p=${params.N_RANDOM_VARIANTS} \
         --reltol=${params.MAF_MATCHING_RELTOL} \
-        --pval-col=${params.PVAL_COL} \
         --pval-threshold=${params.PVAL_THRESHOLD} \
         --rng=${params.RNG} \
         --verbosity=${params.VERBOSITY}
