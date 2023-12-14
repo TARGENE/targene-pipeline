@@ -25,7 +25,8 @@ process SieveVarianceEstimation {
 process MergeOutputs {
     container "olivierlabayle/targeted-estimation:cv_tmle"
     publishDir "$params.OUTDIR", mode: 'symlink'
-
+    label "bigmem"
+    
     input:
         path tmle_files
         val hdf5_output
@@ -36,12 +37,12 @@ process MergeOutputs {
         path "${json_output}", optional: true
 
     script:
-        json_output = json_output != "NO_JSON_OUTPUT" ? "--outputs.json.filename=${json_output}" : ""
+        json_option = json_output !== "NO_JSON_OUTPUT" ? "--outputs.json.filename=${json_output}" : ""
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /opt/bin/tmle make-summary \
         tmle_result \
         --outputs.hdf5.filename=${params.HDF5_OUTPUT} \
-        ${json_output}
+        ${json_option}
         """
 }
