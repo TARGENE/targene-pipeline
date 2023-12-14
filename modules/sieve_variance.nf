@@ -42,7 +42,7 @@ process MergeOutputs {
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /opt/bin/tmle make-summary \
         tmle_result \
-        --outputs.hdf5.filename=${params.HDF5_OUTPUT} \
+        --outputs.hdf5.filename=${hdf5_output} \
         ${json_option}
         """
 }

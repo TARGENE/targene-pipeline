@@ -51,7 +51,6 @@ params.PERMUTATION_JSON_OUTPUT = "NO_JSON_OUTPUT"
 
 // Permutation Tests Parameters
 params.MAX_PERMUTATION_TESTS = null
-params.PVAL_COL = "TMLE_PVALUE"
 params.PERMUTATION_ORDERS = "1"
 params.RNG = 123
 params.MAF_MATCHING_RELTOL = 0.05
@@ -196,7 +195,7 @@ workflow generateSieveEstimates {
 }
 
 workflow negativeControl {
-    results_file = Channel.value(file("${params.HDF5_OUTPUT}"))
+    results_file = Channel.value(file("${params.OUTDIR}/${params.HDF5_OUTPUT}"))
 
     // Permutation Tests
     dataset = Channel.value(file("${params.OUTDIR}/${params.ARROW_OUTPUT}"))
