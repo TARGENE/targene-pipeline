@@ -15,7 +15,7 @@ All arguments are optional but encouraged. Here `-r vX` describes the version to
 2. You need to provide the configuration details associated with your project, this is usually done in a `nextflow.config` file living at the root of your project's directory. The configuration parameters are described in the following sections:
     - [Setting a data source](@ref)
     - [Adjusting for confounders](@ref)
-    - [Describing the causal parameters of interest](@ref)
+    - [Study Designs](@ref)
     - [Specifying a Targeted Estimator](@ref)
     - [Correcting for population relatedness](@ref)
     - [Tweaking additional behaviour](@ref)
