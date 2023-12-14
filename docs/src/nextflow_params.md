@@ -21,7 +21,7 @@ Here is a list of all the pipeline parameters:
 - `MAF_THRESHOLD` (optional): Only variants with that minor allele frequency are considered
 - `NB_PCS` (optional, default: 6): The number of PCA components to extract.
 
-## [Describing the causal parameters of interest](@ref)
+## [Study Designs](@ref)
 
 - **`STUDY_DESIGN`** (required, default: "FROM\_PARAM\_FILE"): One of "FROM\_PARAM\_FILE", "FROM\_ACTORS".
 
@@ -53,7 +53,7 @@ If `STUDY_DESIGN`="FROM_ACTORS":
 
 ## [Tweaking additional behaviour](@ref)
 
-- `CALL_THRESHOLD` (optional, default: 0.9): For putative causal variants (listed in the parameter files described in the [Describing the causal parameters of interest](@ref) section). If a individual's allele's probability is greater than the threshold, then it is called, otherwise it is considered missing.
+- `CALL_THRESHOLD` (optional, default: 0.9): For putative causal variants (listed in the parameter files described in the [Study Designs](@ref) section). If a individual's allele's probability is greater than the threshold, then it is called, otherwise it is considered missing.
 - `BATCH_SIZE` (optional, default: 400): The set of parameters to be estimated is batched and the TMLE processes will run in parallel across batches on your platform.
 - `OUTDIR` (optional, default: "results"): Output directory
 - `RNG` (optional, default: 123): General random seed used where appropriate.
