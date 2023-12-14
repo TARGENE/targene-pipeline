@@ -1,4 +1,4 @@
-module Test UKBFromActors
+module TestUKBFromActors
 
 using Test
 using JLD2
