@@ -44,7 +44,7 @@ include("utils.jl")
 
     check_fails_are_extremely_rare_traits(failed_results.TMLE, dataset; ncases=7)
 
-    # Here we test that the process generateIIDGenotypes has been run once for each chromosome
+    # Here we test that the process IIDGenotypes has been run once for each chromosome
     # There should be 4 files for each chromosome
     n_chr_files = filter(x -> startswith(x, "LDpruned.filtered.ukb_chr"), readdir(joinpath("results", "ld_pruned_chromosomes")))
     @test length(n_chr_files) == 4*3
