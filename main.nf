@@ -1,14 +1,15 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-params.DECRYPTED_DATASET = "NO_FILE"
+params.VERBOSITY = 0 
+params.TRAITS_DATASET = "NO_TRAITS_DATASET"
+params.UKB_ENCODING_FILE = "NO_UKB_ENCODING_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
 params.MAF_THRESHOLD = 0.01
-params.VERBOSITY = 1
 params.COHORT = "UKBB"
-params.TRAITS_CONFIG = "NO_UKB_TRAIT_CONFIG"
-params.WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
+params.UKB_CONFIG = "NO_UKB_TRAIT_CONFIG"
+params.UKB_WITHDRAWAL_LIST = 'NO_WITHDRAWAL_LIST'
 params.OUTDIR = "${launchDir}/results"
 
 // Confounding adjustment by PCA
@@ -41,201 +42,101 @@ params.SVP_ESTIMATOR_KEY = "TMLE"
 params.KEEP_IC = params.SVP == true ? true : false
 params.PVAL_THRESHOLD = 0.05
 params.TMLE_SAVE_EVERY = 100
+params.AGGREGATED_DATASET = "results/dataset.arrow"
+params.ESTIMATOR_FILE = "glmnet"
 
 // Outputs
 params.ARROW_OUTPUT = "dataset.arrow"
 params.JSON_OUTPUT = "NO_JSON_OUTPUT"
 params.HDF5_OUTPUT = "results.hdf5"
-params.PERMUTATION_HDF5_OUTPUT = "permutation_results.hdf5"
-params.PERMUTATION_JSON_OUTPUT = "NO_JSON_OUTPUT"
 
-// Permutation Tests Parameters
-params.MAX_PERMUTATION_TESTS = null
-params.PERMUTATION_ORDERS = "1"
-params.RNG = 123
-params.MAF_MATCHING_RELTOL = 0.05
-params.N_RANDOM_VARIANTS = 10
-
-
+include { EstimationInputs } from './modules/estimation_inputs.nf'
 include { IIDGenotypes } from './modules/genotypes.nf'
-include { FlashPCA; AdaptFlashPCA } from './modules/confounders.nf'
-include { UKBFieldsList; UKBConv; TraitsFromUKB } from './modules/ukb_traits.nf'
-include { TMLE; TMLEInputsFromParamFile; TMLEInputsFromActors } from './modules/tmle.nf'
-include { GRMPart; AggregateGRM } from './modules/grm.nf'
-include { SieveVarianceEstimation ; MergeOutputs } from './modules/sieve_variance.nf'
-include { GeneratePermutationTestsData; GenerateRandomVariantsTestsData } from './modules/negative_control.nf'
-
-workflow extractTraits {
-    traits_config = Channel.value(file("$params.TRAITS_CONFIG"))
-    withdrawal_list = Channel.value(file("$params.WITHDRAWAL_LIST"))
-    if (params.DECRYPTED_DATASET == "NO_FILE") {
-        encrypted_dataset = Channel.value(file("$params.ENCRYPTED_DATASET"))
-        encoding_file = Channel.value(file("$params.ENCODING_FILE"))
-        UKBFieldsList(traits_config)
-        decrypted_dataset = UKBConv(UKBFieldsList.out, encrypted_dataset, encoding_file)
-    }
-    else {
-        decrypted_dataset = Channel.value(file("$params.DECRYPTED_DATASET"))
-    }
-
-    if (params.COHORT == "UKBB") {
-        extracted_traits = TraitsFromUKB(decrypted_dataset, traits_config, withdrawal_list)
-    } 
-    else {
-        extracted_traits = decrypted_dataset 
-    }
-
-    emit:
-        extracted_traits
-}
-
-workflow generateIIDGenotypes {
-    take:
-        traits
-
-    main:
-        qc_file = Channel.value(file("$params.QC_FILE"))
-        flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
-        ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
-        bed_files_ch = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
-
-        IIDGenotypes(flashpca_excl_reg, ld_blocks, bed_files_ch, qc_file, traits)
-
-    emit:
-        IIDGenotypes.out
-}
-
-workflow geneticConfounders {
-    take:
-        iid_genotypes
-
-    main:
-        FlashPCA(iid_genotypes)
-        AdaptFlashPCA(FlashPCA.out)
-
-    emit:
-        AdaptFlashPCA.out
-
-}
-
-workflow runPCA {
-    // Extract traits
-    extractTraits()
-
-    // Generate IID Genotypes
-    generateIIDGenotypes(extractTraits.out)
-
-    // Genetic confounders up to NB_PCS
-    geneticConfounders(generateIIDGenotypes.out) 
-
-}
-
-workflow generateTMLEEstimates {
-    take:
-        traits
-        genetic_confounders
-
-    main:
-        estimator_file = Channel.value(file("$params.ESTIMATOR_FILE", checkIfExists: true))
-        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
-
-        if (params.STUDY_DESIGN == "FROM_ACTORS") {
-            bqtls = Channel.value(file("$params.BQTLS"))
-            trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
-            extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
-            extra_treatments = Channel.value(file("$params.ENVIRONMENTALS"))
-            extra_covariates = Channel.value(file("$params.EXTRA_COVARIATES"))
-            tmle_inputs = TMLEInputsFromActors(
-                bgen_files,
-                traits,
-                genetic_confounders,
-                extra_confounders,
-                extra_treatments,
-                extra_covariates,
-                bqtls,
-                trans_actors)
-        }
-        else if (params.STUDY_DESIGN == "CUSTOM"){
-            estimands_file = Channel.value(file("$params.ESTIMANDS_FILE"))
-            tmle_inputs = TMLEInputsFromParamFile(
-                bgen_files,
-                traits,
-                genetic_confounders,
-                estimands_file)
-        }
-        else { 
-            throw new Exception("This STUDY_DESIGN is not available.")
-        }
-        // compute TMLE estimates for continuous targets
-        TMLE(
-            tmle_inputs.traits,
-            tmle_inputs.estimands.flatten(),
-            estimator_file,
-        )
-        
-
-    emit:
-        TMLE.out
-}
-
-
-workflow generateSieveEstimates {
-    take:
-        tmle_files
-        iid_genotypes
-    
-    main:
-        grm_parts = Channel.from( 1..params.GRM_NSPLITS )
-        GRMPart(iid_genotypes.collect(), params.GRM_NSPLITS, grm_parts)
-        AggregateGRM(GRMPart.out.collect())
-        // Sieve estimation
-        SieveVarianceEstimation(tmle_files.collect(), AggregateGRM.out.grm_ids, AggregateGRM.out.grm_matrix)
-    emit:
-        SieveVarianceEstimation.out
-}
-
-workflow negativeControl {
-    results_file = Channel.value(file("${params.OUTDIR}/${params.HDF5_OUTPUT}"))
-
-    // Permutation Tests
-    dataset = Channel.value(file("${params.OUTDIR}/${params.ARROW_OUTPUT}"))
-    estimator_file = Channel.value(file("${params.ESTIMATOR_FILE}"))
-    GeneratePermutationTestsData(dataset, results_file)
-    TMLE(
-        GeneratePermutationTestsData.output.dataset, 
-        GeneratePermutationTestsData.output.estimands.flatten(), 
-        estimator_file
-    )
-    MergeOutputs(TMLE.out.collect(), params.PERMUTATION_HDF5_OUTPUT, params.PERMUTATION_JSON_OUTPUT)
-    
-    // Random Variants parameter files generation
-    if (params.STUDY_DESIGN == "FROM_ACTORS") {
-        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
-        trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
-        GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
-    }
-}
+include { GeneticConfounders } from './modules/confounders.nf'
+include { ExtractTraits } from './modules/traits.nf'
+include { EstimationWorkflow } from './modules/estimation.nf'
+include { SVPWorkflow } from './modules/svp.nf'
 
 workflow {
-    // Extract traits for UKBB
-    extractTraits()
+    // Define Parameters
+    verbosity = params.VERBOSITY
+
+    cohort = params.COHORT
+    ukb_encoding_file = params.UKB_ENCODING_FILE
+    ukb_config = Channel.value(file("$params.UKB_CONFIG"))
+    ukb_withdrawal_list = Channel.value(file("$params.UKB_WITHDRAWAL_LIST"))
+    traits_dataset = Channel.value(file("$params.TRAITS_DATASET"))
+
+    maf_threshold = params.MAF_THRESHOLD
+    qc_file = Channel.value(file("$params.QC_FILE"))
+    flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS"))
+    ld_blocks = Channel.value(file("$params.LD_BLOCKS"))
+    bed_files = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
     
-    // Generate IID Genotypes
-    generateIIDGenotypes(extractTraits.out)
+    estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
+    keep_ic = params.KEEP_IC
+    pval_threshold = params.PVAL_THRESHOLD
+    save_every = params.TMLE_SAVE_EVERY
+    hdf5_output = "${params.HDF5_OUTPUT}"
+    json_output = "${params.JSON_OUTPUT}"
+
+    do_svp = params.SVP
+    n_svp_estimators = params.NB_SVP_ESTIMATORS
+    max_svp_threshold = params.MAX_SVP_THRESHOLD
+    svp_estimator_key = params.SVP_ESTIMATOR_KEY
+    grm_n_splits = params.GRM_NSPLITS
+
+    // Extract Traits
+    ExtractTraits(
+        traits_dataset,
+        cohort,
+        ukb_config,
+        ukb_withdrawal_list,
+        ukb_encoding_file,
+    )
+    
+    // IID Genotypes
+    IIDGenotypes(
+        flashpca_excl_reg,
+        ld_blocks,
+        bed_files,
+        qc_file,
+        ExtractTraits.out,
+        maf_threshold
+    )
 
     // Genetic confounders
-    geneticConfounders(generateIIDGenotypes.out)
+    GeneticConfounders(IIDGenotypes.out)
+
+    // generate main dataset and estimand configuration files
+    EstimationInputs(
+        ExtractTraits.out,
+        GeneticConfounders.out
+    )
 
     // generate estimates
-    generateTMLEEstimates(
-        extractTraits.out,
-        geneticConfounders.out,
+    EstimationWorkflow(
+        EstimationInputs.out.aggregated_dataset,
+        EstimationInputs.out.estimands.flatten(),
+        estimator_config,
+        keep_ic,
+        do_svp,
+        pval_threshold,
+        save_every,
+        hdf5_output,
+        json_output
     )
 
     // Generate sieve estimates
-    if (params.SVP == true){
-        sieve_results = generateSieveEstimates(generateTMLEEstimates.out, generateIIDGenotypes.out)
+    if (do_svp == true){
+        sieve_results = SVPWorkflow(
+            EstimationWorkflow.out.hdf5_result, 
+            IIDGenotypes.out,
+            n_svp_estimators,
+            max_svp_threshold,
+            svp_estimator_key,
+            grm_n_splits,
+            verbosity
+        )
     }
-
-    MergeOutputs(generateTMLEEstimates.out.collect(), params.HDF5_OUTPUT, params.JSON_OUTPUT)
 }

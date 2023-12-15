@@ -1,20 +1,14 @@
-def longest_prefix(files){
-    // Only one file, strangely it is not passed as a list
-    if (files instanceof Collection == false) {
-        return files.getName()
-    }
-    // More than one file
-    index = 0
-    while(true){
-        current_prefix = files[0].getName()[0..index]
-        for (file in files){
-            if(file.getName()[0..index] != current_prefix){
-                return current_prefix[0..-2]
-            }
-        }
-        index++
-    }
-}
+params.PERMUTATION_HDF5_OUTPUT = "permutation_results.hdf5"
+params.PERMUTATION_JSON_OUTPUT = "NO_JSON_OUTPUT"
+
+// Permutation Tests Parameters
+params.MAX_PERMUTATION_TESTS = null
+params.PERMUTATION_ORDERS = "1"
+params.RNG = 123
+params.MAF_MATCHING_RELTOL = 0.05
+params.N_RANDOM_VARIANTS = 10
+
+include { longest_prefix } from './utils.nf'
 
 process GeneratePermutationTestsData {
     container "olivierlabayle/negative-controls:cvtmle"
@@ -72,4 +66,26 @@ process GenerateRandomVariantsTestsData {
         --rng=${params.RNG} \
         --verbosity=${params.VERBOSITY}
         """
+}
+
+workflow NegativeControl {
+    results_file = Channel.value(file("${params.OUTDIR}/${params.HDF5_OUTPUT}"))
+
+    // Permutation Tests
+    dataset = Channel.value(file("${params.OUTDIR}/${params.ARROW_OUTPUT}"))
+    estimator_file = Channel.value(file("${params.ESTIMATOR_FILE}"))
+    GeneratePermutationTestsData(dataset, results_file)
+    TMLE(
+        GeneratePermutationTestsData.output.dataset, 
+        GeneratePermutationTestsData.output.estimands.flatten(), 
+        estimator_file
+    )
+    MergeOutputs(TMLE.out.collect(), params.PERMUTATION_HDF5_OUTPUT, params.PERMUTATION_JSON_OUTPUT)
+    
+    // Random Variants parameter files generation
+    if (params.STUDY_DESIGN == "FROM_ACTORS") {
+        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
+        trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
+        GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
+    }
 }

@@ -30,3 +30,15 @@ process AdaptFlashPCA {
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl --input $flashpca_out --output pcs.csv adapt
         """
 }
+
+workflow GeneticConfounders {
+    take:
+        iid_genotypes
+
+    main:
+        FlashPCA(iid_genotypes)
+        AdaptFlashPCA(FlashPCA.out)
+
+    emit:
+        AdaptFlashPCA.out
+}

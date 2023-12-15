@@ -1,52 +1,4 @@
-def longest_prefix(files){
-    // Only one file, strangely it is not passed as a list
-    if (files instanceof Collection == false) {
-        return files.getName()
-    }
-    // More than one file
-    index = 0
-    while(true){
-        current_prefix = files[0].getName()[0..index]
-        for (file in files){
-            if(file.getName()[0..index] != current_prefix){
-                return current_prefix[0..-2]
-            }
-        }
-        index++
-    }
-}
-
-process TMLE {
-    container "olivierlabayle/targeted-estimation:cv_tmle"
-    publishDir "$params.OUTDIR/tmle_outputs/", mode: 'symlink', pattern: "*.hdf5"
-    label "bigmem"
-    label "multithreaded"
-
-    input:
-        path data
-        path estimands_file
-        path estimator_file
-    
-    output:
-        path "${hdf5out}"
-    
-    script:
-        basename = "tmle_result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
-        hdf5out = basename + ".hdf5"
-        pval_threshold = params.KEEP_IC == true ? "--outputs.hdf5.pval_threshold=${params.PVAL_THRESHOLD}" : ""
-        sample_ids = params.SVP == true ? "--outputs.hdf5.sample_ids=true" : ""
-        """
-        TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /opt/bin/tmle tmle \
-        $data \
-        --estimands=$estimands_file \
-        --estimators=$estimator_file \
-        --outputs.hdf5.filename=$hdf5out \
-        $pval_threshold \
-        $sample_ids \
-        --chunksize=$params.TMLE_SAVE_EVERY \
-        """
-}
+include { longest_prefix } from './utils.nf'
 
 process TMLEInputsFromParamFile {
     container "olivierlabayle/tl-core:cvtmle"
@@ -61,7 +13,7 @@ process TMLEInputsFromParamFile {
         path parameter
 
     output:
-        path "final.data.arrow", emit: traits
+        path "final.data.arrow", emit: dataset
         path "final.*.jls", emit: estimands
 
     script:
@@ -97,7 +49,7 @@ process TMLEInputsFromActors {
         path trans_actors
 
     output:
-        path "final.data.arrow", emit: traits
+        path "final.data.arrow", emit: dataset
         path "final.*.jls", emit: estimands
 
     script:
@@ -118,4 +70,45 @@ process TMLEInputsFromActors {
         $batch_size \
         from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS}
         """
+}
+
+workflow EstimationInputs {
+    take:
+        traits
+        genetic_confounders
+
+    main:
+        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
+
+        if (params.STUDY_DESIGN == "FROM_ACTORS") {
+            bqtls = Channel.value(file("$params.BQTLS"))
+            trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
+            extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
+            extra_treatments = Channel.value(file("$params.ENVIRONMENTALS"))
+            extra_covariates = Channel.value(file("$params.EXTRA_COVARIATES"))
+            tmle_inputs = TMLEInputsFromActors(
+                bgen_files,
+                traits,
+                genetic_confounders,
+                extra_confounders,
+                extra_treatments,
+                extra_covariates,
+                bqtls,
+                trans_actors)
+        }
+        else if (params.STUDY_DESIGN == "CUSTOM"){
+            estimands_file = Channel.value(file("$params.ESTIMANDS_FILE"))
+            tmle_inputs = TMLEInputsFromParamFile(
+                bgen_files,
+                traits,
+                genetic_confounders,
+                estimands_file)
+        }
+        else { 
+            throw new Exception("This STUDY_DESIGN is not available.")
+        }
+    
+    emit:
+        aggregated_dataset = tmle_inputs.dataset
+        estimands = tmle_inputs.estimands
 }
