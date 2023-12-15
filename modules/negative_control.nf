@@ -1,13 +1,11 @@
+// Negative Control Parameters
 params.PERMUTATION_HDF5_OUTPUT = "permutation_results.hdf5"
 params.PERMUTATION_JSON_OUTPUT = "NO_JSON_OUTPUT"
-
-// Permutation Tests Parameters
-params.MAX_PERMUTATION_TESTS = null
+params.MAX_PERMUTATION_TESTS = ""
 params.PERMUTATION_ORDERS = "1"
 params.RNG = 123
 params.MAF_MATCHING_RELTOL = 0.05
 params.N_RANDOM_VARIANTS = 10
-
 include { longest_prefix } from './utils.nf'
 
 process GeneratePermutationTestsData {
@@ -25,7 +23,7 @@ process GeneratePermutationTestsData {
         path "*.jls", emit: estimands
 
     script:
-        limit = params.MAX_PERMUTATION_TESTS == null ? "" : "--limit=${params.MAX_PERMUTATION_TESTS}"
+        limit = params.MAX_PERMUTATION_TESTS == "" ? "" : "--limit=${params.MAX_PERMUTATION_TESTS}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl  --startup-file=no /NegativeControl/bin/generate_permutation_data.jl \
@@ -68,20 +66,35 @@ process GenerateRandomVariantsTestsData {
         """
 }
 
-workflow NegativeControl {
+workflow {
     results_file = Channel.value(file("${params.OUTDIR}/${params.HDF5_OUTPUT}"))
 
     // Permutation Tests
     dataset = Channel.value(file("${params.OUTDIR}/${params.ARROW_OUTPUT}"))
-    estimator_file = Channel.value(file("${params.ESTIMATOR_FILE}"))
-    GeneratePermutationTestsData(dataset, results_file)
-    TMLE(
-        GeneratePermutationTestsData.output.dataset, 
-        GeneratePermutationTestsData.output.estimands.flatten(), 
-        estimator_file
+    estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
+    keep_ic = false
+    do_svp  = false
+    pval_threshold = params.PVAL_THRESHOLD
+    save_every = params.TMLE_SAVE_EVERY
+    hdf5_output = params.PERMUTATION_HDF5_OUTPUT
+    json_output = params.PERMUTATION_JSON_OUTPUT
+
+    GeneratePermutationTestsData(
+        dataset, 
+        results_file
     )
-    MergeOutputs(TMLE.out.collect(), params.PERMUTATION_HDF5_OUTPUT, params.PERMUTATION_JSON_OUTPUT)
-    
+    EstimationWorkflow(
+        GeneratePermutationTestsData.output.dataset,
+        GeneratePermutationTestsData.output.estimands.flatten(),
+        estimator_config,
+        keep_ic,
+        do_svp,
+        pval_threshold,
+        save_every,
+        hdf5_output,
+        json_output
+    )
+
     // Random Variants parameter files generation
     if (params.STUDY_DESIGN == "FROM_ACTORS") {
         bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()

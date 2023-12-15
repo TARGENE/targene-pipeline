@@ -31,21 +31,21 @@ params.EXTRA_COVARIATES = 'data/NO_EXTRA_COVARIATE'
 params.ENVIRONMENTALS = 'data/NO_EXTRA_TREATMENT'
 params.ORDERS = "1,2"
 
-// Sieve Variance Plateau
+// SVP Parameters
 params.SVP = false
 params.GRM_NSPLITS = 100
 params.NB_SVP_ESTIMATORS = 100
 params.MAX_SVP_THRESHOLD = 0.9
 params.SVP_ESTIMATOR_KEY = "TMLE"
 
-// TMLE
+// TMLE Parameters
 params.KEEP_IC = params.SVP == true ? true : false
 params.PVAL_THRESHOLD = 0.05
 params.TMLE_SAVE_EVERY = 100
 params.AGGREGATED_DATASET = "results/dataset.arrow"
 params.ESTIMATOR_FILE = "glmnet"
 
-// Outputs
+// Outputs Parameters
 params.ARROW_OUTPUT = "dataset.arrow"
 params.JSON_OUTPUT = "NO_JSON_OUTPUT"
 params.HDF5_OUTPUT = "results.hdf5"
