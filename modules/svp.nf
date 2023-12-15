@@ -38,7 +38,7 @@ process SVP {
     publishDir "$params.OUTDIR", mode: 'symlink'
 
     input:
-        path tmle_files
+        path hdf5_results
         path GRM_ids
         path GRM_matrix
         val n_estimators
@@ -50,10 +50,11 @@ process SVP {
         path "svp.hdf5"
     
     script:
+        hdf5_prefix = longest_prefix(hdf5_results)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /opt/bin/tmle sieve-variance-plateau \
-        tmle_result \
+        $hdf5_prefix \
         --n-estimators=$n_estimators \
         --max-tau=$max_tau \
         --estimator-key=$estimator_key \
