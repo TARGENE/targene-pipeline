@@ -17,7 +17,6 @@ process filterBED{
         prefix = bedfiles[0].toString().minus('.bed')
         qc_file = qcfile.getName() != 'NO_QC_FILE' ? "--qcfile $qcfile" : '' 
         ld_blocks = ld_blocks.getName() != 'NO_LD_BLOCKS' ? "--ld-blocks $ld_blocks" : ''
-        println(ld_blocks)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
