@@ -38,19 +38,19 @@ process TraitsFromUKB {
 
     input:
         path dataset
-        path traits_config
+        path ukbconfig
         path withdrawal_list
     
     output:
         path 'traits.csv'
 
     script:
-        traits_config = traits_config.name != 'NO_UKB_TRAIT_CONFIG' ? "--conf $traits_config" : ''
-        withdrawal_list = withdrawal_list.name != 'NO_WITHDRAWAL_LIST' ? "--withdrawal-list $withdrawal_list" : ''
+        ukbconfig = ukbconfig.getName() != 'NO_UKB_TRAIT_CONFIG' ? "--conf $ukbconfig" : ''
+        withdrawal_list = withdrawal_list.getName() != 'NO_WITHDRAWAL_LIST' ? "--withdrawal-list $withdrawal_list" : ''
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/UKBMain.jl --startup-file=no --threads $task.cpus /UKBMain.jl/scripts/process_main_dataset.jl \
-        $dataset $traits_config $withdrawal_list
+        $dataset $ukbconfig $withdrawal_list
         """
 }
 
@@ -66,7 +66,11 @@ workflow ExtractTraits {
         if (cohort == "UKBB") {
             if (ukb_encoding_file != "NO_UKB_ENCODING_FILE") {
                 UKBFieldsList(ukb_config)
-                decrypted_dataset = UKBConv(UKBFieldsList.out, traits_dataset, ukb_encoding_file)
+                decrypted_dataset = UKBConv(
+                    UKBFieldsList.out, 
+                    traits_dataset, 
+                    Channel.value(file("${ukb_encoding_file}", checkIfExists: true))
+                )
             }
             else {
                 decrypted_dataset = traits_dataset

@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 
 params.VERBOSITY = 0 
 params.TRAITS_DATASET = "You need to provide a Traits dataset."
-params.UKB_ENCODING_FILE = "data/NO_UKB_ENCODING_FILE"
+params.UKB_ENCODING_FILE = "NO_UKB_ENCODING_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
 params.MAF_THRESHOLD = 0.01
@@ -56,6 +56,20 @@ include { GeneticConfounders } from './modules/confounders.nf'
 include { ExtractTraits } from './modules/traits.nf'
 include { EstimationWorkflow } from './modules/estimation.nf'
 include { SVPWorkflow } from './modules/svp.nf'
+
+log.info """\
+         ${workflow.manifest.name} v${workflow.manifest.version}
+         ==========================
+         Cohort Type  : ${params.COHORT}
+         Study Design : ${params.STUDY_DESIGN}
+         --
+         run as       : ${workflow.commandLine}
+         started at   : ${workflow.start}
+         config files : ${workflow.configFiles}
+         container    : ${workflow.containerEngine}
+         """
+         .stripIndent()
+
 
 workflow {
     // Define Parameters
