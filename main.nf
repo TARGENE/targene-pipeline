@@ -57,6 +57,19 @@ include { ExtractTraits } from './modules/traits.nf'
 include { EstimationWorkflow } from './modules/estimation.nf'
 include { SVPWorkflow } from './modules/svp.nf'
 
+log.info """\
+         ${params.manifest.name} v${params.manifest.version}
+         ==========================
+         Cohort Type   : ${params.COHORT}
+         Study Design  : ${params.STUDY_DESIGN}
+         --
+         run as       : ${workflow.commandLine}
+         started at   : ${workflow.start}
+         config files : ${workflow.configFiles}
+         container    : ${workflow.containerEngine}
+         """
+         .stripIndent()
+
 workflow {
     // Define Parameters
     verbosity = params.VERBOSITY

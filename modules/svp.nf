@@ -1,3 +1,5 @@
+include { longest_prefix } from './utils.nf'
+
 process GRMPart {
     container "olivierlabayle/tl-core:0.6"
     label "bigmem"
