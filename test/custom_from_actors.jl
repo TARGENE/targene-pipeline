@@ -23,7 +23,7 @@ include("utils.jl")
 
     # Sieve Variance Plateau File
     svp = jldopen(joinpath("results", "svp.hdf5"))
-    @test haskey(svp, "taus")
+    @test length(svp["taus"]) == 10
     @test haskey(svp, "variances")
     @test length(svp["results"]) > 200
     @test all(x.TMLE isa TMLE.TMLEstimate for x in svp["results"])

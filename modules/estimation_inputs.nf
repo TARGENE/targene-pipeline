@@ -11,6 +11,9 @@ process TMLEInputsFromParamFile {
         path traits
         path genetic_confounders
         path parameter
+        val batch_size
+        val call_threshold
+        val positivity_constraint
 
     output:
         path "final.data.arrow", emit: dataset
@@ -18,16 +21,16 @@ process TMLEInputsFromParamFile {
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
-        batch_size = params.BATCH_SIZE == 0 ? "" : "--batch-size ${params.BATCH_SIZE}"
+        batch_size = batch_size == 0 ? "" : "--batch-size ${batch_size}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
         --traits $traits \
         --bgen-prefix $bgen_prefix \
-        --call-threshold ${params.CALL_THRESHOLD} \
+        --call-threshold ${call_threshold} \
         --pcs $genetic_confounders \
         $batch_size \
-        --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
+        --positivity-constraint ${positivity_constraint} \
         from-param-file $parameter
         """
 }
@@ -47,6 +50,9 @@ process TMLEInputsFromActors {
         path extra_covariates
         path bqtls
         path trans_actors
+        val batch_size
+        val call_threshold
+        val positivity_constraint
 
     output:
         path "final.data.arrow", emit: dataset
@@ -55,7 +61,7 @@ process TMLEInputsFromActors {
     script:
         bgen_prefix = longest_prefix(bgenfiles)
         trans_actors_prefix = longest_prefix(trans_actors)
-        batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
+        batch_size = batch_size == 0 ? "" :  "--batch-size ${batch_size}"
         extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
         extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
         extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $extra_covariates" : ''
@@ -64,9 +70,9 @@ process TMLEInputsFromActors {
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
         --traits $traits \
         --bgen-prefix $bgen_prefix \
-        --call-threshold ${params.CALL_THRESHOLD} \
+        --call-threshold ${call_threshold} \
         --pcs $genetic_confounders \
-        --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
+        --positivity-constraint ${positivity_constraint} \
         $batch_size \
         from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS}
         """
@@ -74,18 +80,22 @@ process TMLEInputsFromActors {
 
 workflow EstimationInputs {
     take:
+        study_design
+        bgen_files
         traits
         genetic_confounders
+        estimands_file
+        bqtls_file
+        transactors_files
+        extra_confounders
+        extra_treatments
+        extra_covariates
+        batch_size
+        call_threshold
+        positivity_constraint
 
     main:
-        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
-
-        if (params.STUDY_DESIGN == "FROM_ACTORS") {
-            bqtls = Channel.value(file("$params.BQTLS"))
-            trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
-            extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
-            extra_treatments = Channel.value(file("$params.ENVIRONMENTALS"))
-            extra_covariates = Channel.value(file("$params.EXTRA_COVARIATES"))
+        if (study_design == "FROM_ACTORS") {
             tmle_inputs = TMLEInputsFromActors(
                 bgen_files,
                 traits,
@@ -93,16 +103,23 @@ workflow EstimationInputs {
                 extra_confounders,
                 extra_treatments,
                 extra_covariates,
-                bqtls,
-                trans_actors)
+                bqtls_file,
+                transactors_files,
+                batch_size,
+                call_threshold,
+                positivity_constraint
+                )
         }
-        else if (params.STUDY_DESIGN == "CUSTOM"){
-            estimands_file = Channel.value(file("$params.ESTIMANDS_FILE"))
+        else if (study_design == "CUSTOM"){
             tmle_inputs = TMLEInputsFromParamFile(
                 bgen_files,
                 traits,
                 genetic_confounders,
-                estimands_file)
+                estimands_file,
+                batch_size,
+                call_threshold,
+                positivity_constraint
+                )
         }
         else { 
             throw new Exception("This STUDY_DESIGN is not available.")
