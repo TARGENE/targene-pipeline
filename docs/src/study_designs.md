@@ -93,7 +93,6 @@ Note that variants must be encoded via an explicit genotype string representatio
 This mode will generate all estimands corresponding to the provided `ESTIMANDS_FILE`. In this case, this file is a plain YAML file as follows:
 
 ```yaml
-orders: [2]
 estimands: interactions
 variants:
   TF1:
@@ -119,7 +118,6 @@ extra_confounders:
 
 where:
 
-- `orders`: Defines the orders of treatment combinations to generate
 - `estimands`: The type of generated estimands (only interactions for now)
 - `variants`: Two nested levels of variant groups. For each top level group, the cartesian product of variants in each sub group is produced.
 - `extra_treatments`: These are added to the treatments combinations.
