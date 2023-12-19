@@ -8,19 +8,19 @@ process filterBED{
         path qcfile
         path ld_blocks
         path traits
+        val maf_threshold
 
     output:
         path "filtered.*", emit: filtered_bedfiles
 
     script:
         prefix = bedfiles[0].toString().minus('.bed')
-        qc_file = params.QC_FILE !== 'NO_QC_FILE' ? "--qcfile $qcfile" : '' 
-        ld_blocks = params.LD_BLOCKS !== 'NO_LD_BLOCKS' ? "--ld-blocks $ld_blocks" : ''
-
+        qc_file = qcfile.getName() != 'NO_QC_FILE' ? "--qcfile $qcfile" : '' 
+        ld_blocks = ld_blocks.getName() != 'NO_LD_BLOCKS' ? "--ld-blocks $ld_blocks" : ''
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
-                    --input $prefix --output filtered.$prefix $qc_file --maf-threshold $params.MAF_THRESHOLD \
+                    --input $prefix --output filtered.$prefix $qc_file --maf-threshold $maf_threshold \
                     $ld_blocks --traits $traits filter
         """
 }
@@ -61,7 +61,9 @@ process mergeBEDS{
     script:
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl --input LDpruned. --output ukbb_merged merge
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
+        --input LDpruned. \
+        --output ukbb_merged merge
         """
 
 }
@@ -88,10 +90,11 @@ workflow IIDGenotypes{
         ld_blocks
         bed_files
         qc_file
-        sample_ids
+        traits
+        maf_threshold
 
     main:
-        filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks, sample_ids)
+        filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks, traits, maf_threshold)
         ld_pruned = thinByLD(flashpca_excl_reg, filtered_bedfiles)
         mergeBEDS(ld_pruned.collect())
         SampleQCFilter(mergeBEDS.out.collect())

@@ -81,12 +81,48 @@ For each estimand:
   - ATE: Average Treatment Effect
   - IATE: Interaction Average Treatment Effect
   - CM: Conditional Mean
-- `outcome`: The trait of interest. If using the Uk-Biobank datasource it must match the `phenotypes/name` field in the associated `TRAITS_CONFIG` file. You can also use the wildcard "ALL" to specify that you want to estimate this parameter accross all traits in the dataset.
+- `outcome`: The trait of interest. If using the Uk-Biobank datasource it must match the `phenotypes/name` field in the associated `UKB_CONFIG` file. You can also use the wildcard "ALL" to specify that you want to estimate this parameter accross all traits in the dataset.
 - `treatment_values`: For each treatment variable (genetic-variant / environmental variables), the control/case contrasts.
 - `treatment_confounders`: For each treatment variable, a list of confounding variables. If only a single list is provided, then all treatment variables are assumed to share the same confounding variables. Note that principal components will be added to that list automatically and must not be provided here. You can provide an empty list.
 - `outcome_extra_covariates`: This is optional and correspond to a list of additional covariates for the prediction of the trait.
 
 Note that variants must be encoded via an explicit genotype string representation (e.g. "AC"), the order of the alleles in the genotype is not important.
+
+## `STUDY_DESIGN` = `ALLELE_INDEPENDENT`
+
+This mode will generate all estimands corresponding to the provided `ESTIMANDS_FILE`. In this case, this file is a plain YAML file as follows:
+
+```yaml
+estimands: interactions
+variants:
+  TF1:
+    bQTLs:
+      - RSID_17
+      - RSID_99
+    eQTLs:
+      - RSID_102
+  TF2:
+    bQTLs:
+      - RSID_17
+      - RSID_198
+    eQTLs:
+      - RSID_2
+extra_treatments:
+  - TREAT_1
+outcome_extra_covariates:
+  - COV_1
+extra_confounders:
+  - 21003
+  - 22001
+```
+
+where:
+
+- `estimands`: The type of generated estimands (only interactions for now)
+- `variants`: Two nested levels of variant groups. For each top level group, the cartesian product of variants in each sub group is produced.
+- `extra_treatments`: These are added to the treatments combinations.
+- `outcome_extra_covariates`: Additional covariates predictive of the outcomes
+- `extra_confounders`: Confounding variables other than Principal Components.
 
 ## `STUDY_DESIGN` = `FROM_ACTORS`
 

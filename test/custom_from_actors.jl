@@ -15,7 +15,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 include("utils.jl")
 
 @testset "Test custom_from_actors.config" begin
-    cmd = `nextflow run main.nf -c conf/ci_jobs/custom_from_actors.config $args`
+    cmd = `nextflow run main.nf -c test/configs/custom_from_actors.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
@@ -23,7 +23,7 @@ include("utils.jl")
 
     # Sieve Variance Plateau File
     svp = jldopen(joinpath("results", "svp.hdf5"))
-    @test haskey(svp, "taus")
+    @test length(svp["taus"]) == 10
     @test haskey(svp, "variances")
     @test length(svp["results"]) > 200
     @test all(x.TMLE isa TMLE.TMLEstimate for x in svp["results"])
@@ -44,7 +44,7 @@ include("utils.jl")
 
     check_fails_are_extremely_rare_traits(failed_results.TMLE, dataset; ncases=7)
 
-    # Here we test that the process generateIIDGenotypes has been run once for each chromosome
+    # Here we test that the process IIDGenotypes has been run once for each chromosome
     # There should be 4 files for each chromosome
     n_chr_files = filter(x -> startswith(x, "LDpruned.filtered.ukb_chr"), readdir(joinpath("results", "ld_pruned_chromosomes")))
     @test length(n_chr_files) == 4*3
