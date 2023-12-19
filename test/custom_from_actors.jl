@@ -15,7 +15,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 include("utils.jl")
 
 @testset "Test custom_from_actors.config" begin
-    cmd = `nextflow run main.nf -c conf/ci_jobs/custom_from_actors.config $args`
+    cmd = `nextflow run main.nf -c test/configs/custom_from_actors.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
