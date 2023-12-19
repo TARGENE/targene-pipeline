@@ -53,7 +53,7 @@ include("utils.jl")
 end
 
 @testset "Test negative controls" begin
-    cmd = `nextflow run . -main-script modules/negative_control.nf -c conf/ci_jobs/ukb_from_actors.config $args`
+    cmd = `nextflow run . -main-script modules/negative_control.nf -c test/configs/ukb_from_actors.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
