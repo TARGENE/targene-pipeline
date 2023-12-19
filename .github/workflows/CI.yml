@@ -16,7 +16,8 @@ jobs:
       matrix:
         testrun:
           - "ukb_from_actors.jl"
-          - "ukb_from_param_file.jl"
+          - "ukb_custom.jl"
+          - "ukb_allele_independent.jl"
           - "custom_from_actors.jl"
     steps:
       - uses: actions/checkout@v2

@@ -14,6 +14,7 @@ process TMLEInputsFromParamFile {
         val batch_size
         val call_threshold
         val positivity_constraint
+        val command
 
     output:
         path "final.data.arrow", emit: dataset
@@ -31,7 +32,7 @@ process TMLEInputsFromParamFile {
         --pcs $genetic_confounders \
         $batch_size \
         --positivity-constraint ${positivity_constraint} \
-        from-param-file $parameter
+        $command $parameter
         """
 }
 
@@ -118,7 +119,20 @@ workflow EstimationInputs {
                 estimands_file,
                 batch_size,
                 call_threshold,
-                positivity_constraint
+                positivity_constraint,
+                "from-param-file"
+                )
+        }
+        else if (study_design == "ALLELE_INDEPENDENT"){
+            tmle_inputs = TMLEInputsFromParamFile(
+                bgen_files,
+                traits,
+                genetic_confounders,
+                estimands_file,
+                batch_size,
+                call_threshold,
+                positivity_constraint,
+                "allele-independent"
                 )
         }
         else { 

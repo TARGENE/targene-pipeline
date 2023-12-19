@@ -1,4 +1,4 @@
-module TestUKBFromActors
+module TestUKBAlleleIndependent
 
 using Test
 using JLD2
@@ -15,7 +15,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 include("utils.jl")
 
 @testset "Test ukb_from_actors.config" begin
-    cmd = `nextflow run main.nf -c test/configs/ukb_from_actors.config $args`
+    cmd = `nextflow run main.nf -c test/configs/ukb_allele_independent.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
@@ -52,38 +52,4 @@ include("utils.jl")
     end
 end
 
-@testset "Test negative controls" begin
-    cmd = `nextflow run . -main-script modules/negative_control.nf -c conf/ci_jobs/ukb_from_actors.config $args`
-    @info string("The following command will be run:\n", cmd)
-
-    r = run(cmd)
-    @test r.exitcode == 0
-
-    # Check permutation test
-    data = Arrow.Table(joinpath("results", "permutation_tests", "permutation_dataset.arrow")) |> DataFrame
-    
-    n_permuted_cols = 0
-    for colname in names(data)
-        if endswith(colname, "permuted")
-            n_permuted_cols +=1
-        end
-    end
-    @test n_permuted_cols > 20
-
-    permutation_config = deserialize(joinpath("results", "permutation_tests", "estimands", "permutation_estimands_1.jls"))
-    @test length(permutation_config.estimands) == 100
-    @test Set(typeof(Ψ) for Ψ in permutation_config.estimands) == Set([TMLE.StatisticalATE, TMLE.StatisticalIATE])
-    
-    results = jldopen(joinpath("results", "permutation_results.hdf5"))["Batch_1"]
-    @test length(results) == 100
-    failed_results = retrieve_failed_results(results; expected_keys=(:TMLE, :OSE))
-    @test failed_results == (TMLE=[], OSE=[])
-
-    # Check random variants data
-    random_config = deserialize(joinpath("results", "random_variants_estimands.jls"))
-    @test length(random_config.estimands) > 200
-    @test Set(typeof(Ψ) for Ψ in random_config.estimands) == Set([TMLE.StatisticalATE, TMLE.StatisticalIATE])
 end
-
-end
-true
