@@ -96,7 +96,7 @@ Note: Since this decrypted dataset is a plain CSV file, one may build and add ex
 Additional UK-Biobank required files for preprocessing and filtering are:
 
 - `QC_FILE`: A path to the UK-Biobank SNP quaility control [`ukb_snp_qc.txt`](https://biobank.ctsu.ox.ac.uk/crystal/refer.cgi?id=1955) file.
-- `WITHDRAWAL_LIST`: A path to the withdrawal sample list to exclude removed participants from the study.
+- `UKB_WITHDRAWAL_LIST`: A path to the withdrawal sample list to exclude removed participants from the study.
 
 ## Genetic Data
 

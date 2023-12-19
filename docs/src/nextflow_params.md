@@ -10,7 +10,7 @@ Here is a list of all the pipeline parameters:
 - **`BGEN_FILES` (required)**: Path expression to imputed BGEN files.
 - **`UKB_CONFIG` (required for COHORT=UKBB)**: Configuration file describing which traits should be extracted from the main dataset.
 - `UKB_ENCODING_FILE` (optional): If the `TRAITS_DATASET` is encrypted, an encoding file must be provided.
-- `WITHDRAWAL_LIST` (optional): List of participants withdrawn from the study.
+- `UKB_WITHDRAWAL_LIST` (optional): List of participants withdrawn from the study.
 - `QC_FILE` (optional): Genotyping quality control file from the UK-Biobank study.
 
 ## [Adjusting for confounders](@ref)
