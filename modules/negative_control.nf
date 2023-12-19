@@ -15,6 +15,7 @@ params.MAF_MATCHING_RELTOL = 0.05
 params.N_RANDOM_VARIANTS = 10
 params.TMLE_SAVE_EVERY = 100
 params.ARROW_OUTPUT = "dataset.arrow"
+params.ESTIMATOR_KEY = "TMLE"
 
 include { longest_prefix } from './utils.nf'
 include { EstimationWorkflow } from './estimation.nf'
@@ -41,6 +42,7 @@ process GeneratePermutationTestsData {
         ${dataset} ${results} \
         ${limit} \
         --pval-threshold=${params.PVAL_THRESHOLD} \
+        --estimator-key=${params.ESTIMATOR_KEY} \
         --orders=${params.PERMUTATION_ORDERS} \
         --chunksize=${params.BATCH_SIZE} \
         --rng=${params.RNG} \
@@ -71,6 +73,7 @@ process GenerateRandomVariantsTestsData {
         --out=random_variants_estimands.jls \
         --p=${params.N_RANDOM_VARIANTS} \
         --reltol=${params.MAF_MATCHING_RELTOL} \
+        --estimator-key=${params.ESTIMATOR_KEY} \
         --pval-threshold=${params.PVAL_THRESHOLD} \
         --rng=${params.RNG} \
         --verbosity=${params.VERBOSITY}

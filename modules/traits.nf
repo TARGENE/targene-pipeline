@@ -2,16 +2,16 @@ process UKBFieldsList {
     container "olivierlabayle/ukbmain:0.4"
 
     input:
-        path traits_config
+        path ukb_config
 
     output:
         path "fields_list.txt"
 
     script:
-        traits_config = traits_config.name != 'NO_UKB_TRAIT_CONFIG' ? "--conf $traits_config" : ''
+        ukb_config = ukb_config.getName() != 'NO_UKB_TRAIT_CONFIG' ? "--conf $ukb_config" : ''
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/build_fields_list.jl $traits_config
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/UKBMain.jl --startup-file=no /UKBMain.jl/scripts/build_fields_list.jl $ukb_config
         """
 }
 
