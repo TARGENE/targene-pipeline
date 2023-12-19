@@ -9,7 +9,7 @@ using Serialization
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
-@testset "Test ukb_from_actors.config" begin
+@testset "Test ukb_allele_independent.config" begin
     cmd = `nextflow run main.nf -c test/configs/ukb_allele_independent.config $args`
     @info string("The following command will be run:\n", cmd)
 
