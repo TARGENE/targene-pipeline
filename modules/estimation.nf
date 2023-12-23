@@ -2,7 +2,7 @@
 nextflow.enable.dsl = 2
 
 process MergeOutputs {
-    container "olivierlabayle/targeted-estimation:cv_tmle"
+    container "olivierlabayle/targeted-estimation:argparse"
     publishDir "$params.OUTDIR", mode: 'symlink'
     label "bigmem"
     
@@ -13,21 +13,21 @@ process MergeOutputs {
 
     output:
         path "${hdf5_output}", emit: hdf5_file
-        path "${json_output}", optional: true, emit:json_file
+        path "${json_output}", optional: true, emit: json_file
 
     script:
-        json_option = json_output != "NO_JSON_OUTPUT" ? "--outputs.json.filename=${json_output}" : ""
+        json_option = json_output != "NO_JSON_OUTPUT" ? "--json-output=${json_output}" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /opt/bin/tmle make-summary \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/tmle.jl merge \
         tmle_result \
-        --outputs.hdf5.filename=${hdf5_output} \
-        ${json_option}
+        ${json_option} \
+        --hdf5-output=${hdf5_output}
         """
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:cv_tmle"
+    container "olivierlabayle/targeted-estimation:argparse"
     publishDir "$params.OUTDIR/tmle_outputs/", mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
     label "multithreaded"
@@ -47,17 +47,16 @@ process TMLE {
     script:
         basename = "tmle_result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
-        pval_threshold = keep_ic == true ? "--outputs.hdf5.pval_threshold=${pval_threshold}" : ""
-        sample_ids = do_svp == true ? "--outputs.hdf5.sample_ids=true" : ""
+        pval_option = keep_ic == true ? ",${pval_threshold}" : ""
+        sample_ids = do_svp == true ? ",true" : ""
+        output_option = "--hdf5-output=${hdf5out}${pval_option}${sample_ids}"
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /opt/bin/tmle tmle \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/tmle.jl tmle \
         $data \
         --estimands=$estimands_file \
         --estimators=$estimator_file \
-        --outputs.hdf5.filename=$hdf5out \
-        $pval_threshold \
-        $sample_ids \
+        $output_option \
         --chunksize=$save_every \
         """
 }
