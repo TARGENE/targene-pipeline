@@ -36,7 +36,7 @@ process AggregateGRM {
 }
 
 process SVP {
-    container "olivierlabayle/targeted-estimation:cv_tmle"
+    container "olivierlabayle/targeted-estimation:argparse"
     publishDir "$params.OUTDIR", mode: 'symlink'
 
     input:
@@ -55,7 +55,7 @@ process SVP {
         hdf5_prefix = longest_prefix(hdf5_results)
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargetedEstimation.jl --startup-file=no /opt/bin/tmle sieve-variance-plateau \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/tmle.jl svp \
         $hdf5_prefix \
         --n-estimators=$n_estimators \
         --max-tau=$max_tau \
