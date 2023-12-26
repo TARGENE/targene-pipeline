@@ -22,7 +22,7 @@ process TMLEInputsFromParamFile {
 
     script:
         bgen_prefix = longest_prefix(bgenfiles)
-        batch_size = batch_size == 0 ? "" : "--batch-size ${batch_size}"
+        batchsize = batch_size == 0 ? "" : "--batch-size ${batch_size}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
@@ -30,7 +30,7 @@ process TMLEInputsFromParamFile {
         --bgen-prefix $bgen_prefix \
         --call-threshold ${call_threshold} \
         --pcs $genetic_confounders \
-        $batch_size \
+        $batchsize \
         --positivity-constraint ${positivity_constraint} \
         $command $parameter
         """
