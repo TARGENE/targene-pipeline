@@ -9,7 +9,7 @@ params.POSITIVITY_CONSTRAINT = 0.01
 params.MAF_THRESHOLD = 0.01
 params.COHORT = "UKBB"
 params.UKB_CONFIG = "${projectDir}/data/ukbconfig.yaml"
-params.UKB_WITHDRAWAL_LIST = '${projectDir}/data/NO_WITHDRAWAL_LIST'
+params.UKB_WITHDRAWAL_LIST = "${projectDir}/data/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
 
 // Confounding adjustment by PCA
