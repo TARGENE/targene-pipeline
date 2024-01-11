@@ -56,6 +56,7 @@ include { GeneticConfounders } from './modules/confounders.nf'
 include { ExtractTraits } from './modules/traits.nf'
 include { EstimationWorkflow } from './modules/estimation.nf'
 include { SVPWorkflow } from './modules/svp.nf'
+include { PCA } from './workflows/pca.nf'
 
 log.info """\
          ${workflow.manifest.name} v${workflow.manifest.version}
