@@ -1,24 +1,5 @@
-#!/usr/bin/env nextflow
-nextflow.enable.dsl = 2
-
-// Negative Control Parameters
-params.OUTDIR = "${launchDir}/results"
-params.BATCH_SIZE = 400
-params.VERBOSITY = 1
-params.HDF5_OUTPUT = "results.hdf5"
-params.PERMUTATION_HDF5_OUTPUT = "permutation_results.hdf5"
-params.PERMUTATION_JSON_OUTPUT = "NO_JSON_OUTPUT"
-params.MAX_PERMUTATION_TESTS = ""
-params.PERMUTATION_ORDERS = "1"
-params.RNG = 123
-params.MAF_MATCHING_RELTOL = 0.05
-params.N_RANDOM_VARIANTS = 10
-params.TMLE_SAVE_EVERY = 100
-params.ARROW_OUTPUT = "dataset.arrow"
-params.ESTIMATOR_KEY = "TMLE"
-
-include { longest_prefix } from './utils.nf'
-include { EstimationWorkflow } from './estimation.nf'
+include { longest_prefix } from '../modules/utils.nf'
+include { EstimationWorkflow } from '../modules/estimation.nf'
 
 process GeneratePermutationTestsData {
     container "olivierlabayle/negative-controls:cvtmle"
@@ -80,7 +61,7 @@ process GenerateRandomVariantsTestsData {
         """
 }
 
-workflow {
+workflow NEGCONTROL{
     results_file = Channel.value(file("${params.OUTDIR}/${params.HDF5_OUTPUT}"))
 
     // Permutation Tests
