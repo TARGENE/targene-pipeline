@@ -37,7 +37,7 @@ process GenerateRandomVariantsTestsData {
     label "bigmem"
     
     input:
-        path trans_actors
+        path variants_to_randomize
         path bgenfiles
         path results
 
@@ -45,12 +45,11 @@ process GenerateRandomVariantsTestsData {
         path "random_variants_estimands.jls"
 
     script:
-        trans_actors_prefix = longest_prefix(trans_actors)
         bgen_prefix = longest_prefix(bgenfiles)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl  --startup-file=no /NegativeControl/bin/generate_random_variant_parameters.jl \
-        ${trans_actors_prefix} ${results} ${bgen_prefix} \
+        ${variants_to_randomize} ${results} ${bgen_prefix} \
         --out=random_variants_estimands.jls \
         --p=${params.N_RANDOM_VARIANTS} \
         --reltol=${params.MAF_MATCHING_RELTOL} \
@@ -91,9 +90,9 @@ workflow NEGCONTROL{
     )
 
     // Random Variants parameter files generation
-    if (params.STUDY_DESIGN == "FROM_ACTORS") {
+    if (params.VARIANTS_TO_RANDOMIZE !== "NO_VARIANT_TO_RANDOMIZE") {
         bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
-        trans_actors = Channel.fromPath("$params.TRANS_ACTORS", checkIfExists: true).collect()
-        GenerateRandomVariantsTestsData(trans_actors, bgen_files, results_file)
+        variants_to_randomize = Channel.value(file("$params.VARIANTS_TO_RANDOMIZE", checkIfExists: true))
+        GenerateRandomVariantsTestsData(variants_to_randomize, bgen_files, results_file)
     }
 }
