@@ -53,8 +53,8 @@ params.JSON_OUTPUT = "NO_JSON_OUTPUT"
 params.HDF5_OUTPUT = "results.hdf5"
 
 // Negative Control Parameters
-params.PERMUTATION_HDF5_OUTPUT = "permutation_results.hdf5"
-params.PERMUTATION_JSON_OUTPUT = "NO_JSON_OUTPUT"
+params.PERMUTATION_HDF5_OUTPUT = "permutation_${params.HDF5_OUTPUT}"
+params.PERMUTATION_JSON_OUTPUT = params.JSON_OUTPUT == "NO_JSON_OUTPUT" ? params.JSON_OUTPUT : "permutation_${params.JSON_OUTPUT}"
 params.MAX_PERMUTATION_TESTS = ""
 params.PERMUTATION_ORDERS = "1"
 params.MAF_MATCHING_RELTOL = 0.05
