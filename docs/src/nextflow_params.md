@@ -54,7 +54,7 @@ If `STUDY_DESIGN`=`FROM_ACTORS`:
 - `NB_SVP_ESTIMATORS` (optional, default: 100): Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
 - `MAX_SVP_THRESHOLD` (optional, default: 0.9): Variance estimates are computed for tau ranging from 0 to MAX_SVP_THRESHOLD
 - `PVAL_THRESHOLD` (optional, default: 0.05): To save computation time and disk, only parameters with a p-value below this threshold are considered for sieve variance correction.
-- `SVP_ESTIMATOR_KEY` (optional, default: "TMLE"): The estimator to use for Sieve Variance Plateau correction.
+- `ESTIMATOR_KEY` (optional, default: "TMLE"): The estimator to use for Sieve Variance Plateau correction.
 
 ## [Tweaking additional behaviour](@ref)
 
