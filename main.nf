@@ -44,7 +44,6 @@ params.ESTIMATOR_KEY = "TMLE"
 params.KEEP_IC = params.SVP == true ? true : false
 params.PVAL_THRESHOLD = 0.05
 params.TMLE_SAVE_EVERY = 100
-params.AGGREGATED_DATASET = "results/dataset.arrow"
 params.ESTIMATOR_FILE = "glmnet"
 
 // Outputs Parameters
@@ -56,13 +55,14 @@ params.HDF5_OUTPUT = "results.hdf5"
 params.PERMUTATION_HDF5_OUTPUT = "permutation_${params.HDF5_OUTPUT}"
 params.PERMUTATION_JSON_OUTPUT = params.JSON_OUTPUT == "NO_JSON_OUTPUT" ? params.JSON_OUTPUT : "permutation_${params.JSON_OUTPUT}"
 params.MAX_PERMUTATION_TESTS = ""
+params.MAX_PERMUTATION_ATTEMPTS = 1
 params.PERMUTATION_ORDERS = "1"
 params.MAF_MATCHING_RELTOL = 0.05
 params.VARIANTS_TO_RANDOMIZE = "NO_VARIANT_TO_RANDOMIZE"
 params.N_RANDOM_VARIANTS = 10
 
 include { TARGENE } from './workflows/targene.nf'
-include { NEGCONTROL } from './workflows/negative_control.nf'
+include { PERMUTATION_TEST; RANDOMIZATION_TEST } from './workflows/negative_control.nf'
 include { PCA } from './workflows/pca.nf'
 
 log.info """\

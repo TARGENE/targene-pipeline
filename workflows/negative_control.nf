@@ -19,7 +19,7 @@ process GeneratePermutationTestsData {
         limit = params.MAX_PERMUTATION_TESTS == "" ? "" : "--limit=${params.MAX_PERMUTATION_TESTS}"
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl  --startup-file=no /NegativeControl/bin/generate_permutation_data.jl \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl --startup-file=no /NegativeControl/bin/generate_permutation_data.jl \
         ${dataset} ${results} \
         ${limit} \
         --pval-threshold=${params.PVAL_THRESHOLD} \
@@ -27,6 +27,8 @@ process GeneratePermutationTestsData {
         --orders=${params.PERMUTATION_ORDERS} \
         --chunksize=${params.BATCH_SIZE} \
         --rng=${params.RNG} \
+        --max-attempts=${params.MAX_PERMUTATION_ATTEMPTS} \
+        --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \
         --verbosity=${params.VERBOSITY}
         """
 }
@@ -60,18 +62,17 @@ process GenerateRandomVariantsTestsData {
         """
 }
 
-workflow NEGCONTROL{
-    results_file = Channel.value(file("${params.OUTDIR}/${params.HDF5_OUTPUT}"))
-
+workflow PERMUTATION_TEST {
     // Permutation Tests
-    dataset = Channel.value(file("${params.OUTDIR}/${params.ARROW_OUTPUT}"))
+    results_file = Channel.value(file("${params.RESULTS_FILE}"))
+    dataset = Channel.value(file("${params.AGGREGATED_DATASET}"))
     estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
     keep_ic = false
     do_svp  = false
     pval_threshold = params.PVAL_THRESHOLD
     save_every = params.TMLE_SAVE_EVERY
-    hdf5_output = params.PERMUTATION_HDF5_OUTPUT
-    json_output = params.PERMUTATION_JSON_OUTPUT
+    hdf5_output = params.HDF5_OUTPUT
+    json_output = params.JSON_OUTPUT
 
     GeneratePermutationTestsData(
         dataset, 
@@ -88,11 +89,11 @@ workflow NEGCONTROL{
         hdf5_output,
         json_output
     )
+}
 
-    // Random Variants parameter files generation
-    if (params.VARIANTS_TO_RANDOMIZE !== "NO_VARIANT_TO_RANDOMIZE") {
-        bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
-        variants_to_randomize = Channel.value(file("$params.VARIANTS_TO_RANDOMIZE", checkIfExists: true))
-        GenerateRandomVariantsTestsData(variants_to_randomize, bgen_files, results_file)
-    }
+workflow RANDOMIZATION_TEST {
+    results_file = Channel.value(file("${params.RESULTS_FILE}"))
+    bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
+    variants_to_randomize = Channel.value(file("$params.VARIANTS_TO_RANDOMIZE", checkIfExists: true))
+    GenerateRandomVariantsTestsData(variants_to_randomize, bgen_files, results_file)
 }

@@ -52,14 +52,13 @@ include("utils.jl")
     end
 end
 
-@testset "Test negative controls" begin
-    cmd = `nextflow run . -entry NEGCONTROL -c test/configs/ukb_from_actors.config $args`
+@testset "Test PERMUTATION_TEST" begin
+    cmd = `nextflow run . -entry PERMUTATION_TEST -c test/configs/negcontrol.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
     @test r.exitcode == 0
 
-    # Check permutation test
     data = Arrow.Table(joinpath("results", "permutation_tests", "permutation_dataset.arrow")) |> DataFrame
     
     n_permuted_cols = 0
@@ -78,8 +77,15 @@ end
     @test length(results) == 100
     failed_results = retrieve_failed_results(results; expected_keys=(:TMLE, :OSE))
     @test failed_results == (TMLE=[], OSE=[])
+end
 
-    # Check random variants data
+@testset "Test RANDOMIZATION_TEST" begin
+    cmd = `nextflow run . -entry RANDOMIZATION_TEST -c test/configs/negcontrol.config $args`
+    @info string("The following command will be run:\n", cmd)
+
+    r = run(cmd)
+    @test r.exitcode == 0
+
     random_config = deserialize(joinpath("results", "random_variants_estimands.jls"))
     @test length(random_config.estimands) > 200
     @test Set(typeof(Ψ) for Ψ in random_config.estimands) == Set([TMLE.StatisticalATE, TMLE.StatisticalIATE])

@@ -88,12 +88,3 @@ workflow EstimationWorkflow {
     emit:
         hdf5_result = MergeOutputs.out.hdf5_file
 }
-
-// workflow {
-//     dataset = Channel.value(file("${params.AGGREGATED_DATASET}"))
-//     estimands_configs = Channel.value(file("${params.ESTIMAND_CONFIG_FILES}"))
-//     estimators_config = Channel.value(file("${params.ESTIMATOR_FILE}", checkIfExists: false))
-//     hdf5_output = "${params.HDF5_OUTPUT}"
-//     json_output = "${params.JSON_OUTPUT}"
-//     EstimationWorkflow(dataset, estimands_configs, estimators_config, hdf5_output, json_output)
-// }
