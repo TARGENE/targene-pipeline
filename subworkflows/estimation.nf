@@ -28,7 +28,7 @@ workflow EstimationWorkflow {
         MergeOutputs(TMLE.out.collect(), hdf5_output, json_output)
 
         // Generate Plots
-        GenerateSummaryPlots(MergeOutputs.out.hdf5_result)
+        GenerateSummaryPlots(MergeOutputs.out.hdf5_file)
 
     emit:
         hdf5_result = MergeOutputs.out.hdf5_file
