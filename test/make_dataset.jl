@@ -14,7 +14,9 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     @test r.exitcode == 0
 
     dataset = Arrow.Table("results/dataset.arrow") |> DataFrame
-
+    @test size(dataset, 1) == 500
+    # PCs, SAMPLE_ID and the variant from the list
+    @test all(n ∈ names(dataset) for n in ("SAMPLE_ID", "2:14983:G:A", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6",))
 end
 
 end
