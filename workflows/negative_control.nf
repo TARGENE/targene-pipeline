@@ -23,6 +23,7 @@ process GeneratePermutationTestsData {
         --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \
         --verbosity=${params.VERBOSITY} \
         --batch-size=${params.BATCH_SIZE} \
+        --out-prefix="." \
         permutation-tests ${dataset} ${results} \
         ${limit} \
         --pval-threshold=${params.PVAL_THRESHOLD} \

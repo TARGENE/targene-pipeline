@@ -53,7 +53,7 @@ include("utils.jl")
 end
 
 @testset "Test PERMUTATION_TEST" begin
-    cmd = `nextflow run . -entry PERMUTATION_TEST -c test/configs/negcontrol.config $args`
+    cmd = `nextflow run main.nf -entry PERMUTATION_TEST -c test/configs/negcontrol.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
@@ -80,7 +80,7 @@ end
 end
 
 @testset "Test RANDOMIZATION_TEST" begin
-    cmd = `nextflow run . -entry RANDOMIZATION_TEST -c test/configs/negcontrol.config $args`
+    cmd = `nextflow run main.nf -entry RANDOMIZATION_TEST -c test/configs/negcontrol.config $args`
     @info string("The following command will be run:\n", cmd)
 
     r = run(cmd)
