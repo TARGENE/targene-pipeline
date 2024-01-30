@@ -1,5 +1,5 @@
 include { longest_prefix } from '../modules/utils.nf'
-include { EstimationWorkflow } from '../modules/estimation.nf'
+include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 
 process GeneratePermutationTestsData {
     container "olivierlabayle/tl-core:cvtmle"
