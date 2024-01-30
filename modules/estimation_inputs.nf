@@ -25,14 +25,16 @@ process TMLEInputsFromParamFile {
         batchsize = batch_size == 0 ? "" : "--batch-size ${batch_size}"
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/bin/generate_tl_inputs.jl \
+        --positivity-constraint ${positivity_constraint} \
+        $batchsize \
+        --out-prefix=final \
+        --verbosity=${params.VERBOSITY} \
+        $command $parameter \
         --traits $traits \
         --bgen-prefix $bgen_prefix \
         --call-threshold ${call_threshold} \
         --pcs $genetic_confounders \
-        $batchsize \
-        --positivity-constraint ${positivity_constraint} \
-        $command $parameter
         """
 }
 
@@ -68,14 +70,20 @@ process TMLEInputsFromActors {
         extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $extra_covariates" : ''
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/tmle_inputs.jl \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/bin/generate_tl_inputs.jl \
+        --positivity-constraint ${positivity_constraint} \
+        $batch_size \
+        --out-prefix=final \
+        --verbosity=${params.VERBOSITY} \
+        from-actors $bqtls $trans_actors_prefix \
+        $extra_confounders \
+        $extra_treatments \
+        $extra_covariates \
+        --orders ${params.ORDERS} \
         --traits $traits \
         --bgen-prefix $bgen_prefix \
         --call-threshold ${call_threshold} \
         --pcs $genetic_confounders \
-        --positivity-constraint ${positivity_constraint} \
-        $batch_size \
-        from-actors $bqtls $trans_actors_prefix $extra_confounders $extra_treatments $extra_covariates --orders ${params.ORDERS}
         """
 }
 
