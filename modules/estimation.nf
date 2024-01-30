@@ -1,6 +1,3 @@
-#!/usr/bin/env nextflow
-nextflow.enable.dsl = 2
-
 process MergeOutputs {
     container "olivierlabayle/targeted-estimation:argparse"
     publishDir "$params.OUTDIR", mode: 'symlink'
@@ -61,30 +58,3 @@ process TMLE {
         """
 }
 
-workflow EstimationWorkflow {
-    take:
-        dataset
-        estimands_configs
-        estimators_config
-        keep_ic
-        do_svp
-        pval_threshold
-        save_every
-        hdf5_output
-        json_output
-
-    main:
-        TMLE(
-            dataset,
-            estimands_configs,
-            estimators_config,
-            keep_ic,
-            do_svp,
-            pval_threshold,
-            save_every
-        )
-        MergeOutputs(TMLE.out.collect(), hdf5_output, json_output)
-
-    emit:
-        hdf5_result = MergeOutputs.out.hdf5_file
-}
