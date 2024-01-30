@@ -64,6 +64,7 @@ params.N_RANDOM_VARIANTS = 10
 include { TARGENE } from './workflows/targene.nf'
 include { PERMUTATION_TEST; RANDOMIZATION_TEST } from './workflows/negative_control.nf'
 include { PCA } from './workflows/pca.nf'
+include { MAKE_DATASET } from './workflows/dataset.nf'
 
 log.info """\
          ${workflow.manifest.name} v${workflow.manifest.version}

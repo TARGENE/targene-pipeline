@@ -2,7 +2,7 @@ include { longest_prefix } from '../modules/utils.nf'
 include { EstimationWorkflow } from '../modules/estimation.nf'
 
 process GeneratePermutationTestsData {
-    container "olivierlabayle/negative-controls:cvtmle"
+    container "olivierlabayle/tl-core:cvtmle"
     publishDir "${params.OUTDIR}/permutation_tests", mode: 'symlink', pattern: '*.arrow'
     publishDir "${params.OUTDIR}/permutation_tests/estimands", mode: 'symlink', pattern: '*.jls'
     label "bigmem"
@@ -19,22 +19,22 @@ process GeneratePermutationTestsData {
         limit = params.MAX_PERMUTATION_TESTS == "" ? "" : "--limit=${params.MAX_PERMUTATION_TESTS}"
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl --startup-file=no /NegativeControl/bin/generate_permutation_data.jl \
-        ${dataset} ${results} \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/bin/generate_tl_inputs.jl \
+        --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \
+        --verbosity=${params.VERBOSITY} \
+        --batch-size=${params.BATCH_SIZE} \
+        permutation-tests ${dataset} ${results} \
         ${limit} \
         --pval-threshold=${params.PVAL_THRESHOLD} \
         --estimator-key=${params.ESTIMATOR_KEY} \
         --orders=${params.PERMUTATION_ORDERS} \
-        --chunksize=${params.BATCH_SIZE} \
         --rng=${params.RNG} \
         --max-attempts=${params.MAX_PERMUTATION_ATTEMPTS} \
-        --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \
-        --verbosity=${params.VERBOSITY}
         """
 }
 
 process GenerateRandomVariantsTestsData {
-    container "olivierlabayle/negative-controls:cvtmle"
+    container "olivierlabayle/tl-core:cvtmle"
     publishDir "${params.OUTDIR}", mode: 'symlink'
     label "bigmem"
     
@@ -50,7 +50,7 @@ process GenerateRandomVariantsTestsData {
         bgen_prefix = longest_prefix(bgenfiles)
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/NegativeControl  --startup-file=no /NegativeControl/bin/generate_random_variant_parameters.jl \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/bin/generate_random_variant_estimands.jl \
         ${variants_to_randomize} ${results} ${bgen_prefix} \
         --out=random_variants_estimands.jls \
         --p=${params.N_RANDOM_VARIANTS} \
