@@ -1,6 +1,5 @@
-include { IIDGenotypes } from '../modules/genotypes.nf'
-include { GeneticConfounders } from '../modules/confounders.nf'
-include { ExtractTraits } from '../modules/traits.nf'
+include { IIDGenotypes; GeneticConfounders } from '../subworkflows/confounders.nf'
+include { ExtractTraits } from '../subworkflows/extract_traits.nf'
 
 workflow PCA {
     // Define Parameters
