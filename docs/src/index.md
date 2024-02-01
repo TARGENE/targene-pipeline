@@ -21,10 +21,10 @@ The pipeline can roughly be decoupled into three steps. The first, aims at pre-p
 
 ## Requirements
 
-The pipeline is tested with:
+The pipeline should work with:
 
-- Nextflow: 22.04
-- Singularity: 3.8
+- Nextflow >= 23.10.0
+- Singularity >= 3.8.6
 
 ## Quick start for Eddie users
 
