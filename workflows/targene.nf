@@ -25,8 +25,6 @@ workflow TARGENE {
     bed_files = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
     
     estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
-    hdf5_output = "${params.HDF5_OUTPUT}"
-    json_output = "${params.JSON_OUTPUT}"
 
     // Extract Traits
     ExtractTraits(
@@ -66,8 +64,6 @@ workflow TARGENE {
         EstimationInputs.out.aggregated_dataset,
         EstimationInputs.out.estimands.flatten(),
         estimator_config,
-        hdf5_output,
-        json_output
     )
 
     // Generate sieve estimates

@@ -6,8 +6,6 @@ workflow PERMUTATION_TEST {
     results_file = Channel.value(file("${params.RESULTS_FILE}"))
     dataset = Channel.value(file("${params.AGGREGATED_DATASET}"))
     estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
-    hdf5_output = params.HDF5_OUTPUT
-    json_output = params.JSON_OUTPUT
 
     GeneratePermutationTestsData(
         dataset, 
@@ -17,8 +15,6 @@ workflow PERMUTATION_TEST {
         GeneratePermutationTestsData.output.dataset,
         GeneratePermutationTestsData.output.estimands.flatten(),
         estimator_config,
-        hdf5_output,
-        json_output
     )
 }
 
