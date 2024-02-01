@@ -7,10 +7,9 @@ workflow IIDGenotypes{
         bed_files
         qc_file
         traits
-        maf_threshold
 
     main:
-        filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks, traits, maf_threshold)
+        filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks, traits)
         ld_pruned = thinByLD(flashpca_excl_reg, filtered_bedfiles)
         mergeBEDS(ld_pruned.collect())
         SampleQCFilter(mergeBEDS.out.collect())

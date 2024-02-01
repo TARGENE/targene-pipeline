@@ -8,7 +8,6 @@ process filterBED{
         path qcfile
         path ld_blocks
         path traits
-        val maf_threshold
 
     output:
         path "filtered.*", emit: filtered_bedfiles
@@ -20,7 +19,7 @@ process filterBED{
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/bin/prepare_confounders.jl \
-                    --input $prefix --output filtered.$prefix $qc_file --maf-threshold $maf_threshold \
+                    --input $prefix --output filtered.$prefix $qc_file --maf-threshold ${params.MAF_THRESHOLD} \
                     $ld_blocks --traits $traits filter
         """
 }
