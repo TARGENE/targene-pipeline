@@ -43,10 +43,6 @@ process SVP {
         path hdf5_results
         path GRM_ids
         path GRM_matrix
-        val n_estimators
-        val max_tau
-        val estimator_key
-        val verbosity
 
     output:
         path "svp.hdf5"
@@ -57,9 +53,9 @@ process SVP {
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/tmle.jl svp \
         $hdf5_prefix \
-        --n-estimators=$n_estimators \
-        --max-tau=$max_tau \
-        --estimator-key=$estimator_key \
-        --verbosity=$verbosity
+        --n-estimators=${params.NB_SVP_ESTIMATORS} \
+        --max-tau=${params.MAX_SVP_THRESHOLD} \
+        --estimator-key=${params.ESTIMATOR_KEY} \
+        --verbosity=${params.VERBOSITY}
         """
 }

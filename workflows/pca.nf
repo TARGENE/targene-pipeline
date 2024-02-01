@@ -3,13 +3,11 @@ include { ExtractTraits } from '../subworkflows/extract_traits.nf'
 
 workflow PCA {
     // Define Parameters
-    cohort = params.COHORT
     ukb_encoding_file = params.UKB_ENCODING_FILE
     ukb_config = Channel.value(file("$params.UKB_CONFIG", checkIfExists: true))
     ukb_withdrawal_list = Channel.value(file("$params.UKB_WITHDRAWAL_LIST", checkIfExists: true))
     traits_dataset = Channel.value(file("$params.TRAITS_DATASET", checkIfExists: true))
 
-    maf_threshold = params.MAF_THRESHOLD
     qc_file = Channel.value(file("$params.QC_FILE", checkIfExists: true))
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS", checkIfExists: true))
     ld_blocks = Channel.value(file("$params.LD_BLOCKS", checkIfExists: true))
@@ -18,7 +16,6 @@ workflow PCA {
     // Extract Traits
     ExtractTraits(
         traits_dataset,
-        cohort,
         ukb_config,
         ukb_withdrawal_list,
         ukb_encoding_file,
@@ -31,7 +28,6 @@ workflow PCA {
         bed_files,
         qc_file,
         ExtractTraits.out,
-        maf_threshold
     )
 
     // Genetic confounders

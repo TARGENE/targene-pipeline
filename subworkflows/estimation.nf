@@ -6,10 +6,6 @@ workflow EstimationWorkflow {
         dataset
         estimands_configs
         estimators_config
-        keep_ic
-        do_svp
-        pval_threshold
-        save_every
         hdf5_output
         json_output
 
@@ -19,10 +15,6 @@ workflow EstimationWorkflow {
             dataset,
             estimands_configs,
             estimators_config,
-            keep_ic,
-            do_svp,
-            pval_threshold,
-            save_every
         )
         // Merge results files together
         MergeOutputs(TMLE.out.collect(), hdf5_output, json_output)

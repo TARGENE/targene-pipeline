@@ -33,10 +33,6 @@ process TMLE {
         path data
         path estimands_file
         path estimator_file
-        val keep_ic
-        val do_svp
-        val pval_threshold
-        val save_every
     
     output:
         path "${hdf5out}"
@@ -44,8 +40,8 @@ process TMLE {
     script:
         basename = "tmle_result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
-        pval_option = keep_ic == true ? ",${pval_threshold}" : ""
-        sample_ids = do_svp == true ? ",true" : ""
+        pval_option = params.KEEP_IC == true ? ",${params.PVAL_THRESHOLD}" : ""
+        sample_ids = params.SVP == true ? ",true" : ""
         output_option = "--hdf5-output=${hdf5out}${pval_option}${sample_ids}"
         """
         TEMPD=\$(mktemp -d)
@@ -54,7 +50,7 @@ process TMLE {
         --estimands=$estimands_file \
         --estimators=$estimator_file \
         $output_option \
-        --chunksize=$save_every \
+        --chunksize=${params.TMLE_SAVE_EVERY} \
         """
 }
 

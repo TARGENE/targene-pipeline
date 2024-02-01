@@ -6,10 +6,6 @@ workflow PERMUTATION_TEST {
     results_file = Channel.value(file("${params.RESULTS_FILE}"))
     dataset = Channel.value(file("${params.AGGREGATED_DATASET}"))
     estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
-    keep_ic = false
-    do_svp  = false
-    pval_threshold = params.PVAL_THRESHOLD
-    save_every = params.TMLE_SAVE_EVERY
     hdf5_output = params.HDF5_OUTPUT
     json_output = params.JSON_OUTPUT
 
@@ -21,10 +17,6 @@ workflow PERMUTATION_TEST {
         GeneratePermutationTestsData.output.dataset,
         GeneratePermutationTestsData.output.estimands.flatten(),
         estimator_config,
-        keep_ic,
-        do_svp,
-        pval_threshold,
-        save_every,
         hdf5_output,
         json_output
     )

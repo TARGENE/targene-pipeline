@@ -3,13 +3,12 @@ include { UKBConv; TraitsFromUKB; UKBFieldsList } from '../modules/extract_trait
 workflow ExtractTraits {
     take:
         traits_dataset
-        cohort
         ukb_config
         ukb_withdrawal_list
         ukb_encoding_file
         
     main:
-        if (cohort == "UKBB") {
+        if (params.COHORT == "UKBB") {
             if (ukb_encoding_file != "NO_UKB_ENCODING_FILE") {
                 UKBFieldsList(ukb_config)
                 decrypted_dataset = UKBConv(

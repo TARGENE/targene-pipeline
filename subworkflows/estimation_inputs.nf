@@ -2,7 +2,6 @@ include { TMLEInputsFromActors; TMLEInputsFromParamFile } from '../modules/estim
 
 workflow EstimationInputs {
     take:
-        study_design
         bgen_files
         traits
         genetic_confounders
@@ -12,12 +11,9 @@ workflow EstimationInputs {
         extra_confounders
         extra_treatments
         extra_covariates
-        batch_size
-        call_threshold
-        positivity_constraint
 
     main:
-        if (study_design == "FROM_ACTORS") {
+        if (params.STUDY_DESIGN == "FROM_ACTORS") {
             tmle_inputs = TMLEInputsFromActors(
                 bgen_files,
                 traits,
@@ -27,32 +23,23 @@ workflow EstimationInputs {
                 extra_covariates,
                 bqtls_file,
                 transactors_files,
-                batch_size,
-                call_threshold,
-                positivity_constraint
                 )
         }
-        else if (study_design == "CUSTOM"){
+        else if (params.STUDY_DESIGN == "CUSTOM"){
             tmle_inputs = TMLEInputsFromParamFile(
                 bgen_files,
                 traits,
                 genetic_confounders,
                 estimands_file,
-                batch_size,
-                call_threshold,
-                positivity_constraint,
                 "from-param-file"
                 )
         }
-        else if (study_design == "ALLELE_INDEPENDENT"){
+        else if (params.STUDY_DESIGN == "ALLELE_INDEPENDENT"){
             tmle_inputs = TMLEInputsFromParamFile(
                 bgen_files,
                 traits,
                 genetic_confounders,
                 estimands_file,
-                batch_size,
-                call_threshold,
-                positivity_constraint,
                 "allele-independent"
                 )
         }
