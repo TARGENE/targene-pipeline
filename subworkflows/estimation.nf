@@ -15,7 +15,7 @@ workflow EstimationWorkflow {
             estimators_config,
         )
         // Merge results files together
-        MergeOutputs(TMLE.out.collect(), json_output)
+        MergeOutputs(TMLE.out.collect())
 
         // Generate Plots
         GenerateSummaryPlots(MergeOutputs.out.hdf5_file)
