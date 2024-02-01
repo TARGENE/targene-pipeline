@@ -6,8 +6,6 @@ workflow EstimationWorkflow {
         dataset
         estimands_configs
         estimators_config
-        hdf5_output
-        json_output
 
     main:
         // Run the estimation process for each estimands configuration
@@ -17,7 +15,7 @@ workflow EstimationWorkflow {
             estimators_config,
         )
         // Merge results files together
-        MergeOutputs(TMLE.out.collect(), hdf5_output, json_output)
+        MergeOutputs(TMLE.out.collect(), json_output)
 
         // Generate Plots
         GenerateSummaryPlots(MergeOutputs.out.hdf5_file)

@@ -5,21 +5,19 @@ process MergeOutputs {
     
     input:
         path tmle_files
-        val hdf5_output
-        val json_output
 
     output:
-        path "${hdf5_output}", emit: hdf5_file
-        path "${json_output}", optional: true, emit: json_file
+        path "${params.HDF5_OUTPUT}", emit: hdf5_file
+        path "${params.JSON_OUTPUT}", optional: true, emit: json_file
 
     script:
-        json_option = json_output != "NO_JSON_OUTPUT" ? "--json-output=${json_output}" : ""
+        json_option = params.JSON_OUTPUT != "NO_JSON_OUTPUT" ? "--json-output=${params.JSON_OUTPUT}" : ""
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/tmle.jl merge \
         tmle_result \
         ${json_option} \
-        --hdf5-output=${hdf5_output}
+        --hdf5-output=${params.HDF5_OUTPUT}
         """
 }
 
