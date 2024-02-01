@@ -37,6 +37,8 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
         (Symbol("2:14983:G:A"), Symbol("3:3502414:T:C")),
         (Symbol("1:238411180:T:C"), Symbol("2:14983:G:A"))
     ])
+    # QQ plot
+    @test isfile("results/QQ.png")
 end
 
 end
