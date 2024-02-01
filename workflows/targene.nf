@@ -1,9 +1,8 @@
-include { EstimationInputs } from '../modules/estimation_inputs.nf'
-include { IIDGenotypes } from '../modules/genotypes.nf'
-include { GeneticConfounders } from '../modules/confounders.nf'
-include { ExtractTraits } from '../modules/traits.nf'
+include { EstimationInputs } from '../subworkflows/estimation_inputs.nf'
+include { IIDGenotypes; GeneticConfounders } from '../subworkflows/confounders.nf'
+include { ExtractTraits } from '../subworkflows/extract_traits.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
-include { SVPWorkflow } from '../modules/svp.nf'
+include { SVPWorkflow } from '../subworkflows/svp.nf'
 
 workflow TARGENE {
     // Define Parameters
