@@ -24,7 +24,7 @@ process TMLEInputsFromParamFile {
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/bin/generate_tl_inputs.jl \
         --positivity-constraint ${params.POSITIVITY_CONSTRAINT} \
-        $batchsize \
+        $batch_size \
         --out-prefix=final \
         --verbosity=${params.VERBOSITY} \
         $command $parameter \
