@@ -2,6 +2,8 @@
 
 This workflow extracts an aggregated dataset containing traits (`TRAITS_DATASET`), genetic confounders (`NB_PCS`) and genetic variants (`VARIANTS_LIST`) in an Arrow tabular format.
 
+![Make Dataset](../assets/make_dataset.png)
+
 ## Example Run Command
 
 ```bash

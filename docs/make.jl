@@ -17,15 +17,15 @@ makedocs(;
         "Home" => "index.md",
         "Workflows" => [
             "overview.md",
-            "TarGene" => [
-                joinpath("targene", "targene.md"),
+            "The TarGene Workflow " => [
+                joinpath("targene", "overview.md"),
                 joinpath("targene", "data_sources.md"),
                 joinpath("targene", "confounding_adjustment.md"),
                 joinpath("targene", "study_designs.md"),
                 joinpath("targene", "tmle.md"),
                 joinpath("targene", "sieve_variance.md"),
                 joinpath("targene", "miscellaneous.md"),
-                joinpath("targene", "output.md"),
+                joinpath("targene", "configuration.md"),
                 joinpath("targene", "runtime_considerations.md")
             ],
             "Negative Control" => [
@@ -37,8 +37,8 @@ makedocs(;
             joinpath("secondary_workflows", "make_dataset.md")
             ],
         "Developper Guide" => [
-            "project_organization.md",
-            "contribution_guide.md"
+            joinpath("developper_guide", "project_organization.md"),
+            joinpath("developper_guide", "contribution_guide.md")
             ],
         "Associated Softwares" => "associated_softwares.md",
         "Related Publications" => "publications.md"
