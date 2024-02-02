@@ -4,11 +4,11 @@ Here is a list of all the pipeline parameters:
 
 ## [Setting a data source](@ref)
 
-- **`COHORT` (required):** Current default for this is UKBB. If set to a value other than UKBB, this will not run UKBB-specific trait extraction. If `COHORT` is not UKBB, you must specify your trait data in the `TRAITS_DATASET` parameter.
+- **`COHORT` (required):** Current default for this is UKBB. If set to a value other than UKBB, this will not run UKBB-specific trait extraction.
 - **`TRAITS_DATASET` (required):** Path to a traits dataset. If you are running this for a non-UKBB cohort, your sample IDs must be specified in the first column of this CSV file, with the column name `SAMPLE_ID`.
 - **`BED_FILES` (required)**: Path expression to PLINK BED files.
 - **`BGEN_FILES` (required)**: Path expression to imputed BGEN files.
-- **`UKB_CONFIG` (required for COHORT=UKBB)**: Configuration file describing which traits should be extracted from the main dataset.
+- **`UKB_CONFIG` (required for COHORT=UKBB)**: - **`UKB_CONFIG` (required)**: YAML configuration file describing which traits should be extracted and how the population should be subsetted.
 - `UKB_ENCODING_FILE` (optional): If the `TRAITS_DATASET` is encrypted, an encoding file must be provided.
 - `UKB_WITHDRAWAL_LIST` (optional): List of participants withdrawn from the study.
 - `QC_FILE` (optional): Genotyping quality control file from the UK-Biobank study.
@@ -63,10 +63,10 @@ If `STUDY_DESIGN`=`FROM_ACTORS`:
 - `OUTDIR` (optional, default: "results"): Output directory
 - `RNG` (optional, default: 123): General random seed used where appropriate.
 
-## [Running negative control checks](@ref)
+## Running negative control checks
 
 - `MAX_PERMUTATION_TESTS` (optional, default: null): Arbitrarily limits the number of permutation tests performed.
 - `ESTIMATOR_KEY` (optional, default: "TMLE"): The estimator from `ESTIMATOR_FILE` to use to asses significance.
-- `PERMUTATION_ORDERS` (optional, default: "1"): A comma separating string defining the permutation test orders to be performed. (see [Permutation tests](@ref))
+- `PERMUTATION_ORDERS` (optional, default: "1"): A comma separating string defining the permutation test orders to be performed.
 - `MAF_MATCHING_RELTOL`(optional, default:0.05): Random variants are chosen with a similar MAF matched with the given relative tolerance.
 - `N_RANDOM_VARIANTS`(optional, default: 10): For each hit, that many variants are randomly picked.

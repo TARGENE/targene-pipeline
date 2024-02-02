@@ -43,7 +43,7 @@ params.ESTIMATOR_KEY = "TMLE"
 // TMLE Parameters
 params.KEEP_IC = params.SVP == true ? true : false
 params.PVAL_THRESHOLD = 0.05
-params.TMLE_SAVE_EVERY = 100
+params.TL_SAVE_EVERY = 100
 params.ESTIMATOR_FILE = "glmnet"
 
 // Outputs Parameters
