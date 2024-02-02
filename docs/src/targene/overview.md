@@ -22,11 +22,4 @@ An overview of the workflow is presented in the following diagram.
 nextflow run https://github.com/TARGENE/targene-pipeline/ -r TAG -entry TARGENE -profile P -resume
 ```
 
-## Content
-
-- [Setting a data source](@ref)
-- [Adjusting for confounders](@ref)
-- [Study Designs](@ref)
-- [Specifying a Targeted Estimator](@ref)
-- [Correcting for population relatedness](@ref)
-- [Tweaking additional behaviour](@ref)
+We now describe step by step how to setup a TarGene run configuration.
