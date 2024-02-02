@@ -8,7 +8,7 @@ In order to discuss and track the evolution of the project, please first raise a
 
 ## Workflow
 
-Following our previous UKBMain.jl example, there are two repositories tha need to be updated, the current workflow is as follows:
+Following our previous UKBMain.jl example, there are two repositories that need to be updated, the current workflow is as follows:
 
 1. Develop
     - UKBMain.jl
@@ -36,11 +36,10 @@ Currently, all TarGene building blocks (executables) are provided as docker imag
 | [TargeneCore.jl](https://github.com/TARGENE/TargeneCore.jl) | [tl-core](https://hub.docker.com/r/olivierlabayle/tl-core/tags) |
 | [UKBMain.jl](https://github.com/TARGENE/UKBMain.jl) | [ukbmain](https://hub.docker.com/r/olivierlabayle/ukbmain/tags) |
 | [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) | [targeted-estimation](https://hub.docker.com/r/olivierlabayle/targeted-estimation/tags) |
-| [NegativeControl.jl](https://github.com/TARGENE/NegativeControl.jl) | [negative-controls](https://hub.docker.com/r/olivierlabayle/negative-controls/tags) |
 
 ## Note on the pipeline's tests
 
-The pipeline is automatically tested for every push/pull-request made to the github repository. The tests will require that Julia and the container engine of your choice be installed (see below). Each test corresponds to a pipeline run and a file in the `test` directory is associated with it. Each test run can be launched locally as follows:
+The pipeline is automatically tested for every push/pull-request made to the github repository. To run the tests locally, you will need Julia and the container engine of your choice to be installed (see below). Each test corresponds to a pipeline run and a file in the `test` directory is associated with it. Each test run can be launched locally as follows:
 
 ```bash
 julia --project=test --startup-file=no test/TESTFILE -profile PROFILE -resume
