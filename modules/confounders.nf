@@ -94,7 +94,7 @@ process FlashPCA {
     
     script:
         prefix = bedfiles[0].toString().minus('.bed')
-        "/home/flashpca-user/flashpca/flashpca --bfile $prefix --ndim $params.NB_PCS --numthreads $task.cpus"
+        "/home/flashpca-user/flashpca/flashpca --bfile $prefix --ndim ${params.NB_PCS} --numthreads $task.cpus"
 }
 
 process AdaptFlashPCA {

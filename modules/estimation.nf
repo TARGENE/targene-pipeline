@@ -48,7 +48,7 @@ process TMLE {
         --estimands=$estimands_file \
         --estimators=$estimator_file \
         $output_option \
-        --chunksize=${params.TMLE_SAVE_EVERY} \
+        --chunksize=${params.TL_SAVE_EVERY} \
         """
 }
 
