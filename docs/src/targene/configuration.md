@@ -23,15 +23,13 @@ The workflow will produce the following main outputs in the output directory (`O
 - **`POSITIVITY_CONSTRAINT` (default: 0.01)**: When the list of estimands is generated or validated. Treatment variables' rarest configuration should have at least that frequency. For example if the treatment variables are two variants with minor allele A and T respectively. The rarest configuration will be (AA, TT) and should have a frequency of at least `POSITIVITY_CONSTRAINT`.
 - **`NB_PCS` (default: 6)**: The number of PCA components to extract.
 - **`SVP` (default: false)**: Whether Sieve Variance Plateau correction should be performed.
-- **`FLASHPCA_EXCLUSION_REGIONS` (default: data/exclusion_regions_hg19.txt)**: A path to the flashpca special exclusion regions.
+- **`FLASHPCA_EXCLUSION_REGIONS` (default: assets/exclusion_regions_hg19.txt)**: A path to the flashpca special exclusion regions.
 - **`MAF_THRESHOLD` (default: 0.01)**: Only variants with that minor allele frequency are considered
 - **`LD_BLOCKS`**: A path to pre-identified linkage disequilibrium blocks to be removed from the BED files. It is good practice to specify `LD_BLOCKS`, as it will remove SNPs correlated with your variants-of-interest before running PCA.
-- **`PVAL_THRESHOLD` (default: 0.05)**: Only results with a p-value below this threshold are considered for Sieve Plateau Variance correction.
-- **`ESTIMATOR_KEY` (default: TMLE)**: The p-value for `PVAL_THRESHOLD` is computed using the result from this estimator.
 
 ### If `COHORT=UKBB` (default)
 
-- **`UKB_CONFIG` (default: data/ukbconfig.yaml)**: YAML configuration file describing which traits should be extracted and how the population should be subsetted.
+- **`UKB_CONFIG` (default: assets/ukbconfig.yaml)**: YAML configuration file describing which traits should be extracted and how the population should be subsetted.
 - **`UKB_ENCODING_FILE`**: If the `TRAITS_DATASET` is encrypted, an encoding file must be provided.
 - **`UKB_WITHDRAWAL_LIST`**: List of participants withdrawn from the study.
 - **`QC_FILE`**: Genotyping quality control file from the UK-Biobank study.
@@ -48,15 +46,23 @@ The workflow will produce the following main outputs in the output directory (`O
 
 - **`BQTLS`**: A CSV file containing binding quantitative trait loci (bQTLs). If multiple transcription factors (TFs) are included in a single run, you must include a column called `TF`, which specifies the TF associated with each bQTL.
 - **`TRANS_ACTORS`**: A prefix to CSV files containing quantitative trait loci potentially interacting with the previous bqtls. If multiple transcription factors (TFs) are included in a single run, you must include a column called `TF`, which specifies the TF associated with each transactor.
-- **`EXTRA_CONFOUNDERS` (optional, default: nothing)**: Path to additional confounders file, one per line, no header.
-- **`EXTRA_COVARIATES` (optional, default: nothing)**: Path to additional covariates file, one per line, no header.
-- **`ENVIRONMENTALS` (optional, default: nothing)**: Path to additional environmental treatments file, one per line, no header.
-- **`ORDERS` (optional, default: "1,2")**: Comma separated list describing the order of desired interaction estimands, 1 for the ATE (no interaction), 2 for pairwise interactions etc... e.g. "1,2"
+- **`EXTRA_CONFOUNDERS`, default: nothing**: Path to additional confounders file, one per line, no header.
+- **`EXTRA_COVARIATES`, default: nothing**: Path to additional covariates file, one per line, no header.
+- **`ENVIRONMENTALS`, default: nothing**: Path to additional environmental treatments file, one per line, no header.
+- **`ORDERS`, default: "1,2"**: Comma separated list describing the order of desired interaction estimands, 1 for the ATE (no interaction), 2 for pairwise interactions etc... e.g. "1,2"
+
+### If `SVP=true`
+
+- **`GRM_NSPLITS`, default: 100**: To fasten GRM computation, it is typically split in batches.
+- **`NB_SVP_ESTIMATORS`, default: 100**: Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
+- **`MAX_SVP_THRESHOLD`, default: 0.9**: Variance estimates are computed for tau ranging from 0 to MAX_SVP_THRESHOLD
+- **`PVAL_THRESHOLD`, default: 0.05**: Only results with a p-value below this threshold are considered for Sieve Plateau Variance correction.
+- **`ESTIMATOR_KEY`, default: TMLE**: The p-value for `PVAL_THRESHOLD` is computed using the result from this estimator.
 
 ## Secondary Options
 
-- **`RNG` (default: 123)**: General random seed used to induce permutation.
-- **`VERBOSITY` (default: 0)**: Verbosity level of the the Workflow's processes.
-- **`BATCH_SIZE` (default: 400)**: The set of estimands to be estimated is batched and the Targeted Learning processes will run in parallel across batches.
-- **`TL_SAVE_EVERY` (default: 50)**: During the estimation process, results are appended to the file in chunks to free memory.
-- **`KEEP_IC` (default: SVP)**: To save the Influence Curves for each estimate. Depending on the size of your dataset, this can result in massive disk usage.
+- **`RNG`, default: 123**: General random seed used to induce permutation.
+- **`VERBOSITY`, default: 0**: Verbosity level of the the Workflow's processes.
+- **`BATCH_SIZE`, default: 400**: The set of estimands to be estimated is batched and the Targeted Learning processes will run in parallel across batches.
+- **`TL_SAVE_EVERY`, default: 50**: During the estimation process, results are appended to the file in chunks to free memory.
+- **`KEEP_IC`, default: SVP**: To save the Influence Curves for each estimate. Depending on the size of your dataset, this can result in massive disk usage.

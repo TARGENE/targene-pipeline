@@ -41,7 +41,7 @@ include("utils.jl")
     check_fails_are_extremely_rare_traits(failed_results.TMLE, dataset; ncases=3)
 
     ## Checking parameter files correspond to either bQTL only or bQTL/eQTL
-    bQTLs = Symbol.(CSV.read(joinpath("test", "data", "actors", "bqtls.csv"), DataFrame).ID)
+    bQTLs = Symbol.(CSV.read(joinpath("test", "assets", "actors", "bqtls.csv"), DataFrame).ID)
 
     config_1 = deserialize(joinpath("results", "estimands", "final.estimands_1.jls"))
     @test length(config_1.estimands) == 400

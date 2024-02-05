@@ -10,15 +10,15 @@ params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
 params.MAF_THRESHOLD = 0.01
 params.COHORT = "UKBB"
-params.UKB_CONFIG = "${projectDir}/data/ukbconfig.yaml"
-params.UKB_WITHDRAWAL_LIST = "${projectDir}/data/NO_WITHDRAWAL_LIST"
+params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
+params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
 
 // Confounding adjustment by PCA
 params.NB_PCS = 6
-params.QC_FILE = "${projectDir}/data/NO_QC_FILE"
-params.LD_BLOCKS = "${projectDir}/data/NO_LD_BLOCKS"
-params.FLASHPCA_EXCLUSION_REGIONS = "${projectDir}/data/exclusion_regions_hg19.txt"
+params.QC_FILE = "${projectDir}/assets/NO_QC_FILE"
+params.LD_BLOCKS = "${projectDir}/assets/NO_LD_BLOCKS"
+params.FLASHPCA_EXCLUSION_REGIONS = "${projectDir}/assets/exclusion_regions_hg19.txt"
 
 // Estimands Generation 
 params.BATCH_SIZE = 400
@@ -28,9 +28,9 @@ params.STUDY_DESIGN = "CUSTOM"
 params.ESTIMANDS_FILE = "NO_ESTIMANDS_FILE"
 
 // FROM_ACTORS
-params.EXTRA_CONFOUNDERS = "${projectDir}/data/NO_EXTRA_CONFOUNDER"
-params.EXTRA_COVARIATES = "${projectDir}/data/NO_EXTRA_COVARIATE"
-params.ENVIRONMENTALS = "${projectDir}/data/NO_EXTRA_TREATMENT"
+params.EXTRA_CONFOUNDERS = "${projectDir}/assets/NO_EXTRA_CONFOUNDER"
+params.EXTRA_COVARIATES = "${projectDir}/assets/NO_EXTRA_COVARIATE"
+params.ENVIRONMENTALS = "${projectDir}/assets/NO_EXTRA_TREATMENT"
 params.ORDERS = "1,2"
 
 // SVP Parameters

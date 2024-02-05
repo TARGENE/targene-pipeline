@@ -50,7 +50,7 @@ include("utils.jl")
     @test length(n_chr_files) == 4*3
 
     ## Checking parameter files correspond to either bQTL only or bQTL/eQTL
-    bQTLs = Symbol.(CSV.read(joinpath("test", "data", "actors", "bqtls.csv"), DataFrame).ID)
+    bQTLs = Symbol.(CSV.read(joinpath("test", "assets", "actors", "bqtls.csv"), DataFrame).ID)
 
     estimands_tf1 = deserialize(joinpath("results", "estimands", "final.TF1.estimands_1.jls"))
     estimands_tf2 = deserialize(joinpath("results", "estimands", "final.TF2.estimands_1.jls"))
