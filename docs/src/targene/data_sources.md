@@ -1,4 +1,4 @@
-# Setting a data source
+# Setting a Data Source
 
 The dataset is the main ingredient manipulated by TarGene. Population Genetics datasets are typically split into a variety of files and formats. The following section describes these formats and how to input them to a TarGene run.
 
