@@ -2,7 +2,7 @@
 
 Here is a list of all the pipeline parameters:
 
-## [Setting a data source](@ref)
+## [Setting a Data Source](@ref)
 
 - **`COHORT` (required):** Current default for this is UKBB. If set to a value other than UKBB, this will not run UKBB-specific trait extraction.
 - **`TRAITS_DATASET` (required):** Path to a traits dataset. If you are running this for a non-UKBB cohort, your sample IDs must be specified in the first column of this CSV file, with the column name `SAMPLE_ID`.

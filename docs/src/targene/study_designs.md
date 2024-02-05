@@ -113,6 +113,7 @@ extra_confounders:
 ```
 
 where:
+
 - `orders`: If more than 2 treatment variables are provided, interactions can be of order greater than 2.
 - `estimands`: The type of generated estimands (only interactions `IATE` for now)
 - `variants`: Two nested levels of variant groups. For each top level group, the Cartesian product of variants in each subgroup is produced.
