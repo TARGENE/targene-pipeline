@@ -4,9 +4,9 @@ def longest_prefix(files){
         return files.getName()
     }
     // More than one file
-    index = 0
+    def index = 0
     while(true){
-        current_prefix = files[0].getName()[0..index]
+        def current_prefix = files[0].getName()[0..index]
         for (file in files){
             if(file.getName()[0..index] != current_prefix){
                 return current_prefix[0..-2]
