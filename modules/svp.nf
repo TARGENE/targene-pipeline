@@ -1,7 +1,7 @@
 include { longest_prefix } from './utils.nf'
 
 process GRMPart {
-    container "olivierlabayle/tl-core:0.7"
+    container "olivierlabayle/tl-core:flat_config"
     label "bigmem"
     label "multithreaded"
 
@@ -36,7 +36,7 @@ process AggregateGRM {
 }
 
 process SVP {
-    container "olivierlabayle/targeted-estimation:0.8"
+    container "olivierlabayle/targeted-estimation:up_tmle"
     publishDir "$params.OUTDIR", mode: 'symlink'
 
     input:

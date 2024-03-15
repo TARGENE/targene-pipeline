@@ -1,5 +1,5 @@
 process GenerateSummaryPlots {
-    container "olivierlabayle/tl-core:0.7"
+    container "olivierlabayle/tl-core:flat_config"
     publishDir "${params.OUTDIR}", mode: 'symlink'
     label "bigmem"
 
