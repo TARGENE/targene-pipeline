@@ -1,7 +1,7 @@
 include { longest_prefix } from './utils.nf'
 
 process MakeDataset {
-    container "olivierlabayle/tl-core:flat_config"
+    container "olivierlabayle/tl-core:0.8"
     publishDir "${params.OUTDIR}", mode: 'symlink'
     label "bigmem"
 

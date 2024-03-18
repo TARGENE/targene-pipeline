@@ -1,6 +1,6 @@
 process filterBED{
     label 'bigmem'
-    container "olivierlabayle/tl-core:flat_config"
+    container "olivierlabayle/tl-core:0.8"
     publishDir "$params.OUTDIR/qc_filtered_chromosomes", mode: 'symlink'
 
     input:
@@ -48,7 +48,7 @@ process thinByLD{
 
 process mergeBEDS{
     label 'bigmem'
-    container "olivierlabayle/tl-core:flat_config"
+    container "olivierlabayle/tl-core:0.8"
     publishDir "$params.OUTDIR/merged_genotypes", mode: 'symlink'
     
     input:
@@ -98,7 +98,7 @@ process FlashPCA {
 }
 
 process AdaptFlashPCA {
-    container "olivierlabayle/tl-core:flat_config"
+    container "olivierlabayle/tl-core:0.8"
     publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
     label 'bigmem'
     
