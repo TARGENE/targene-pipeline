@@ -61,10 +61,22 @@ params.MAF_MATCHING_RELTOL = 0.05
 params.VARIANTS_TO_RANDOMIZE = "NO_VARIANT_TO_RANDOMIZE"
 params.N_RANDOM_VARIANTS = 10
 
+// Simulations
+params.TRAIN_RATIO = 6
+params.GA_MAX_VARIANTS = 50
+params.GA_DISTANCE_THRESHOLD = 1000000
+params.GA_PVAL_THRESHOLD = 1e-6
+params.GA_MAF_THRESHOLD = 0.5
+params.N_REPEATS = 1
+params.RNGS = [1]
+params.SAMPLE_SIZES = [100]
+params.GA_TRAIT_TABLE = "${projectDir}/assets/Traits_Table_GeneATLAS.csv"
+
 include { TARGENE } from './workflows/targene.nf'
 include { PERMUTATION_TEST; RANDOMIZATION_TEST } from './workflows/negative_control.nf'
 include { PCA } from './workflows/pca.nf'
 include { MAKE_DATASET } from './workflows/dataset.nf'
+include { NULL_SIMULATION; REALISTIC_SIMULATION; SIMULATIONS } from './workflows/simulations.nf'
 
 log.info """\
          ${workflow.manifest.name} v${workflow.manifest.version}
