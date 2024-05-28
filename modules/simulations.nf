@@ -105,7 +105,7 @@ process RealisticSimulationInputs {
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/opt/Simulations --startup-file=no --sysimage=/opt/Simulations/Simulations.so /opt/Simulations/targene-simulation.jl \
         simulation-inputs-from-ga ${estimands_prefix} ${bgen_prefix} ${traits} ${pcs} \
-        --ga-download-dirgene_atlas \
+        --ga-download-dir=gene_atlas \
         --remove-ga-data=true \
         --ga-trait-table=${ga_trait_table} \
         --maf-threshold=${params.GA_MAF_THRESHOLD} \
