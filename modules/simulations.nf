@@ -94,7 +94,7 @@ process RealisticSimulationInputs {
         path ga_trait_table
         
     output:
-        path "ga_sim_input.dataset.arrow", emit: dataset
+        path "ga_sim_input.data.arrow", emit: dataset
         path "ga_sim_input.conditional_density*", emit: conditional_densities
         path "ga_sim_input.estimand*", emit: estimands
 
