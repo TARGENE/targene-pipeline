@@ -1,9 +1,9 @@
 include { longest_prefix } from './utils.nf'
 
 process GRMPart {
-    container "olivierlabayle/tl-core:0.8"
     label "bigmem"
     label "multithreaded"
+    label 'targenecore_image'
 
     input:
         path bedfiles
@@ -36,7 +36,7 @@ process AggregateGRM {
 }
 
 process SVP {
-    container "olivierlabayle/targeted-estimation:0.8"
+    label 'tmle_image'
     publishDir "$params.OUTDIR", mode: 'symlink'
 
     input:

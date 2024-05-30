@@ -1,7 +1,7 @@
 process GenerateSummaryPlots {
-    container "olivierlabayle/tl-core:0.8"
     publishDir "${params.OUTDIR}", mode: 'symlink'
     label "bigmem"
+    label 'targenecore_image'
 
     input:
         path resultsfile
