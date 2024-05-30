@@ -20,6 +20,7 @@ process TMLEInputsFromParamFile {
     script:
         bgen_prefix = longest_prefix(bgenfiles)
         batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
+        call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/bin/generate_tl_inputs.jl \
@@ -30,8 +31,8 @@ process TMLEInputsFromParamFile {
         $command $parameter \
         --traits $traits \
         --bgen-prefix $bgen_prefix \
-        --call-threshold ${params.CALL_THRESHOLD} \
         --pcs $genetic_confounders \
+        ${call_threshold}
         """
 }
 
@@ -62,6 +63,7 @@ process TMLEInputsFromActors {
         extra_confounders = extra_confounders.name != 'NO_EXTRA_CONFOUNDER' ? "--extra-confounders $extra_confounders" : ''
         extra_treatments = extra_treatments.name != 'NO_EXTRA_TREATMENT' ? "--extra-treatments $extra_treatments" : ''
         extra_covariates = extra_covariates.name != 'NO_EXTRA_COVARIATE' ? "--extra-covariates $extra_covariates" : ''
+        call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/bin/generate_tl_inputs.jl \
@@ -76,7 +78,7 @@ process TMLEInputsFromActors {
         --orders ${params.ORDERS} \
         --traits $traits \
         --bgen-prefix $bgen_prefix \
-        --call-threshold ${params.CALL_THRESHOLD} \
         --pcs $genetic_confounders \
+        ${call_threshold}
         """
 }

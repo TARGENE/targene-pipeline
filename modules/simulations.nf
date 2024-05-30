@@ -101,6 +101,7 @@ process RealisticSimulationInputs {
     script:
         estimands_prefix = longest_prefix(estimands)
         bgen_prefix = longest_prefix(bgen_files)
+        call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/opt/Simulations --startup-file=no --sysimage=/opt/Simulations/Simulations.so /opt/Simulations/targene-simulation.jl \
@@ -113,10 +114,10 @@ process RealisticSimulationInputs {
         --distance-threshold=${params.GA_DISTANCE_THRESHOLD} \
         --max-variants=${params.GA_MAX_VARIANTS} \
         --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \
-        --call-threshold=${params.CALL_THRESHOLD} \
         --output-prefix=ga_sim_input \
         --batchsize=${params.BATCH_SIZE} \
-        --verbosity=${params.VERBOSITY}
+        --verbosity=${params.VERBOSITY} \
+        ${call_threshold}
         """
 }
 
