@@ -1,8 +1,8 @@
 process MergeOutputs {
-    container "olivierlabayle/targeted-estimation:0.8"
     publishDir "$params.OUTDIR", mode: 'symlink'
     label "bigmem"
-    
+    label 'tmle_image'
+
     input:
         path tmle_files
 
@@ -22,10 +22,10 @@ process MergeOutputs {
 }
 
 process TMLE {
-    container "olivierlabayle/targeted-estimation:0.8"
     publishDir "$params.OUTDIR/tmle_outputs/", mode: 'symlink', pattern: "*.hdf5"
     label "bigmem"
     label "multithreaded"
+    label 'tmle_image'
 
     input:
         path data

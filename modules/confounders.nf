@@ -1,6 +1,6 @@
 process filterBED{
     label 'bigmem'
-    container "olivierlabayle/tl-core:0.8"
+    label 'targenecore_image'
     publishDir "$params.OUTDIR/qc_filtered_chromosomes", mode: 'symlink'
 
     input:
@@ -27,7 +27,7 @@ process filterBED{
 
 process thinByLD{
     label 'bigmem'
-    container "olivierlabayle/plink2:0.1.0"
+    label 'plink_image'
     publishDir "$params.OUTDIR/ld_pruned_chromosomes", mode: 'symlink'
 
     input:
@@ -48,7 +48,7 @@ process thinByLD{
 
 process mergeBEDS{
     label 'bigmem'
-    container "olivierlabayle/tl-core:0.8"
+    label 'targenecore_image'
     publishDir "$params.OUTDIR/merged_genotypes", mode: 'symlink'
     
     input:
@@ -69,7 +69,7 @@ process mergeBEDS{
 
 process SampleQCFilter {
     label 'bigmem'
-    container "olivierlabayle/plink2:0.1.0"
+    label 'plink_image'
     publishDir "$params.OUTDIR/iid_genotypes", mode: 'symlink'
 
     input:
@@ -84,7 +84,7 @@ process SampleQCFilter {
 
 process FlashPCA {
     label "multithreaded"
-    container "ktetleycampbell/flashpca:1.0"
+    label 'pca_image'
 
     input:
         path bedfiles
@@ -98,10 +98,10 @@ process FlashPCA {
 }
 
 process AdaptFlashPCA {
-    container "olivierlabayle/tl-core:0.8"
     publishDir "$params.OUTDIR/covariates/", mode: 'symlink'
     label 'bigmem'
-    
+    label 'targenecore_image'
+
     input:
         path flashpca_out
     
