@@ -21,6 +21,8 @@ process NullSimulationEstimation {
         estimation ${origin_dataset} ${estimands} ${estimators} \
             ${sample_size_option} \
             --n-repeats=${params.N_REPEATS} \
+            --min-occurences=${params.MIN_FACTOR_LEVEL_OCCURENCES} \
+            --max-sampling-attempts=${params.MAX_SAMPLING_ATTEMPTS} \
             --out=${out} \
             --verbosity=${params.VERBOSITY} \
             --chunksize=${params.TL_SAVE_EVERY} \
@@ -53,6 +55,8 @@ process RealisticSimulationEstimation {
         --density-estimates-prefix=${density_estimate_prefix} \
         ${sample_size_option} \
         --n-repeats=${params.N_REPEATS} \
+        --min-occurences=${params.MIN_FACTOR_LEVEL_OCCURENCES} \
+        --max-sampling-attempts=${params.MAX_SAMPLING_ATTEMPTS} \
         --out=${out} \
         --verbosity=${params.VERBOSITY} \
         --chunksize=${params.TL_SAVE_EVERY} \
