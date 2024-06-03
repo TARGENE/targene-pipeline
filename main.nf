@@ -71,6 +71,8 @@ params.N_REPEATS = 1
 params.RNGS = [1]
 params.SAMPLE_SIZES = [100]
 params.GA_TRAIT_TABLE = "${projectDir}/assets/Traits_Table_GeneATLAS.csv"
+params.MIN_FACTOR_LEVEL_OCCURENCES = 10
+params.MAX_SAMPLING_ATTEMPTS = 1000
 
 include { TARGENE } from './workflows/targene.nf'
 include { PERMUTATION_TEST; RANDOMIZATION_TEST } from './workflows/negative_control.nf'
