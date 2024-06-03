@@ -21,7 +21,9 @@ A set of predefined estimators is readily available and can be accessed by using
 - superlearning
 - tuned-xgboost
 
-all using TMLE as the meta statistical inference method. While these should cover most use cases, it may be useful to define a custom estimation strategy. This can be achieved by writing a small [Julia](https://julialang.org/) file described below.
+To see what the estimand files for these examples look like, please refer to the [TargetedEstimation.jl](https://github.com/TARGENE/TargetedEstimation.jl) package, located here: https://github.com/TARGENE/TargetedEstimation.jl/tree/main/estimators-configs.
+
+All using TMLE as the meta statistical inference method. While these should cover most use cases, it may be useful to define a custom estimation strategy. This can be achieved by writing a small [Julia](https://julialang.org/) file described below.
 
 ## Custom estimators from a file
 
@@ -61,3 +63,80 @@ All estimators will learn the nuisance functions `Q` and `G` with the provided `
 For the list of available models and resampling strategies, checkout the [TargetedEstimation documentation](https://targene.github.io/TargetedEstimation.jl/stable/models/).
 
 For full details, on available estimators and how to specify them, visit the [TMLE.jl documentation](https://targene.github.io/TMLE.jl/stable/).
+
+## Current recommanedations
+
+At present, there are two main use cases for Targene: (1) investigating an average treatment effect (ATE) or (2) an interaction average treatment effect (IATE). Here we present our current recommendation fo estimators for these two types of analyses.
+
+1. ATE
+
+```julia
+default_models = TMLE.default_models(
+  # For the estimation of E[Y|W, T]: continuous outcome
+  Q_continuous = LinearRegressor(),
+  # For the estimation of E[Y|W, T]: binary target
+  Q_binary = LogisticClassifier(lambda=0.),
+  # For the estimation of p(T| W)
+  G = LogisticClassifier(lambda=0.)
+)
+
+ESTIMATORS = (
+  TMLE_weighted   = TMLEE(models=default_models, weighted=true),
+  OSE             = OSE(models=default_models)
+)
+```
+
+2. IATE
+
+```
+xgboost_classifier = XGBoostClassifier(tree_method="hist")
+resampling = JointStratifiedCV(patterns=[r"<regex-expression-matching-all-snps-in-bgen-files>"], resampling=StratifiedCV(nfolds=3))
+ 
+default_models = TMLE.default_models(
+  # For the estimation of E[Y|W, T]: continuous outcome
+  Q_continuous = Pipeline(
+    RestrictedInteractionTransformer(order=2, primary_variables_patterns=[r"<regex-expression-matching-all-snps-in-bgen-files>"]),
+    GLMNetRegressor(resampling=resampling),
+    cache = false
+  ),
+  # For the estimation of E[Y|W, T]: binary target
+  Q_binary    = Pipeline(
+    RestrictedInteractionTransformer(order=2, primary_variables_patterns=[r"<regex-expression-matching-all-snps-in-bgen-files>"]),
+    GLMNetClassifier(resampling=resampling),
+    cache = false
+  ),
+  # For the estimation of p(T| W)
+  G = Stack(
+    metalearner        = LogisticClassifier(lambda=0., fit_intercept=false),
+    resampling         = resampling,
+    cache              = false,
+    glmnet             = GLMNetClassifier(resampling=resampling),
+    lr                 = LogisticClassifier(lambda=0.),
+    tuned_xgboost      = TunedModel(
+        model = xgboost_classifier,
+        resampling = resampling,
+        tuning = Grid(goal=20),
+        range = [
+            range(xgboost_classifier, :max_depth, lower=3, upper=7),
+            range(xgboost_classifier, :lambda, lower=1e-5, upper=10, scale=:log)
+            ],
+        measure = log_loss,
+        cache=false
+    )
+  )
+)
+ 
+ESTIMATORS = (
+  TMLE = TMLEE(models=default_models, weighted=true),
+  OSE  = OSE(models=default_models)
+)
+```
+
+The `RestrictedInteractionTransformer` investigates all interactions between your genotypes-of-interest and other variables in your model, without computing the interaction between every PC. You must fill in the `<regex-expression-matching-all-snps-in-bgen-files>` with a REGEX expression that matches all SNP IDs in your BGEN files and additional environmental factors included in a run. Since the genotypes are pulled from the BGEN files, the format of these IDs must be checked in advance, as they may follow the structure of rsIDs or they may not. 
+
+Some examples for `<regex-expression-matching-all-snps-in-bgen-files>` include:
+1. "^rs[0-9]+"
+2. "^chr([1-9]|1[0-9]|2[0-2]):\d+:[GATC]+:[GATC]+"
+3. "(^rs[0-9]+|Genetic-Sex)"
+
+A BioBank-scale simulation study is currently being conducted, and these recommendations will be updated in a later version.
