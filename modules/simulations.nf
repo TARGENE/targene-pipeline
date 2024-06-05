@@ -33,7 +33,7 @@ process NullSimulationEstimation {
 
 process RealisticSimulationEstimation {
     label 'simulation_image'
-    publishDir "${params.OUTDIR}/null_simulation_results", mode: 'symlink'
+    publishDir "${params.OUTDIR}/realistic_simulation_results", mode: 'symlink'
 
     input:
         path origin_dataset
