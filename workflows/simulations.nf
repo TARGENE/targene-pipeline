@@ -18,17 +18,14 @@ workflow NULL_SIMULATION {
     rngs = Channel.fromList(params.RNGS)
     bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
 
-    // Extract Traits
-    traits = EXTRACT_TRAITS()
-    
     // PCA
-    pcs = PCA()
+    PCA()
 
     // generate main dataset and estimand configuration files
     EstimationInputs(
         bgen_files,
-        traits,
-        pcs,
+        PCA.out.traits,
+        PCA.out.pcs,
         estimands_files,
         bqtls_file,
         transactors_files,
@@ -62,19 +59,16 @@ workflow REALISTIC_SIMULATION {
     sample_sizes = Channel.fromList(params.SAMPLE_SIZES)
     rngs = Channel.fromList(params.RNGS)
     bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
-
-    // Extract Traits
-    traits = EXTRACT_TRAITS()
     
     // PCA
-    pcs = PCA()
+    PCA()
 
     // Realistic Simulation Inputs
     simulation_inputs = RealisticSimulationInputs(
         estimands_files.collect(),
         bgen_files,
-        traits,
-        pcs,
+        PCA.out.traits,
+        PCA.out.pcs,
         ga_trait_table
     )
     dataset = simulation_inputs.dataset
