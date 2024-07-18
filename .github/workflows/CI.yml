@@ -20,6 +20,8 @@ jobs:
           - "ukb_allele_independent.jl"
           - "custom_from_actors.jl"
           - "make_dataset.jl"
+          - "null_simulation.jl"
+          - "realistic_simulation.jl"
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1

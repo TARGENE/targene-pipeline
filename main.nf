@@ -13,6 +13,8 @@ params.COHORT = "UKBB"
 params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
 params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
+params.VARIANTS_REGEXP = "^(rs[0-9]*|Affx)"
+params.SAMPLE_GA_HITS = true
 
 // Confounding adjustment by PCA
 params.NB_PCS = 6
@@ -78,7 +80,7 @@ include { TARGENE } from './workflows/targene.nf'
 include { PERMUTATION_TEST; RANDOMIZATION_TEST } from './workflows/negative_control.nf'
 include { PCA } from './workflows/pca.nf'
 include { MAKE_DATASET } from './workflows/dataset.nf'
-include { NULL_SIMULATION; REALISTIC_SIMULATION; SIMULATIONS } from './workflows/simulations.nf'
+include { NULL_SIMULATION; REALISTIC_SIMULATION } from './workflows/simulations.nf'
 
 log.info """\
          ${workflow.manifest.name} v${workflow.manifest.version}
