@@ -7,7 +7,7 @@ process TMLEInputsFromParamFile {
     label 'targenecore_image'
 
     input:
-        path bgenfiles
+        path genotypes_prefix
         path traits
         path genetic_confounders
         path parameter
@@ -18,7 +18,7 @@ process TMLEInputsFromParamFile {
         path "final.*.jls", emit: estimands
 
     script:
-        bgen_prefix = longest_prefix(bgenfiles)
+        genotypes_prefix = longest_prefix(genotypes_prefix)
         batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
@@ -30,7 +30,7 @@ process TMLEInputsFromParamFile {
         --verbosity=${params.VERBOSITY} \
         $command $parameter \
         --traits $traits \
-        --bgen-prefix $bgen_prefix \
+        --genotype-prefix ${genotypes_prefix} \
         --pcs $genetic_confounders \
         ${call_threshold}
         """

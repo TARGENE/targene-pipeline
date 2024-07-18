@@ -28,6 +28,10 @@ makedocs(;
                 joinpath("targene", "configuration.md"),
                 joinpath("targene", "runtime_considerations.md")
             ],
+            "The Simulation Workflows" => [
+                joinpath("simulations", "overview.md"),
+                joinpath("simulations", "null_simulation.md"),
+            ],
             "Negative Control" => [
                 joinpath("negative_control", "overview.md"),
                 joinpath("negative_control", "permutation_tests.md"),
