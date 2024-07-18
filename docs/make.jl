@@ -37,8 +37,8 @@ makedocs(;
             joinpath("secondary_workflows", "make_dataset.md")
             ],
         "Developper Guide" => [
-            joinpath("developper_guide", "project_organization.md"),
-            joinpath("developper_guide", "contribution_guide.md")
+            joinpath("developer_guide", "project_organization.md"),
+            joinpath("developer_guide", "contribution_guide.md")
             ],
         "Associated Softwares" => "associated_softwares.md",
         "Related Publications" => "publications.md"
