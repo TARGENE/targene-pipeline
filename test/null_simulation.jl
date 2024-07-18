@@ -1,5 +1,7 @@
 module TestNullSimulation
 
+using Test
+
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
 @testset "Test Null Simulation Workflow" begin
