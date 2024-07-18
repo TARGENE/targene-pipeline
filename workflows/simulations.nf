@@ -91,8 +91,3 @@ workflow REALISTIC_SIMULATION {
     // Aggregation of Estimation Results
     AggregateSimulationResults(simulation_results.collect(), "realistic_simulation_results.hdf5")
 }
-
-workflow SIMULATIONS {
-    NULL_SIMULATION()
-    REALISTIC_SIMULATION()
-}
