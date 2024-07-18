@@ -1,5 +1,7 @@
 module TestRealisticSimulation
 
+using Test
+
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
 @testset "Test Realistic Simulation Workflow" begin
