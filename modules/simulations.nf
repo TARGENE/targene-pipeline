@@ -109,7 +109,7 @@ process RealisticSimulationInputs {
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/opt/Simulations --startup-file=no --sysimage=/opt/Simulations/Simulations.so /opt/Simulations/targene-simulation.jl \
-        simulation-inputs-from-ga ${estimands_prefix} ${bgen_prefix} ${traits} ${pcs} \
+        realistic-simulation-inputs ${estimands_prefix} ${bgen_prefix} ${traits} ${pcs} \
         --sample-gene-atlas-hits=${params.SAMPLE_GA_HITS} \
         --ga-download-dir=gene_atlas \
         --remove-ga-data=true \
