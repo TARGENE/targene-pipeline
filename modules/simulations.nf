@@ -122,7 +122,6 @@ process RealisticSimulationInputs {
         --output-prefix=ga_sim_input \
         --batchsize=${params.BATCH_SIZE} \
         --verbosity=${params.VERBOSITY} \
-        --variants-regex=${params.VARIANTS_REGEXP} \
         ${call_threshold}
         """
 }
