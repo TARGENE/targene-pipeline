@@ -18,16 +18,16 @@ process EstimationInputs {
 
     script:
         genotypes_prefix = longest_prefix(genotypes_prefix)
-        batch_size = params.BATCH_SIZE == 0 ? "" :  "--batch-size ${params.BATCH_SIZE}"
+        batch_size = params.BATCH_SIZE == 0 ? "" :  "--batchsize ${params.BATCH_SIZE}"
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
         estimation-inputs ${config_file} \
-        --traits-file=${traits} \
         --genotypes-prefix=${genotypes_prefix} \
+        --traits-file=${traits} \
         --pcs-file=${genetic_confounders} \
-        --out-prefix=final \
+        --outprefix=final \
         ${batch_size} \
         ${call_threshold} \
         --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \
