@@ -1,5 +1,5 @@
 include { PCA } from './pca.nf'
-include { EstimationInputs } from '../subworkflows/estimation_inputs.nf'
+include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 include { SVPWorkflow } from '../subworkflows/svp.nf'
 
@@ -9,13 +9,6 @@ workflow TARGENE {
     estimands_file = Channel.value(file("$params.ESTIMANDS_FILE"))
     estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
 
-    // DEPRECATED: LEGACY TO BE REMOVED
-    bqtls_file = Channel.value(file("$params.BQTLS"))
-    transactors_files = Channel.fromPath("$params.TRANS_ACTORS").collect()
-    extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
-    extra_treatments = Channel.value(file("$params.ENVIRONMENTALS"))
-    extra_covariates = Channel.value(file("$params.EXTRA_COVARIATES"))
-
     // Extract Traits
     PCA()
 
@@ -24,12 +17,7 @@ workflow TARGENE {
         bgen_files,
         PCA.out.traits,
         PCA.out.pcs,
-        estimands_file,
-        bqtls_file,
-        transactors_files,
-        extra_confounders,
-        extra_treatments,
-        extra_covariates,
+        estimands_file
     )
 
     // generate estimates

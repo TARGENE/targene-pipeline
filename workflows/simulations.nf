@@ -1,6 +1,6 @@
 include { EXTRACT_TRAITS } from './traits.nf'
 include { PCA } from './pca.nf'
-include { EstimationInputs } from '../subworkflows/estimation_inputs.nf'
+include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { RealisticSimulationInputs; NullSimulationEstimation; RealisticSimulationEstimation; AggregateSimulationResults; DensityEstimation } from '../modules/simulations.nf'
 
 workflow NULL_SIMULATION {
@@ -26,12 +26,7 @@ workflow NULL_SIMULATION {
         bgen_files,
         PCA.out.traits,
         PCA.out.pcs,
-        estimands_files,
-        bqtls_file,
-        transactors_files,
-        extra_confounders,
-        extra_treatments,
-        extra_covariates,
+        estimands_files
     )
 
     // Null Simulation Estimation

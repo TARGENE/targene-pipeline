@@ -14,7 +14,6 @@ params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
 params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
 params.VARIANTS_REGEXP = "^(rs[0-9]*|Affx)"
-params.SAMPLE_GA_HITS = true
 
 // Confounding adjustment by PCA
 params.NB_PCS = 6
@@ -28,12 +27,6 @@ params.BATCH_SIZE = 400
 // CUSTOM
 params.STUDY_DESIGN = "CUSTOM"
 params.ESTIMANDS_FILE = "NO_ESTIMANDS_FILE"
-
-// FROM_ACTORS
-params.EXTRA_CONFOUNDERS = "${projectDir}/assets/NO_EXTRA_CONFOUNDER"
-params.EXTRA_COVARIATES = "${projectDir}/assets/NO_EXTRA_COVARIATE"
-params.ENVIRONMENTALS = "${projectDir}/assets/NO_EXTRA_TREATMENT"
-params.ORDERS = "1,2"
 
 // SVP Parameters
 params.SVP = false
@@ -53,18 +46,9 @@ params.ARROW_OUTPUT = "dataset.arrow"
 params.JSON_OUTPUT = "NO_JSON_OUTPUT"
 params.HDF5_OUTPUT = "results.hdf5"
 
-// Negative Control Parameters
-params.PERMUTATION_HDF5_OUTPUT = "permutation_${params.HDF5_OUTPUT}"
-params.PERMUTATION_JSON_OUTPUT = params.JSON_OUTPUT == "NO_JSON_OUTPUT" ? params.JSON_OUTPUT : "permutation_${params.JSON_OUTPUT}"
-params.MAX_PERMUTATION_TESTS = ""
-params.MAX_PERMUTATION_ATTEMPTS = 1
-params.PERMUTATION_ORDERS = "1"
-params.MAF_MATCHING_RELTOL = 0.05
-params.VARIANTS_TO_RANDOMIZE = "NO_VARIANT_TO_RANDOMIZE"
-params.N_RANDOM_VARIANTS = 10
-
 // Simulations
 params.TRAIN_RATIO = 6
+params.SAMPLE_GA_HITS = true
 params.GA_MAX_VARIANTS = 50
 params.GA_DISTANCE_THRESHOLD = 1000000
 params.GA_PVAL_THRESHOLD = 1e-5
@@ -77,7 +61,6 @@ params.MIN_FACTOR_LEVEL_OCCURENCES = 10
 params.MAX_SAMPLING_ATTEMPTS = 1000
 
 include { TARGENE } from './workflows/targene.nf'
-include { PERMUTATION_TEST; RANDOMIZATION_TEST } from './workflows/negative_control.nf'
 include { PCA } from './workflows/pca.nf'
 include { MAKE_DATASET } from './workflows/dataset.nf'
 include { NULL_SIMULATION; REALISTIC_SIMULATION } from './workflows/simulations.nf'
