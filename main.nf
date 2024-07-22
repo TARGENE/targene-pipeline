@@ -13,7 +13,6 @@ params.COHORT = "UKBB"
 params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
 params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
-params.VARIANTS_REGEXP = "^(rs[0-9]*|Affx)"
 
 // Confounding adjustment by PCA
 params.NB_PCS = 6
