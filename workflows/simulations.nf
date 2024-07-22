@@ -4,15 +4,8 @@ include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { RealisticSimulationInputs; NullSimulationEstimation; RealisticSimulationEstimation; AggregateSimulationResults; DensityEstimation } from '../modules/simulations.nf'
 
 workflow NULL_SIMULATION {
-    // DEPRECATED: LEGACY TO BE REMOVED
-    bqtls_file = Channel.value(file("$params.BQTLS"))
-    transactors_files = Channel.fromPath("$params.TRANS_ACTORS").collect()
-    extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
-    extra_treatments = Channel.value(file("$params.ENVIRONMENTALS"))
-    extra_covariates = Channel.value(file("$params.EXTRA_COVARIATES"))
-
     // Workflow specific channels
-    estimators = Channel.fromPath(params.ESTIMATORS, checkIfExists: true)
+    estimators = Channel.fromPath(params.ESTIMATORS)
     estimands_files = Channel.value(file("$params.ESTIMANDS_FILE"))
     sample_sizes = Channel.fromList(params.SAMPLE_SIZES)
     rngs = Channel.fromList(params.RNGS)
@@ -40,16 +33,9 @@ workflow NULL_SIMULATION {
 }
 
 workflow REALISTIC_SIMULATION {
-    // DEPRECATED: TO BE REMOVED
-    bqtls_file = Channel.value(file("$params.BQTLS"))
-    transactors_files = Channel.fromPath("$params.TRANS_ACTORS").collect()
-    extra_confounders = Channel.value(file("$params.EXTRA_CONFOUNDERS"))
-    extra_treatments = Channel.value(file("$params.ENVIRONMENTALS"))
-    extra_covariates = Channel.value(file("$params.EXTRA_COVARIATES"))
-
     // Workflow specific channels
     ga_trait_table = Channel.value(file(params.GA_TRAIT_TABLE, checkIfExists: true))
-    estimators = Channel.fromPath(params.ESTIMATORS, checkIfExists: true)
+    estimators = Channel.fromPath(params.ESTIMATORS)
     estimands_files = Channel.value(file("$params.ESTIMANDS_FILE"))
     sample_sizes = Channel.fromList(params.SAMPLE_SIZES)
     rngs = Channel.fromList(params.RNGS)
