@@ -14,7 +14,7 @@ process GenerateSummaryPlots {
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
         summary-plots ${results_file} \
-        --out-prefix="." \
+        --outprefix="." \
         --verbosity=${params.VERBOSITY}
         """
 }
