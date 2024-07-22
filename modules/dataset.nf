@@ -8,8 +8,8 @@ process MakeDataset {
     input:
         path bgenfiles
         path traits
-        path confounders
-        path variants_list
+        path pcs_file
+        path variants_file
     
     output:
         path "dataset.arrow"
@@ -19,9 +19,14 @@ process MakeDataset {
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/bin/generate_dataset.jl \
-        ${bgenprefix} ${traits} ${confounders} ${variants_list} \
-        --out dataset.arrow \
-        ${call_threshold}
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
+            make-dataset \
+            --genotypes-prefix=${bgenprefix} \
+            --traits-file=${traits} \
+            --pcs-file=${pcs_file} \
+            --variants-file=${variants_file} \
+            --out=dataset.arrow \
+            ${call_threshold} \
+            --verbosity=${params.VERBOSITY}
         """
 }

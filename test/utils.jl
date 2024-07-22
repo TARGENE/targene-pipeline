@@ -58,5 +58,5 @@ function write_custom_configuration()
         treatment_confounders = []
       )
     ])
-    TMLE.write_yaml(joinpath("test", "assets", "parameters", "parameters.yaml"), config)
+    TMLE.write_yaml(joinpath("test", "assets", "estimands.yaml"), config)
 end
