@@ -22,7 +22,7 @@ workflow TARGENE {
 
     // generate estimates
     EstimationWorkflow(
-        EstimationInputs.out.aggregated_dataset,
+        EstimationInputs.out.dataset,
         EstimationInputs.out.estimands.flatten(),
         estimator_config,
     )
