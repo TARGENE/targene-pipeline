@@ -113,6 +113,6 @@ process AdaptFlashPCA {
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/targenecore.jl \
-        ${flashpca_out} pcs.csv
+        adapt-flashpca ${flashpca_out} pcs.csv
         """
 }
