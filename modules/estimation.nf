@@ -38,16 +38,17 @@ process TMLE {
     script:
         basename = "tmle_result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
-        pval_option = params.KEEP_IC == true ? ",${params.PVAL_THRESHOLD}" : ""
-        sample_ids = params.SVP == true ? ",true" : ""
-        output_option = "--hdf5-output=${hdf5out}${pval_option}${sample_ids}"
+        pvalue_threhsold = params.KEEP_IC == true ? "--pvalue-threshold=${params.PVAL_THRESHOLD}" : ""
+        save_sample_ids = params.SVP == true ? "--save_sample_ids" : ""
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/tmle.jl tmle \
-        $data \
-        --estimands=$estimands_file \
-        --estimators=$estimator_file \
-        $output_option \
+        ${data} \
+        --estimands=${estimands_file} \
+        --estimators=${estimator_file} \
+        --hdf5-output=${hdf5out} \
+        ${pvalue_threhsold} \
+        ${save_sample_ids} \
         --chunksize=${params.TL_SAVE_EVERY} \
         """
 }
