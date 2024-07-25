@@ -39,7 +39,7 @@ process TMLE {
         basename = "tmle_result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
         pvalue_threhsold = params.KEEP_IC == true ? "--pvalue-threshold=${params.PVAL_THRESHOLD}" : ""
-        save_sample_ids = params.SVP == true ? "--save_sample_ids" : ""
+        save_sample_ids = params.SVP == true ? "--save-sample-ids" : ""
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/tmle.jl tmle \
