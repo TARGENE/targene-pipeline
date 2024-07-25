@@ -13,6 +13,9 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     r = run(cmd)
     @test r.exitcode == 0
 
+    # Check properly resumed
+    resume_time = @elapsed run(cmd)
+    @test resume_time < 1000
 end
 
 end
