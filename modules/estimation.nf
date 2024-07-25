@@ -49,7 +49,7 @@ process TMLE {
         --hdf5-output=${hdf5out} \
         ${pvalue_threhsold} \
         ${save_sample_ids} \
-        --chunksize=${params.TL_SAVE_EVERY} \
+        --chunksize=${params.TL_SAVE_EVERY}
         """
 }
 
