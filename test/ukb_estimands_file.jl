@@ -19,8 +19,7 @@ include("utils.jl")
     r = run(cmd)
     @test r.exitcode == 0
     
-    result_file = jldopen(joinpath("results", "results.hdf5"))
-    results = vcat(result_file["Batch_1"], result_file["Batch_2"])
+    results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
     dataset = DataFrame(Arrow.Table(joinpath("results", "dataset.arrow")))
 
     failed_results = retrieve_failed_results(results)
@@ -33,6 +32,10 @@ include("utils.jl")
     @test all(startswith(x.msg, "Could not fluctuate") for x ∈ failed_results.TMLE)
 
     check_fails_are_extremely_rare_traits(failed_results.TMLE, dataset; ncases=3)
+
+    # Check properly resumed
+    resume_time = @elapsed run(cmd)
+    @test resume_time < 1000
 end
 
 end

@@ -51,9 +51,9 @@ version = "0.4.5"
 
 [[deps.Accessors]]
 deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "LinearAlgebra", "MacroTools", "Markdown", "Test"]
-git-tree-sha1 = "c0d491ef0b135fd7d63cbc6404286bc633329425"
+git-tree-sha1 = "f61b15be1d76846c0ce31d3fcfac5380ae53db6a"
 uuid = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
-version = "0.1.36"
+version = "0.1.37"
 
     [deps.Accessors.extensions]
     AccessorsAxisKeysExt = "AxisKeys"
@@ -162,10 +162,10 @@ uuid = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
 version = "0.3.9"
 
 [[deps.BangBang]]
-deps = ["Accessors", "Compat", "ConstructionBase", "InitialValues", "LinearAlgebra", "Requires"]
-git-tree-sha1 = "08e5fc6620a8d83534bf6149795054f1b1e8370a"
+deps = ["Accessors", "ConstructionBase", "InitialValues", "LinearAlgebra", "Requires"]
+git-tree-sha1 = "e2144b631226d9eeab2d746ca8880b7ccff504ae"
 uuid = "198e06fe-97b7-11e9-32a5-e1d131e6ad66"
-version = "0.4.2"
+version = "0.4.3"
 
     [deps.BangBang.extensions]
     BangBangChainRulesCoreExt = "ChainRulesCore"
@@ -355,9 +355,9 @@ version = "0.17.6"
 
 [[deps.ConstructionBase]]
 deps = ["LinearAlgebra"]
-git-tree-sha1 = "260fd2400ed2dab602a7c15cf10c1933c59930a2"
+git-tree-sha1 = "d8a9c0b6ac2d9081bf76324b39c78ca3ce4f0c98"
 uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
-version = "1.5.5"
+version = "1.5.6"
 
     [deps.ConstructionBase.extensions]
     ConstructionBaseIntervalSetsExt = "IntervalSets"
@@ -614,9 +614,9 @@ version = "1.9.0"
 
 [[deps.GLMNet]]
 deps = ["DataFrames", "Distributed", "Distributions", "Printf", "Random", "SparseArrays", "StatsBase", "glmnet_jll"]
-git-tree-sha1 = "49ef90cd140f8a99a81338f1e08e8ebc18837a63"
+git-tree-sha1 = "7ea4e2bbb84183fe52a488d05e16c152b2387b95"
 uuid = "8d5ece8b-de18-5317-b113-243142960cc6"
-version = "0.7.0"
+version = "0.7.2"
 
 [[deps.GPUArrays]]
 deps = ["Adapt", "GPUArraysCore", "LLVM", "LinearAlgebra", "Printf", "Random", "Reexport", "Serialization", "Statistics"]
@@ -666,10 +666,10 @@ version = "0.17.2"
     MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
 
 [[deps.HDF5_jll]]
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LLVMOpenMP_jll", "LazyArtifacts", "LibCURL_jll", "Libdl", "MPICH_jll", "MPIPreferences", "MPItrampoline_jll", "MicrosoftMPI_jll", "OpenMPI_jll", "OpenSSL_jll", "TOML", "Zlib_jll", "libaec_jll"]
-git-tree-sha1 = "38c8874692d48d5440d5752d6c74b0c6b0b60739"
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LazyArtifacts", "LibCURL_jll", "Libdl", "MPICH_jll", "MPIPreferences", "MPItrampoline_jll", "MicrosoftMPI_jll", "OpenMPI_jll", "OpenSSL_jll", "TOML", "Zlib_jll", "libaec_jll"]
+git-tree-sha1 = "82a471768b513dc39e471540fdadc84ff80ff997"
 uuid = "0234f1f7-429e-5d53-9886-15a909be8d59"
-version = "1.14.2+1"
+version = "1.14.3+3"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
@@ -969,15 +969,21 @@ version = "2024.2.0+0"
 
 [[deps.MLFlowClient]]
 deps = ["Dates", "FilePathsBase", "HTTP", "JSON", "ShowCases", "URIs", "UUIDs"]
-git-tree-sha1 = "5cc2a5453856e79f4772269fbe6b19fcdcba391a"
+git-tree-sha1 = "9abb12b62debc27261c008daa13627255bf79967"
 uuid = "64a0f543-368b-4a9a-827a-e71edb2a0b83"
-version = "0.4.7"
+version = "0.5.1"
 
 [[deps.MLJ]]
-deps = ["CategoricalArrays", "ComputationalResources", "Distributed", "Distributions", "LinearAlgebra", "MLJBase", "MLJEnsembles", "MLJFlow", "MLJIteration", "MLJModels", "MLJTuning", "OpenML", "Pkg", "ProgressMeter", "Random", "Reexport", "ScientificTypes", "StatisticalMeasures", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "58d17a367ee211ade6e53f83a9cc5adf9d26f833"
+deps = ["CategoricalArrays", "ComputationalResources", "Distributed", "Distributions", "LinearAlgebra", "MLJBalancing", "MLJBase", "MLJEnsembles", "MLJFlow", "MLJIteration", "MLJModels", "MLJTuning", "OpenML", "Pkg", "ProgressMeter", "Random", "Reexport", "ScientificTypes", "StatisticalMeasures", "Statistics", "StatsBase", "Tables"]
+git-tree-sha1 = "bd2072e9cd65be0a3cb841f3d8cda1d2cacfe5db"
 uuid = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
-version = "0.20.0"
+version = "0.20.5"
+
+[[deps.MLJBalancing]]
+deps = ["MLJBase", "MLJModelInterface", "MLUtils", "OrderedCollections", "Random", "StatsBase"]
+git-tree-sha1 = "f707a01a92d664479522313907c07afa5d81df19"
+uuid = "45f359ea-796d-4f51-95a5-deb1a414c586"
+version = "0.1.5"
 
 [[deps.MLJBase]]
 deps = ["CategoricalArrays", "CategoricalDistributions", "ComputationalResources", "Dates", "DelimitedFiles", "Distributed", "Distributions", "InteractiveUtils", "InvertedIndices", "LearnAPI", "LinearAlgebra", "MLJModelInterface", "Missings", "OrderedCollections", "Parameters", "PrettyTables", "ProgressMeter", "Random", "RecipesBase", "Reexport", "ScientificTypes", "Serialization", "StatisticalMeasuresBase", "StatisticalTraits", "Statistics", "StatsBase", "Tables"]
@@ -997,9 +1003,9 @@ version = "0.4.3"
 
 [[deps.MLJFlow]]
 deps = ["MLFlowClient", "MLJBase", "MLJModelInterface"]
-git-tree-sha1 = "dc0de70a794c6d4c1aa4bde8196770c6b6e6b550"
+git-tree-sha1 = "508bff8071d7d1902d6f1b9d1e868d58821f1cfe"
 uuid = "7b7b8358-b45c-48ea-a8ef-7ca328ad328f"
-version = "0.2.0"
+version = "0.5.0"
 
 [[deps.MLJGLMInterface]]
 deps = ["Distributions", "GLM", "MLJModelInterface", "StatsModels", "Tables"]
@@ -1205,10 +1211,10 @@ uuid = "8b6db2d4-7670-4922-a472-f9537c81ab66"
 version = "0.3.1"
 
 [[deps.OpenMPI_jll]]
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "Hwloc_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "MPIPreferences", "TOML", "Zlib_jll"]
-git-tree-sha1 = "2f0a1d8c79bc385ec3fcda12830c9d0e72b30e71"
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "MPIPreferences", "TOML"]
+git-tree-sha1 = "e25c1778a98e34219a00455d6e4384e017ea9762"
 uuid = "fe0851c0-eecd-5654-98d4-656369965a5c"
-version = "5.0.4+0"
+version = "4.1.6+0"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1386,9 +1392,9 @@ version = "0.4.2+0"
 
 [[deps.Roots]]
 deps = ["Accessors", "ChainRulesCore", "CommonSolve", "Printf"]
-git-tree-sha1 = "1ab580704784260ee5f45bffac810b152922747b"
+git-tree-sha1 = "3484138c9fa4296a0cf46a74ca3f97b59d12b1d0"
 uuid = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
-version = "2.1.5"
+version = "2.1.6"
 
     [deps.Roots.extensions]
     RootsForwardDiffExt = "ForwardDiff"
@@ -1572,9 +1578,9 @@ version = "1.7.0"
 
 [[deps.StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
-git-tree-sha1 = "d1bf48bfcc554a3761a133fe3a9bb01488e06916"
+git-tree-sha1 = "5cf7606d6cef84b543b483848d4ae08ad9832b21"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.33.21"
+version = "0.34.3"
 
 [[deps.StatsFuns]]
 deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
@@ -1636,7 +1642,7 @@ version = "7.2.1+1"
 [[deps.TMLE]]
 deps = ["AbstractDifferentiation", "CategoricalArrays", "Combinatorics", "Distributions", "GLM", "Graphs", "HypothesisTests", "LogExpFunctions", "MLJBase", "MLJGLMInterface", "MLJModels", "MetaGraphsNext", "Missings", "PrecompileTools", "Random", "SplitApplyCombine", "Statistics", "TableOperations", "Tables", "Zygote"]
 git-tree-sha1 = "86f8ca5c47ab2b96a871beaeaae649a865d7d3f6"
-repo-rev = "4fbd86a"
+repo-rev = "4fbd86a02538274f579b21e7da3d5b05f493bb17"
 repo-url = "https://github.com/TARGENE/TMLE.jl"
 uuid = "8afdd2fb-6e73-43df-8b62-b1650cd9c8cf"
 version = "0.16.1"
@@ -1682,9 +1688,9 @@ version = "1.10.0"
 
 [[deps.TargetedEstimation]]
 deps = ["ArgParse", "Arrow", "CSV", "CategoricalArrays", "Combinatorics", "Configurations", "DataFrames", "EvoTrees", "GLMNet", "HDF5", "JLD2", "JSON", "MKL", "MLJ", "MLJBase", "MLJLinearModels", "MLJModelInterface", "MLJModels", "MLJXGBoostInterface", "Mmap", "MultipleTesting", "Optim", "PackageCompiler", "Random", "Serialization", "TMLE", "Tables", "YAML"]
-git-tree-sha1 = "98ae29ef85f5bbeb088b1003c58ced0e0e6104d3"
-repo-rev = "acc1de1"
-repo-url = "https://github.com/TARGENE/TargetedEstimation.jl"
+git-tree-sha1 = "994d0e683ffe710abbc413bd699c6d607b6dc0ed"
+repo-rev = "1fe317a2722120c38da283fa241fca9a0370a407"
+repo-url = "https://github.com/TARGENE/TargetedEstimation.jl.git"
 uuid = "2573d147-4098-46ba-9db2-8608d210ccac"
 version = "0.9.0"
 
@@ -1835,10 +1841,10 @@ uuid = "700de1a5-db45-46bc-99cf-38207098b444"
 version = "0.2.5"
 
 [[deps.glmnet_jll]]
-deps = ["Libdl", "Pkg"]
-git-tree-sha1 = "a88d1783391cea1503e092e8a346751ec5e3b5d1"
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "31adae3b983b579a1fbd7cfd43a4bc0d224c2f5a"
 uuid = "78c6b45d-5eaf-5d68-bcfb-a5a2cb06c27f"
-version = "5.0.0+0"
+version = "2.0.13+0"
 
 [[deps.libaec_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
