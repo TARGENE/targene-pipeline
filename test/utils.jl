@@ -95,10 +95,10 @@ function save_custom_configuration()
         ),
     IATE(
         outcome="other fractures",
-        treatment_values=(;(Symbol("3:3502414:T:C")=>(case="TT", control="CT"), Symbol("3:3502414:T:C")=>(case="TC", control="TT"))...),
-        treatment_confounders = (;(Symbol("3:3502414:T:C") => ["Number of vehicles in household"], Symbol("3:3502414:T:C")=>[])...)
+        treatment_values=(;(Symbol("3:3502414:T:C")=>(case="TT", control="CT"), Symbol("1:238411180:T:C")=>(case="TC", control="TT"))...),
+        treatment_confounders = (;(Symbol("3:3502414:T:C") => ["Number of vehicles in household"], Symbol("1:238411180:T:C")=>[])...)
     )
   ]
   )
-  TMLE.write_yaml("test/simulation_estimands.yaml", configuration)
+  TMLE.write_yaml("test/assets/simulation_estimands.yaml", configuration)
 end
