@@ -8,5 +8,5 @@ default_models = TMLE.default_models(
 )
 
 ESTIMATORS = (
-  OSE  = OSE(models=default_models)
+  OSE  = OSE(models=default_models),
 )
