@@ -1,39 +1,13 @@
 
 const TRAITS = [
   "J40-J47 Chronic lower respiratory diseases",
-  "G25 Other extrapyramidal and movement disorders",
-  "G20 Parkinson's disease",
-  "L72 Follicular cysts of skin and subcutaneous tissue",
-  "J34 Other disorders of nose and nasal sinuses",
-  "H15-H22 Disorders of sclera, cornea, iris and ciliary body",
-  "O26 Maternal care for other conditions predominantly related to pregnancy",
-  "O20 Haemorrhage in early pregnancy",
-  "O94-O99 Other obstetric conditions, not elsewhere classified",
   "O20-O29 Other maternal disorders predominantly related to pregnancy",
-  "oesophageal disorder",
   "bacterial infection",
-  "psychological/psychiatric problem",
-  "heart valve problem/heart murmur",
   "other fractures",
-  "glaucoma",
-  "gastric/stomach ulcers",
-  "mumps / epidemic parotitis",
-  "other renal/kidney problem",
-  "hypothyroidism/myxoedema",
-  "C43 Malignant melanoma of skin",
-  "D37-D48 Neoplasms of uncertain or unknown behaviour",
   "D41 Neoplasm of uncertain or unknown behaviour of urinary organs",
   "C34 Malignant neoplasm of bronchus and lung",
-  "D06 Carcinoma in situ of cervix uteri",
-  "D05 Carcinoma in situ of breast",
-  "D04 Carcinoma in situ of skin",
-  "D03 Melanoma in situ",
   "C50-C50 Malignant neoplasm of breast",
-  "C81-C96 Malignant neoplasms, stated or presumed to be primary, of lymphoid, haematopoietic and related tissue",
   "Cheese intake",
-  "Part of a multiple birth",
-  "Ease of skin tanning",
-  "Variation in diet",
   "Number of vehicles in household",
   "Skin colour",
   "Pork intake"
@@ -108,4 +82,23 @@ function write_custom_configuration()
       )
     ])
     TMLE.write_yaml(joinpath("test", "assets", "estimands.yaml"), config)
+end
+
+function save_custom_configuration()
+  configuration = TMLE.Configuration(estimands = [
+    factorialEstimand(
+        ATE,
+        (;(Symbol("3:3502414:T:C")=>["TT", "TC", "CC"],)...),
+        "ALL",
+        confounders = ["Number of vehicles in household"],
+        outcome_extra_covariates = ["Skin colour"]
+        ),
+    IATE(
+        outcome="other fractures",
+        treatment_values=(;(Symbol("3:3502414:T:C")=>(case="TT", control="CT"), Symbol("3:3502414:T:C")=>(case="TC", control="TT"))...),
+        treatment_confounders = (;(Symbol("3:3502414:T:C") => ["Number of vehicles in household"], Symbol("3:3502414:T:C")=>[])...)
+    )
+  ]
+  )
+  TMLE.write_yaml("test/simulation_estimands.yaml", configuration)
 end
