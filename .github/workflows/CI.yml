@@ -16,6 +16,7 @@ jobs:
       matrix:
         testrun:
           - "ukb_estimands_file.jl"
+          - "custom_cohort_flat_config.jl"
           - "ukb_interactions_group_config.jl"
           - "make_dataset.jl"
           - "null_simulation.jl"

@@ -8,6 +8,5 @@ default_models = TMLE.default_models(
 )
 
 ESTIMATORS = (
-  TMLE = TMLEE(models=default_models, weighted=true),
   OSE  = OSE(models=default_models)
 )
