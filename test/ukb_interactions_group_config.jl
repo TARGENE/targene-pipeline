@@ -26,7 +26,7 @@ include("utils.jl")
     nfails = 0
     treatment_combinations = Set([])
     for result in results_from_hdf5
-        Ψ̂ = result.TMLE
+        Ψ̂ = result.TMLE_GLM_GLM
         if Ψ̂ isa TargetedEstimation.FailedEstimate
             nfails += 1
         else

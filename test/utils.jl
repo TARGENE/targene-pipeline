@@ -37,17 +37,17 @@ function check_fails_are_extremely_rare_traits(results, dataset; ncases=3)
     end
 end
 
-function retrieve_failed_results(results; expected_keys=(:TMLE, :OSE))
-    failed_results = (TMLE = [], OSE = [])
+function retrieve_failed_results(results; expected_keys=(:TMLE_GLM_GLM, :OSE_GLM_GLM))
+    failed_results = (TMLE_GLM_GLM = [], OSE_GLM_GLM = [])
     for result ∈ results
         @test keys(result) == expected_keys
-        @test result.TMLE isa Union{TMLE.TMLEstimate, TargetedEstimation.FailedEstimate}
-        @test result.OSE isa Union{TMLE.OSEstimate, TargetedEstimation.FailedEstimate}
-        if result.TMLE isa TargetedEstimation.FailedEstimate
-            push!(failed_results.TMLE, result.TMLE)
+        @test result.TMLE_GLM_GLM isa Union{TMLE.TMLEstimate, TargetedEstimation.FailedEstimate}
+        @test result.OSE_GLM_GLM isa Union{TMLE.OSEstimate, TargetedEstimation.FailedEstimate}
+        if result.TMLE_GLM_GLM isa TargetedEstimation.FailedEstimate
+            push!(failed_results.TMLE_GLM_GLM, result.TMLE_GLM_GLM)
         end
-        if result.OSE isa TargetedEstimation.FailedEstimate
-            push!(failed_results.OSE, result.OSE)
+        if result.OSE_GLM_GLM isa TargetedEstimation.FailedEstimate
+            push!(failed_results.OSE_GLM_GLM, result.OSE_GLM_GLM)
         end
     end
     return failed_results
