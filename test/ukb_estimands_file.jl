@@ -31,7 +31,7 @@ include("utils.jl")
     @test length(failed_results.TMLE_GLM_GLM) / length(results) < 1/3
     @test all(startswith(x.msg, "Could not fluctuate") for x ∈ failed_results.TMLE_GLM_GLM)
 
-    check_fails_are_extremely_rare_traits(failed_results.TMLE, dataset; ncases=3)
+    check_fails_are_extremely_rare_traits(failed_results.TMLE_GLM_GLM, dataset; ncases=3)
 
     # Check properly resumed
     resume_time = @elapsed run(cmd)
