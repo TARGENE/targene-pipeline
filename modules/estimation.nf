@@ -23,8 +23,6 @@ process MergeOutputs {
 
 process TMLE {
     publishDir "$params.OUTDIR/tmle_outputs/", mode: 'symlink', pattern: "*.hdf5"
-    label "bigmem"
-    label "multithreaded"
     label 'tmle_image'
 
     input:
