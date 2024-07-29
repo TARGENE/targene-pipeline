@@ -20,6 +20,7 @@ include("utils.jl")
     @test r.exitcode == 0
     
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
+    @test length(results) > 40
     dataset = DataFrame(Arrow.Table(joinpath("results", "dataset.arrow")))
 
     failed_results = retrieve_failed_results(results)
