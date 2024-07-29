@@ -1,7 +1,7 @@
 include { EXTRACT_TRAITS } from './traits.nf'
 include { PCA } from './pca.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
-include { RealisticSimulationInputs; NullSimulationEstimation; RealisticSimulationEstimation; AggregateSimulationResults; DensityEstimation } from '../modules/simulations.nf'
+include { RealisticSimulationInputs; NullSimulationEstimation; RealisticSimulationEstimation; AggregateRealisticSimulationResults; AggregateNullSimulationResults; DensityEstimation } from '../modules/simulations.nf'
 
 workflow NULL_SIMULATION {
     // Workflow specific channels
