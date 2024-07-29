@@ -14,7 +14,8 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     @test r.exitcode == 0
 
     results = jldopen(io -> io["results"], joinpath("results", "null_simulation_results.hdf5"))
-    @test all(length(x) == 4 for x in results.ESTIMATES)
+    
+    @test all(length(x) == 4 - nf for (x, nf) in zip(results.ESTIMATES, results.N_FAILED)) # 2 bootstraps per run * 2 random seeds
     @test all(x == 1000 for x in results.SAMPLE_SIZE)
     @test all(x == :OSE_GLM_GLM for x in results.ESTIMATOR)
     # For the first joint estimand: 
