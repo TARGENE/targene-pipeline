@@ -29,7 +29,7 @@ workflow NULL_SIMULATION {
     simulation_results = NullSimulationEstimation(validated_dataset, bootstrap_grid)
 
     // Aggregation of Estimation Results
-    AggregateSimulationResults(simulation_results.collect(), "null_simulation_results.hdf5")
+    AggregateNullSimulationResults(simulation_results.collect())
 }
 
 workflow REALISTIC_SIMULATION {
@@ -70,5 +70,5 @@ workflow REALISTIC_SIMULATION {
     )
 
     // Aggregation of Estimation Results
-    AggregateSimulationResults(simulation_results.collect(), "realistic_simulation_results.hdf5")
+    AggregateRealisticSimulationResults(simulation_results.collect(), dataset, density_estimates)
 }

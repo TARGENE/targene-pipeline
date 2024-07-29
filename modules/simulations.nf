@@ -29,6 +29,25 @@ process NullSimulationEstimation {
         """
 }
 
+process AggregateNullSimulationResults {
+    label "bigmem"
+    label "simulation_image"
+    publishDir "${params.OUTDIR}", mode: 'symlink'
+
+    input:
+        path results
+        
+    output:
+        path "null_simulation_results.hdf5"
+
+    script:
+        """
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/opt/Simulations --startup-file=no --sysimage=/opt/Simulations/Simulations.so /opt/Simulations/targene-simulation.jl \
+        aggregate results null_simulation_results.hdf5
+        """
+}
+
 process RealisticSimulationEstimation {
     label 'simulation_image'
     publishDir "${params.OUTDIR}/realistic_simulation_results", mode: 'symlink'
@@ -61,23 +80,31 @@ process RealisticSimulationEstimation {
         """
 }
 
-process AggregateSimulationResults {
+process AggregateRealisticSimulationResults {
     label "bigmem"
     label "simulation_image"
     publishDir "${params.OUTDIR}", mode: 'symlink'
 
     input:
         path results
-        val outfile
+        path dataset
+        path density_estimates
         
     output:
-        path outfile
+        path "realistic_simulation_results.hdf5"
 
     script:
+        density_estimates_prefix = longest_prefix(density_estimates)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/opt/Simulations --startup-file=no --sysimage=/opt/Simulations/Simulations.so /opt/Simulations/targene-simulation.jl \
-        aggregate results ${outfile}
+        aggregate results realistic_simulation_results.hdf5 \
+        --density-estimates-prefix=${density_estimates_prefix} \
+        --dataset=${dataset} \
+        --n=${params.NSAMPLES_FOR_TRUTH} \
+        --min-occurences=${params.MIN_FACTOR_LEVEL_OCCURENCES} \
+        --max-attempts=${params.MAX_SAMPLING_ATTEMPTS} \
+        --verbosity=${params.VERBOSITY}
         """
 }
 

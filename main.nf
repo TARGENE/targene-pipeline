@@ -58,6 +58,7 @@ params.SAMPLE_SIZES = [100]
 params.GA_TRAIT_TABLE = "${projectDir}/assets/Traits_Table_GeneATLAS.csv"
 params.MIN_FACTOR_LEVEL_OCCURENCES = 10
 params.MAX_SAMPLING_ATTEMPTS = 1000
+params.NSAMPLES_FOR_TRUTH = 1000000
 
 include { TARGENE } from './workflows/targene.nf'
 include { PCA } from './workflows/pca.nf'
