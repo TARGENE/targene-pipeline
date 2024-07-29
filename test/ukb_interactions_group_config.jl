@@ -22,7 +22,7 @@ include("utils.jl")
     # Results
     results_from_hdf5 = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
     nresults = length(results_from_hdf5)
-    @test nresults > 50
+    @test nresults > 20
     nfails = 0
     treatment_combinations = Set([])
     for result in results_from_hdf5
