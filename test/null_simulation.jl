@@ -1,6 +1,8 @@
 module TestNullSimulation
 
 using Test
+using JLD2
+using TargetedEstimation
 
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
@@ -10,6 +12,20 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 
     r = run(cmd)
     @test r.exitcode == 0
+
+    results = jldopen(io -> io["results"], joinpath("results", "null_simulation_results.hdf5"))
+    @test all(length(x) == 4 for x in results.ESTIMATES)
+    @test all(x == 1000 for x in results.SAMPLE_SIZE)
+    @test all(x == :OSE_GLM_GLM for x in results.ESTIMATOR)
+    # For the first joint estimand: 
+    # Total number of traits = 11 - (Number of vehicles in household + Skin colour) = 9
+    # For the second estimand, only 1 outcome
+    # Total = 9 + 1 = 10 estimands
+    @test nrow(results) == 10
+
+    # Check properly resumed
+    resume_time = @elapsed run(cmd)
+    @test resume_time < 1000
 end
 
 end
