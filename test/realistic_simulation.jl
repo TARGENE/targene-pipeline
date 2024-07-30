@@ -3,6 +3,7 @@ module TestRealisticSimulation
 using Test
 using TargetedEstimation
 using JLD2
+using DataFrames
 
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
