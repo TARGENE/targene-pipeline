@@ -24,7 +24,8 @@ estimands:
         treatment_confounders:
           3:3502414:T:C:
             - Number of vehicles in household
-  - outcome_extra_covariates: []
+  - outcome_extra_covariates: 
+      - Skin colour
     type: "IATE"
     treatment_values:
       3:3502414:T:C:
