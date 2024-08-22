@@ -54,16 +54,17 @@ process mergeBEDS{
     publishDir "${params.OUTDIR}/merged_genotypes", mode: 'symlink'
     
     input:
-        path files
+        tuple val(output_prefix), path(bed_files)
     
     output:
-        path "ukbb_merged*"
+        path "$output_prefix*"
 
     script:
+        prefix = longest_prefix(bed_files)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/targenecore.jl \
-        merge-beds LDpruned. ukbb_merged
+        merge-beds ${prefix} ${output_prefix}
         """
 
 }
