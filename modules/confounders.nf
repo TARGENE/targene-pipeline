@@ -1,3 +1,5 @@
+include { longest_prefix } from './utils'
+
 process filterBED {
     label 'bigmem'
     label 'targenecore_image'
@@ -54,17 +56,18 @@ process mergeBEDS{
     publishDir "${params.OUTDIR}/merged_genotypes", mode: 'symlink'
     
     input:
-        tuple val(output_prefix), path(bed_files)
+        tuple val(genotypes_id), path(bed_files)
     
     output:
-        path "$output_prefix*"
+        tuple val(genotypes_id), path("${output_prefix}*")
 
     script:
-        prefix = longest_prefix(bed_files)
+        output_prefix = "${genotypes_id}.merged"
+        input_prefix = longest_prefix(bed_files)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/targenecore.jl \
-        merge-beds ${prefix} ${output_prefix}
+        merge-beds ${input_prefix} ${output_prefix}
         """
 
 }
@@ -75,13 +78,15 @@ process SampleQCFilter {
     publishDir "${params.OUTDIR}/iid_genotypes", mode: 'symlink'
 
     input:
-        path merged_bed_files
+        tuple val(genotypes_id), path(merged_bed_files)
     
     output:
-        path "qc_filtered*"
+        tuple val(genotypes_id), path("${output_prefix}*")
 
     script:
-        "plink2 --bfile ukbb_merged --make-bed --hwe 1e-10 --geno --mind --out qc_filtered"
+        input_prefix = "${genotypes_id}.merged"
+        output_prefix = "${input_prefix}.qc"
+        "plink2 --bfile ${input_prefix} --make-bed --hwe 1e-10 --geno --mind --out ${output_prefix}"
 }
 
 process FlashPCA {
@@ -89,14 +94,14 @@ process FlashPCA {
     label 'pca_image'
 
     input:
-        path bedfiles
+        tuple val(genotypes_id), path(bedfiles)
     
     output:
-        path "pcs.txt"
+        tuple val(genotypes_id), path("pcs.${genotypes_id}.txt")
     
     script:
-        prefix = bedfiles[0].toString().minus('.bed')
-        "/home/flashpca-user/flashpca/flashpca --bfile ${prefix} --ndim ${params.NB_PCS} --numthreads ${task.cpus}"
+        input_prefix = bedfiles[0].toString().minus('.bed')
+        "/home/flashpca-user/flashpca/flashpca --bfile ${input_prefix} --ndim ${params.NB_PCS} --numthreads ${task.cpus} --suffix .${genotypes_id}"
 }
 
 process AdaptFlashPCA {
@@ -105,15 +110,15 @@ process AdaptFlashPCA {
     label 'targenecore_image'
 
     input:
-        path flashpca_out
+        tuple val(genotypes_id), path(pc_file)
     
     output:
-        path "pcs.csv"
+        tuple val(genotypes_id), path(pc_file)
     
     script:
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/targenecore.jl \
-        adapt-flashpca ${flashpca_out} pcs.csv
+        adapt-flashpca ${pc_file} ${pc_file}
         """
 }

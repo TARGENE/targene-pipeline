@@ -7,9 +7,8 @@ process EstimationInputs {
     label 'targenecore_image'
 
     input:
-        path genotypes_prefix
+        tuple val(genotypes_id), path(pcs), path(genotypes)
         path traits
-        path genetic_confounders
         path config_file
 
     output:
@@ -17,7 +16,7 @@ process EstimationInputs {
         path "final.*.jls", emit: estimands
 
     script:
-        genotypes_prefix = longest_prefix(genotypes_prefix)
+        genotypes_prefix = longest_prefix(genotypes)
         batch_size = params.BATCH_SIZE == 0 ? "" :  "--batchsize ${params.BATCH_SIZE}"
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
@@ -26,7 +25,7 @@ process EstimationInputs {
         estimation-inputs ${config_file} \
         --genotypes-prefix=${genotypes_prefix} \
         --traits-file=${traits} \
-        --pcs-file=${genetic_confounders} \
+        --pcs-file=${pcs} \
         --outprefix=final \
         ${batch_size} \
         ${call_threshold} \
