@@ -13,10 +13,10 @@ workflow TARGENE {
     PCA()
 
     // generate main dataset and estimand configuration files
+    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files).map{it -> [it[0][0], it[0][1], it[1]]}
     EstimationInputs(
-        bgen_files,
+        pcs_and_genotypes,
         PCA.out.traits,
-        PCA.out.pcs,
         estimands_file
     )
 
@@ -28,10 +28,11 @@ workflow TARGENE {
     )
 
     // Generate sieve variance plateau estimates
+    genotypes = PCA.out.iid_genotypes.map{it -> it[1]}
     if (params.SVP == true){
         sieve_results = SVPWorkflow(
             EstimationWorkflow.out.hdf5_result, 
-            PCA.out.iid_genotypes,
+            genotypes,
         )
     }
 }
