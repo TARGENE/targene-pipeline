@@ -58,6 +58,6 @@ All estimators will learn the nuisance functions `Q` and `G` with the provided `
 - `Q_binary`: A MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is binary.
 - `G`: A MLJ model used for the estimation of `p(T|W)`.
 
-For the list of available models and resampling strategies, checkout the [TargetedEstimation documentation](https://targene.github.io/TargetedEstimation.jl/stable/models/).
+For the list of available models and resampling strategies, checkout the [TmleCLI documentation](https://targene.github.io/TmleCLI.jl/stable/models/).
 
 For full details, on available estimators and how to specify them, visit the [TMLE.jl documentation](https://targene.github.io/TMLE.jl/stable/).

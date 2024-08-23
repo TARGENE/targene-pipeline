@@ -3,15 +3,13 @@ include { GenerateSummaryPlots } from '../modules/plot.nf'
 
 workflow EstimationWorkflow {
     take:
-        dataset
-        estimands_configs
+        dataset_and_estimands
         estimators_config
 
     main:
         // Run the estimation process for each estimands configuration
         TMLE(
-            dataset,
-            estimands_configs,
+            dataset_and_estimands,
             estimators_config,
         )
         // Merge results files together

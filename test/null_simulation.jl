@@ -2,7 +2,7 @@ module TestNullSimulation
 
 using Test
 using JLD2
-using TargetedEstimation
+using TmleCLI
 using DataFrames
 
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
