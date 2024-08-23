@@ -30,7 +30,7 @@ workflow PCA {
         ExtractTraits.out,
     )
 
-    // Genetic confounders
+    // PCA
     FlashPCA(IIDGenotypes.out)
     
     emit:
@@ -51,7 +51,8 @@ workflow LocoPCA {
     flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS", checkIfExists: true))
     ld_blocks = Channel.value(file("$params.LD_BLOCKS", checkIfExists: true))
     bed_files = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
-
+    
+    // Extract Traits
     ExtractTraits(
         traits_dataset,
         ukb_config,
@@ -59,6 +60,7 @@ workflow LocoPCA {
         ukb_encoding_file,
     )
 
+    // IID Genotypes
     loco_genotypes = LOCOGenotypes(
         flashpca_excl_reg,
         ld_blocks,
@@ -66,7 +68,8 @@ workflow LocoPCA {
         qc_file,
         ExtractTraits.out
     )
-    // Genetic confounders
+
+    // PCA
     FlashPCA(loco_genotypes)
 
     emit:
