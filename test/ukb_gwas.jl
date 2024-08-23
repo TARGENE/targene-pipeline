@@ -19,9 +19,26 @@ include("utils.jl")
     r = run(cmd)
     @test r.exitcode == 0
     
+    # Check datasets are consistent
+    traits_and_pcs = ["SAMPLE_ID", "Body mass index (BMI)", "Number of vehicles in household", "Cheese intake", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6"]
+    for chr in 1:3
+        dataset = DataFrame(Arrow.Table(joinpath("results", "datasets", "ukb_chr$(chr).data.arrow")))
+        @test nrow(dataset) == 500
+        columnnames = names(dataset)
+        @test issubset(traits_and_pcs, columnnames)
+        variant_columns = setdiff(columnnames, traits_and_pcs)
+        @test all(startswith(colname, string(chr)) for colname in variant_columns)
+    end
+
+    # Check results
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
+    variants = []
+    for estimators_results in results
+        for (estimatoir, result) in zip(keys(estimators_results), estimators_results)
+            push!(variants, TmleCLI.get_treatments(result.estimand))
+        end
+    end
     @test length(results) > 40
-    dataset = DataFrame(Arrow.Table(joinpath("results", "dataset.arrow")))
 
     failed_results = retrieve_failed_results(results)
 
