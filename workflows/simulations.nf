@@ -9,15 +9,15 @@ workflow NULL_SIMULATION {
     estimands_files = Channel.value(file("$params.ESTIMANDS_FILE"))
     sample_sizes = Channel.fromList(params.SAMPLE_SIZES)
     rngs = Channel.fromList(params.RNGS)
-    bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
+    bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect().toList()
 
     // PCA
     PCA()
 
     // generate main dataset and estimand configuration files
-    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files).map{it -> [it[0][0], it[0][1], it[1]]}
+    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files)
     EstimationInputs(
-        pcs_and_genotypes
+        pcs_and_genotypes,
         PCA.out.traits,
         estimands_files
     )
@@ -39,13 +39,13 @@ workflow REALISTIC_SIMULATION {
     estimands_files = Channel.value(file("$params.ESTIMANDS_FILE"))
     sample_sizes = Channel.fromList(params.SAMPLE_SIZES)
     rngs = Channel.fromList(params.RNGS)
-    bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
+    bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect().toList()
     
     // PCA
     PCA()
 
     // Realistic Simulation Inputs
-    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files).map{it -> [it[0][0], it[0][1], it[1]]}
+    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files)
     simulation_inputs = RealisticSimulationInputs(
         pcs_and_genotypes,
         estimands_files.collect(),
