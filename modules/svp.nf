@@ -14,8 +14,9 @@ process GRMPart {
         path "GRM*.grm.*"
     
     script:
-        base = bedfiles.first().getName().split("\\.")[0]
-        "gcta64 --bfile ${base} --make-grm-part ${nparts} ${part_id} --thread-num ${task.cpus} --out GRM"
+        input_prefix = longest_prefix(bedfiles)
+        // base = bedfiles.first().getName().split("\\.")[0]
+        "gcta64 --bfile ${input_prefix} --make-grm-part ${nparts} ${part_id} --thread-num ${task.cpus} --out GRM"
 }
 
 process AggregateGRM {
