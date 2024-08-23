@@ -6,11 +6,10 @@ using TMLE
 using Arrow
 using JLD2
 using TmleCLI
+using TargeneCore
 
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
-
-include("utils.jl")
 
 @testset "Test ukb_estimands_file.config" begin
     cmd = `nextflow run main.nf -c test/configs/ukb_gwas.config $args`
@@ -32,28 +31,32 @@ include("utils.jl")
 
     # Check results
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
+    @test length(results) > 80
     variants = []
+    failed_results = []
     for estimators_results in results
-        for (estimatoir, result) in zip(keys(estimators_results), estimators_results)
-            push!(variants, TmleCLI.get_treatments(result.estimand))
+        for (estimatoir, Ψ̂) in zip(keys(estimators_results), estimators_results)
+            if Ψ̂ isa TmleCLI.FailedEstimate
+                push!(failed_results, Ψ̂)
+            end
+            Ψ = Ψ̂.estimand
+            @test Ψ isa JointEstimand
+            @test get_outcome(Ψ) == Symbol("Body mass index (BMI)")
+            variant = only(TargeneCore.get_treatments(Ψ))
+            push!(variants, variant)
+            @test get_confounders(Ψ, variant) == (:PC1, :PC2, :PC3, :PC4, :PC5, :PC6)
+            @test get_outcome_extra_covariates(Ψ) == Symbol.(("Cheese intake", "Number of vehicles in household"))
         end
     end
-    @test length(results) > 40
+    @test Set(string(v)[1] for v ∈ variants) == Set(['1', '2', '3'])
+    @test length(failed_results) == 0
 
-    failed_results = retrieve_failed_results(results)
-
-    # All fails are due to fluctuation failure due non positive definite matrix
-    # This does not affect the OSE
-    @test isempty(failed_results.OSE_GLM_GLM)
-    # Less than 1/3 affected: this is still quite significant
-    @test length(failed_results.TMLE_GLM_GLM) / length(results) < 1/3
-    @test all(startswith(x.msg, "Could not fluctuate") for x ∈ failed_results.TMLE_GLM_GLM)
-
-    check_fails_are_extremely_rare_traits(failed_results.TMLE_GLM_GLM, dataset; ncases=3)
+    # Check QQ
+    @test isfile(joinpath("results", "QQ.png"))
 
     # Check properly resumed
     resume_time = @elapsed run(cmd)
-    @test resume_time < 1000
+    @test resume_time < 100
 end
 
 end

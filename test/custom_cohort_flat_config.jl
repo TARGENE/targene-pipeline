@@ -6,6 +6,7 @@ using DataFrames
 using JLD2
 using TmleCLI
 using CSV
+using TargeneCore
 
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
