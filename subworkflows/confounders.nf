@@ -1,4 +1,4 @@
-include { filterBED; thinByLD; mergeBEDS; SampleQCFilter; FlashPCA; AdaptFlashPCA } from '../modules/confounders.nf'
+include { filterBED; thinByLD; mergeBEDS; SampleQCFilter; FlashPCA } from '../modules/confounders.nf'
 
 workflow IIDGenotypes{
     take:

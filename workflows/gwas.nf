@@ -3,7 +3,7 @@ include { PCA } from './pca.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 include { SVPWorkflow } from '../subworkflows/svp.nf'
 include { ExtractTraits } from '../subworkflows/extract_traits.nf'
-include { filterBED; thinByLD; mergeBEDS; SampleQCFilter; FlashPCA; AdaptFlashPCA } from '../modules/confounders.nf'
+include { filterBED; thinByLD; mergeBEDS; SampleQCFilter; FlashPCA } from '../modules/confounders.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
 
 def filepath_matches_chr_prefix(fp, chr_prefix){

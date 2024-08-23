@@ -103,22 +103,3 @@ process FlashPCA {
         input_prefix = bedfiles[0].toString().minus('.bed')
         "/home/flashpca-user/flashpca/flashpca --bfile ${input_prefix} --ndim ${params.NB_PCS} --numthreads ${task.cpus} --suffix .${genotypes_id}.txt"
 }
-
-process AdaptFlashPCA {
-    publishDir "${params.OUTDIR}/covariates/", mode: 'symlink'
-    label 'bigmem'
-    label 'targenecore_image'
-
-    input:
-        tuple val(genotypes_id), path(pc_file)
-    
-    output:
-        tuple val(genotypes_id), path(pc_file)
-    
-    script:
-        """
-        TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/targenecore.jl \
-        adapt-flashpca ${pc_file} ${pc_file}
-        """
-}
