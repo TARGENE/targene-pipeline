@@ -1,4 +1,4 @@
-include { IIDGenotypes; GeneticConfounders } from '../subworkflows/confounders.nf'
+include { IIDGenotypes; FlashPCA } from '../subworkflows/confounders.nf'
 include { ExtractTraits } from '../subworkflows/extract_traits.nf'
 
 workflow PCA {
@@ -31,11 +31,11 @@ workflow PCA {
     )
 
     // Genetic confounders
-    GeneticConfounders(IIDGenotypes.out)
+    FlashPCA(IIDGenotypes.out)
     
     emit:
         traits = ExtractTraits.out
         iid_genotypes = IIDGenotypes.out
-        pcs = GeneticConfounders.out
+        pcs = FlashPCA.out
 
 }

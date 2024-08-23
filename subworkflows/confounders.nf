@@ -19,15 +19,3 @@ workflow IIDGenotypes{
     emit:
         SampleQCFilter.out
 }
-
-workflow GeneticConfounders {
-    take:
-        iid_genotypes
-
-    main:
-        FlashPCA(iid_genotypes)
-        AdaptFlashPCA(FlashPCA.out)
-
-    emit:
-        AdaptFlashPCA.out
-}
