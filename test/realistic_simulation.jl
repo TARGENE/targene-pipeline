@@ -1,7 +1,7 @@
 module TestRealisticSimulation
 
 using Test
-using TargetedEstimation
+using TmleCLI
 using JLD2
 using DataFrames
 

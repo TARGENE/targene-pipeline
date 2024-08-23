@@ -5,15 +5,15 @@ include { SVPWorkflow } from '../subworkflows/svp.nf'
 
 workflow TARGENE {
     // Define Parameters
-    bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect()
+    bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect().toList()
     estimands_file = Channel.value(file("$params.ESTIMANDS_FILE"))
     estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
 
-    // Extract Traits
+    // PCA
     PCA()
 
-    // generate main dataset and estimand configuration files
-    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files).map{it -> [it[0][0], it[0][1], it[1]]}
+    // Estimation Inputs
+    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files)
     EstimationInputs(
         pcs_and_genotypes,
         PCA.out.traits,
@@ -22,8 +22,7 @@ workflow TARGENE {
 
     // generate estimates
     EstimationWorkflow(
-        EstimationInputs.out.dataset,
-        EstimationInputs.out.estimands.flatten(),
+        EstimationInputs.out.transpose(),
         estimator_config,
     )
 

@@ -51,7 +51,7 @@ process SVP {
         hdf5_prefix = longest_prefix(hdf5_results)
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/tmle.jl svp \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TmleCLI.jl/TMLESysimage.so --project=/TmleCLI.jl --startup-file=no /TmleCLI.jl/tmle.jl svp \
         ${hdf5_prefix} \
         --n-estimators=${params.NB_SVP_ESTIMATORS} \
         --max-tau=${params.MAX_SVP_THRESHOLD} \

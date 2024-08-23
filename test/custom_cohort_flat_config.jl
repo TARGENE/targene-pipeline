@@ -4,7 +4,7 @@ using Test
 using Arrow
 using DataFrames
 using JLD2
-using TargetedEstimation
+using TmleCLI
 using CSV
 
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 

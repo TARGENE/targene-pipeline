@@ -1,6 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+import org.yaml.snakeyaml.Yaml
+
 // Misc Parameters
 params.VERBOSITY = 0
 params.RNG = 123
@@ -60,10 +62,16 @@ params.MIN_FACTOR_LEVEL_OCCURENCES = 10
 params.MAX_SAMPLING_ATTEMPTS = 1000
 params.NSAMPLES_FOR_TRUTH = 1000000
 
+include { GWAS } from './workflows/gwas.nf'
 include { TARGENE } from './workflows/targene.nf'
 include { PCA } from './workflows/pca.nf'
 include { MAKE_DATASET } from './workflows/dataset.nf'
 include { NULL_SIMULATION; REALISTIC_SIMULATION } from './workflows/simulations.nf'
+
+def isGWAS(){
+    config = new Yaml().load(new FileReader(params.ESTIMANDS_FILE))
+    return config.type == 'gwas'
+}
 
 log.info """\
          ${workflow.manifest.name} v${workflow.manifest.version}
@@ -81,5 +89,10 @@ log.info """\
 
 
 workflow  {
-    TARGENE()
+    if (isGWAS()) {
+        GWAS()
+    }
+    else {
+        TARGENE()
+    }
 }

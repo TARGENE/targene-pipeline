@@ -12,8 +12,7 @@ process EstimationInputs {
         path config_file
 
     output:
-        path "final.data.arrow", emit: dataset
-        path "final.*.jls", emit: estimands
+        tuple path("${genotypes_id}.data.arrow"), path("${genotypes_id}.*.jls")
 
     script:
         genotypes_prefix = longest_prefix(genotypes)
@@ -26,7 +25,7 @@ process EstimationInputs {
         --genotypes-prefix=${genotypes_prefix} \
         --traits-file=${traits} \
         --pcs-file=${pcs} \
-        --outprefix=final \
+        --outprefix=${genotypes_id} \
         ${batch_size} \
         ${call_threshold} \
         --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \

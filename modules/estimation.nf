@@ -14,7 +14,7 @@ process MergeOutputs {
         json_option = params.JSON_OUTPUT != "NO_JSON_OUTPUT" ? "--json-output=${params.JSON_OUTPUT}" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/tmle.jl merge \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TmleCLI.jl/TMLESysimage.so --project=/TmleCLI.jl --startup-file=no /TmleCLI.jl/tmle.jl merge \
         tmle_result \
         ${json_option} \
         --hdf5-output=${params.HDF5_OUTPUT}
@@ -26,8 +26,7 @@ process TMLE {
     label 'tmle_image'
 
     input:
-        path data
-        path estimands_file
+        tuple path(dataset), path(estimands_file)
         path estimator_file
     
     output:
@@ -40,8 +39,8 @@ process TMLE {
         save_sample_ids = params.SVP == true ? "--save-sample-ids" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/tmle.jl tmle \
-        ${data} \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TmleCLI.jl/TMLESysimage.so --project=/TmleCLI.jl --threads=${task.cpus} --startup-file=no /TmleCLI.jl/tmle.jl tmle \
+        ${dataset} \
         --estimands=${estimands_file} \
         --estimators=${estimator_file} \
         --hdf5-output=${hdf5out} \
