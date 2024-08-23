@@ -14,7 +14,7 @@ estimands:
       3:3502414:T:C: []
       1:238411180:T:C: []
   - outcome_extra_covariates: []
-    type: "IATE"
+    type: "AIE"
     treatment_values:
       3:3502414:T:C:
         case: "TT"

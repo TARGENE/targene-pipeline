@@ -1,7 +1,7 @@
 type: groups
 
 estimands:
-  - type: IATE
+  - type: AIE
     orders: [2]
 
 variants:

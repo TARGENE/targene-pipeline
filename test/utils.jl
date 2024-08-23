@@ -60,7 +60,7 @@ function write_custom_configuration()
             treatment_values = NamedTuple{(Symbol("1:238411180:T:C"), Symbol("3:3502414:T:C"))}([(control = "TT", case = "TC"), (control = "CT", case = "TT")]),
             treatment_confounders = []
         ),
-      IATE(
+      AIE(
         outcome = "ALL",
         treatment_values = NamedTuple{(Symbol("1:238411180:T:C"), Symbol("3:3502414:T:C"))}([(control = "TT", case = "TC"), (control = "CT", case = "TT")]),
         treatment_confounders = []
@@ -93,7 +93,7 @@ function save_custom_configuration()
         confounders = ["Number of vehicles in household"],
         outcome_extra_covariates = ["Skin colour"]
         ),
-    IATE(
+    AIE(
         outcome="other fractures",
         treatment_values=(;(Symbol("3:3502414:T:C")=>(case="TT", control="CT"), Symbol("1:238411180:T:C")=>(case="TC", control="TT"))...),
         treatment_confounders = (;(Symbol("3:3502414:T:C") => ["Number of vehicles in household"], Symbol("1:238411180:T:C")=>[])...)

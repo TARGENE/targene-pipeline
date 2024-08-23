@@ -14,7 +14,7 @@ Where ``V_1...V_p`` are a set of genetic variants, the ``Y_1...Y_K`` are a set o
 The following sections describe the available study designs available in TarGene and assumes the following notations:
 
 - ATE: Average Treatment Effect
-- IATE: Interaction Average Treatment Effect
+- AIE: Interaction Average Treatment Effect
 - CM: Conditional Mean
 
 ## `CUSTOM`
@@ -36,7 +36,7 @@ estimands:
     outcome: ALL
     treatment_confounders: []
   - outcome_extra_covariates: []
-    type: "IATE"
+    type: "AIE"
     treatment_values:
       3:3502414:T:C:
         case: "TT"
@@ -75,7 +75,7 @@ estimands:
 
 For each estimand:
 
-- `type`: refers to the type of effect size (ATE, IATE, CM)
+- `type`: refers to the type of effect size (ATE, AIE, CM)
 - `outcome`: The trait of interest. If using the Uk-Biobank datasource it must match the `phenotypes/name` field in the associated `UKB_CONFIG` file. You can also use the wildcard "ALL" to specify that you want to estimate this parameter accross all traits in the dataset.
 - `treatment_values`: For each treatment variable (genetic-variant / environmental variables), the control/case contrasts.
 - `treatment_confounders`: If each treatment's set of confounding variables is assumed to be the same, it can be a list of these variables. Otherwise, for each treatment variable, a list of confounding variables. Note that principal components will be added to that list automatically and must not be provided here. You can provide an empty list.
@@ -89,7 +89,7 @@ This mode aims to make it easy to generate estimands without explicitly having t
 
 - `type`: How the variants will be combined to generate estimands (see below).
 - `estimands`: A list of the followings:
-  - `type`: The type of generated estimands (`CM`, `ATE`, `IATE`)
+  - `type`: The type of generated estimands (`CM`, `ATE`, `AIE`)
   - `orders`: With respect to treatment variables if more than two are provided, the combination orders to be generated. For interactions, the order is always greater or equal than 2.
 - `variants`: The list of genetic variants of interest, see below for how this can be specified.
 - `extra_treatments`: Environmental treatment variables that are added to the treatments combinations.
@@ -108,7 +108,7 @@ For example, with the following file:
 type: flat
 
 estimands:
-  - type: IATE
+  - type: AIE
     orders: [2, 3]
   - type: ATE
 
@@ -144,7 +144,7 @@ For example, the following file describes two groups each consisting of two subg
 ```yaml
 type: groups
 estimands:
-  - type: IATE
+  - type: AIE
     orders: [2, 3]
 variants:
   TF1:
@@ -189,4 +189,4 @@ Let us now turn to the pipeline specification for this parameter plan:
 - `EXTRA_CONFOUNDERS`: A path to a `.txt` file containing a list of extra confounding variables with no header and one variable per line. Each variable should be available from the trait dataset.
 - `ORDERS`: A comma separated string that specifies the various interaction orders of interest. All combinations satisfying the positivity constraint will be generated. The order 1 corresponds to the Average Treatment Effect (ATE) for `bQTLs`, any higher order corresponds to the Interaction Average Treatment Effect (IATE) for the various actors. For example, in the previous scenario, assume we provided `ORDERS`=`1,2`. This would generate parameter files for the estimation of all:
   - ATEs estimands for all bQTLs
-  - IATEs estimands for all (bQTLs, xQTLs), (bQTLs, yQTLs), (bQTLs, Envs) pairs.
+  - AIEs estimands for all (bQTLs, xQTLs), (bQTLs, yQTLs), (bQTLs, Envs) pairs.
