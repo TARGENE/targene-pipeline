@@ -31,7 +31,7 @@ include("utils.jl")
             nfails += 1
         else
             Ψc = first(Ψ̂.estimand.args)
-            push!(treatment_combinations, keys(Ψc.treatment_values))
+            push!(treatment_combinations, Tuple(keys(Ψc.treatment_values)))
         end
     end
     @test nfails / nresults < 1/4
