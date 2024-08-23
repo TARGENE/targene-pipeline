@@ -41,7 +41,7 @@ include("utils.jl")
     ])
 
     # Dataset
-    dataset = TmleCLI.instantiate_dataset("results/dataset.arrow")
+    dataset = TmleCLI.instantiate_dataset(joinpath("results", "datasets", "all_genotypes.data.arrow"))
     @test Set(names(dataset)) == Set(vcat("SAMPLE_ID", TRAITS, PCS, ["2:14983:G:A", "3:3502414:T:C", "1:238411180:T:C"]))
 
     # QQ plot
