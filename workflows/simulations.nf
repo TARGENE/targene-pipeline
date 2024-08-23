@@ -15,10 +15,10 @@ workflow NULL_SIMULATION {
     PCA()
 
     // generate main dataset and estimand configuration files
+    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files).map{it -> [it[0][0], it[0][1], it[1]]}
     EstimationInputs(
-        bgen_files,
+        pcs_and_genotypes
         PCA.out.traits,
-        PCA.out.pcs,
         estimands_files
     )
 
@@ -45,11 +45,11 @@ workflow REALISTIC_SIMULATION {
     PCA()
 
     // Realistic Simulation Inputs
+    pcs_and_genotypes = PCA.out.pcs.combine(bgen_files).map{it -> [it[0][0], it[0][1], it[1]]}
     simulation_inputs = RealisticSimulationInputs(
+        pcs_and_genotypes,
         estimands_files.collect(),
-        bgen_files,
         PCA.out.traits,
-        PCA.out.pcs,
         ga_trait_table
     )
     dataset = simulation_inputs.dataset

@@ -114,10 +114,9 @@ process RealisticSimulationInputs {
     publishDir "${params.OUTDIR}/realistic_simulation_inputs/", mode: 'symlink'
     
     input:
+        tuple val(genotypes_id), path(pcs), path(genotypes)
         path estimands
-        path bgen_files
         path traits
-        path pcs
         path ga_trait_table
         
     output:
@@ -127,7 +126,7 @@ process RealisticSimulationInputs {
 
     script:
         estimands_prefix = longest_prefix(estimands)
-        bgen_prefix = longest_prefix(bgen_files)
+        bgen_prefix = longest_prefix(genotypes)
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)
