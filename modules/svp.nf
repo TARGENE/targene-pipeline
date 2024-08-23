@@ -14,8 +14,8 @@ process GRMPart {
         path "GRM*.grm.*"
     
     script:
-        input_prefix = longest_prefix(bedfiles)
-        // base = bedfiles.first().getName().split("\\.")[0]
+        // Remove the last "." from the prefix otherwise gcta will not find the files
+        input_prefix = longest_prefix(bedfiles)[0..-2]
         "gcta64 --bfile ${input_prefix} --make-grm-part ${nparts} ${part_id} --thread-num ${task.cpus} --out GRM"
 }
 
