@@ -23,8 +23,13 @@ workflow NULL_SIMULATION {
     )
 
     // Null Simulation Estimation
-    validated_estimands = EstimationInputs.out.estimands.flatten()
-    validated_dataset = EstimationInputs.out.dataset
+    estimation_inputs = EstimationInputs.out.multiMap { dataset, estimands ->
+        dataset: dataset
+        estimands: estimands
+
+    }
+    validated_estimands = estimation_inputs.estimands.flatten()
+    validated_dataset = estimation_inputs.dataset
     bootstrap_grid = estimators.combine(validated_estimands).combine(sample_sizes).combine(rngs)
     simulation_results = NullSimulationEstimation(validated_dataset, bootstrap_grid)
 
