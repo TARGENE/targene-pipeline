@@ -1,8 +1,8 @@
 include { longest_prefix } from './utils.nf'
 
 process EstimationInputs {
-    publishDir "$params.OUTDIR/estimands/${genotypes_id}", mode: 'symlink', pattern: "*.jls"
-    publishDir "$params.OUTDIR/datasets/", mode: 'symlink', pattern: "*.arrow", saveAs: { filename -> "${params.ARROW_OUTPUT}" }
+    publishDir "$params.OUTDIR/estimands/", mode: 'symlink', pattern: "*.jls"
+    publishDir "$params.OUTDIR/datasets/", mode: 'symlink', pattern: "*.arrow"
     label "bigmem"
     label 'targenecore_image'
 
