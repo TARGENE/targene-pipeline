@@ -21,7 +21,7 @@ include("utils.jl")
     
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
     @test length(results) > 40
-    dataset = DataFrame(Arrow.Table(joinpath("results", "dataset.arrow")))
+    dataset = DataFrame(Arrow.Table(joinpath("results", "datasets", "all_genotypes.data.arrow")))
 
     failed_results = retrieve_failed_results(results)
 

@@ -18,7 +18,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     @test r.exitcode == 0
 
     dataset_origin = CSV.read(joinpath("test", "assets", "traits.csv"), DataFrame)
-    dataset = DataFrame(Arrow.Table(joinpath("results", "dataset.arrow")))
+    dataset = DataFrame(Arrow.Table(joinpath("results", "datasets", "all_genotypes.data.arrow")))
     @test issubset(names(dataset_origin), names(dataset))
     
     results = jldopen(io -> io["results"], "results/results.hdf5")
