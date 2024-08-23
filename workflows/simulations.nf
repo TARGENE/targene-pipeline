@@ -29,7 +29,7 @@ workflow NULL_SIMULATION {
 
     }
     validated_estimands = estimation_inputs.estimands.flatten()
-    validated_dataset = estimation_inputs.dataset
+    validated_dataset = estimation_inputs.dataset.collect()
     bootstrap_grid = estimators.combine(validated_estimands).combine(sample_sizes).combine(rngs)
     simulation_results = NullSimulationEstimation(validated_dataset, bootstrap_grid)
 
@@ -57,7 +57,7 @@ workflow REALISTIC_SIMULATION {
         PCA.out.traits,
         ga_trait_table
     )
-    dataset = simulation_inputs.dataset
+    dataset = simulation_inputs.dataset.collect()
 
     // Density Estimation
     density_estimates = DensityEstimation(

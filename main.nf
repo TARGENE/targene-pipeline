@@ -43,8 +43,7 @@ params.TL_SAVE_EVERY = params.BATCH_SIZE
 params.ESTIMATOR_FILE = "glmnet"
 
 // Outputs Parameters
-params.ARROW_OUTPUT = "dataset.arrow"
-params.JSON_OUTPUT = "NO_JSON_OUTPUT"
+params.JSON_OUTPUT = "results.json"
 params.HDF5_OUTPUT = "results.hdf5"
 
 // Simulations
