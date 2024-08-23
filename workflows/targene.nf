@@ -27,10 +27,10 @@ workflow TARGENE {
     )
 
     // Generate sieve variance plateau estimates
-    genotypes = PCA.out.iid_genotypes.map{it -> it[1]}
+    genotypes = PCA.out.iid_genotypes.map{genotypes_id, genotypes -> genotypes}.collect()
     if (params.SVP == true){
         sieve_results = SVPWorkflow(
-            EstimationWorkflow.out.hdf5_result, 
+            EstimationWorkflow.out.hdf5_result.collect(), 
             genotypes,
         )
     }
