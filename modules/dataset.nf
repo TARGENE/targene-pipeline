@@ -8,7 +8,7 @@ process MakeDataset {
     input:
         path bgenfiles
         path traits
-        tuple val(genotypes_id) path(pcs_file)
+        tuple val(genotypes_id), path(pcs_file)
         path variants_file
     
     output:
