@@ -6,8 +6,8 @@ include { SVPWorkflow } from '../subworkflows/svp.nf'
 workflow TARGENE {
     // Define Parameters
     bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect().toList()
-    estimands_file = Channel.value(file("$params.ESTIMANDS_FILE"))
-    estimator_config = Channel.value(file("${params.ESTIMATOR_FILE}"))
+    estimands_file = Channel.value(file("$params.ESTIMANDS_CONFIG"))
+    estimator_config = Channel.value(file("${params.ESTIMATOR_CONFIG}"))
 
     // PCA
     PCA()

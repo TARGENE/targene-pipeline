@@ -15,9 +15,12 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "Workflows" => [
+        "Examples" => [
+            
+        ],
+        "User Guide" => [
             "overview.md",
-            "The TarGene Workflow " => [
+            "The TarGene Workflow" => [
                 joinpath("targene", "overview.md"),
                 joinpath("targene", "data_sources.md"),
                 joinpath("targene", "confounding_adjustment.md"),

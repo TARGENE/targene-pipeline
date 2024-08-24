@@ -6,8 +6,8 @@ include { EstimationInputs } from '../modules/estimation_inputs.nf'
 workflow GWAS {
     // Define Parameters
     bed_files = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
-    estimands_file = Channel.value(file("$params.ESTIMANDS_FILE"))
-    estimator_config = Channel.value(file("$params.ESTIMATOR_FILE"))
+    estimands_file = Channel.value(file("$params.ESTIMANDS_CONFIG"))
+    estimator_config = Channel.value(file("$params.ESTIMATOR_CONFIG"))
 
     // Loco PCA
     LocoPCA()
