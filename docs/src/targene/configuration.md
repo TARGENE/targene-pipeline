@@ -11,7 +11,7 @@ The workflow will produce the following main outputs in the output directory (`O
 
 ## Arguments
 
-- **`ESTIMATOR_FILE`**: Estimator name or Julia file containing the description of the Targeted Estimators to use. To be consistent it should match the argument provided to the previous TarGene run.
+- **`ESTIMATOR_CONFIG`**: Estimator name or Julia file containing the description of the Targeted Estimators to use. To be consistent it should match the argument provided to the previous TarGene run.
 - **`BGEN_FILES`**: Path to imputed BGEN files from which the variants in `VARIANTS_LIST` will be extracted.
 - **`BED_FILES`**: Path expression to PLINK BED files.
 - **`TRAITS_DATASET`**: Path to a traits dataset. If you are running this for a non-UKBB cohort, your sample IDs must be specified in the first column of this CSV file, with the column name `SAMPLE_ID`.
@@ -36,11 +36,11 @@ The workflow will produce the following main outputs in the output directory (`O
 
 ### If `STUDY_DESIGN=CUSTOM` (default)
 
-- **`ESTIMANDS_FILE`**: YAML configuration file describing the effect sizes of interest, see the [custom study design section](@ref "`CUSTOM`")
+- **`ESTIMANDS_CONFIG`**: YAML configuration file describing the effect sizes of interest, see the [custom study design section](@ref "`CUSTOM`")
 
 ### If `STUDY_DESIGN=ALLELE_INDEPENDENT`
 
-- **`ESTIMANDS_FILE`**: YAML configuration file describing the effect sizes of interest, see the [allele independent section](@ref "`ALLELE_INDEPENDENT`").
+- **`ESTIMANDS_CONFIG`**: YAML configuration file describing the effect sizes of interest, see the [allele independent section](@ref "`ALLELE_INDEPENDENT`").
 
 ### If `STUDY_DESIGN=FROM_ACTORS`
 

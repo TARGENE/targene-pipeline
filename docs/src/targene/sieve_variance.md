@@ -6,7 +6,7 @@ In brief, the SVP estimator computes a variance estimate for a range of threshol
 The following arguments can be changed to control the behaviour of the pipeline:
 
 - `SVP` (default: false): Must be set to true to enable variance adjustement.
-- `ESTIMATOR_KEY` (default: TMLE): The estimator from the `ESTIMATOR_FILE` that will be used for sieve variance plateau adjustment.
+- `ESTIMATOR_KEY` (default: TMLE): The estimator from the `ESTIMATOR_CONFIG` that will be used for sieve variance plateau adjustment.
 - `GRM_NSPLITS` (default: 100): This is a purely computational argument. The GRM is typically very large and splitting enables a good memory/parallelization tradeoff.
 - `MAX_SVP_THRESHOLD` (default: 0.8): Controls the maximum genetic distance considered.
 - `NB_SVP_ESTIMATORS` (default: 0): Controls the number of points in the interval [0, `MAX_SVP_THRESHOLD`]. If 0, the Sieve Variance Plateau method will not be applied.

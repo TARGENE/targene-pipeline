@@ -27,7 +27,7 @@ params.BATCH_SIZE = 400
 
 // CUSTOM
 params.STUDY_DESIGN = "CUSTOM"
-params.ESTIMANDS_FILE = "NO_ESTIMANDS_FILE"
+params.ESTIMANDS_CONFIG = "NO_ESTIMANDS_CONFIG"
 
 // SVP Parameters
 params.SVP = false
@@ -40,7 +40,7 @@ params.ESTIMATOR_KEY = "TMLE"
 params.KEEP_IC = params.SVP == true ? true : false
 params.PVAL_THRESHOLD = 0.05
 params.TL_SAVE_EVERY = params.BATCH_SIZE
-params.ESTIMATOR_FILE = "glmnet"
+params.ESTIMATOR_CONFIG = "glmnet"
 
 // Outputs Parameters
 params.JSON_OUTPUT = "results.json"
@@ -68,7 +68,7 @@ include { MAKE_DATASET } from './workflows/dataset.nf'
 include { NULL_SIMULATION; REALISTIC_SIMULATION } from './workflows/simulations.nf'
 
 def isGWAS(){
-    config = new Yaml().load(new FileReader(params.ESTIMANDS_FILE))
+    config = new Yaml().load(new FileReader(params.ESTIMANDS_CONFIG))
     return config.type == 'gwas'
 }
 

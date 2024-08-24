@@ -30,23 +30,46 @@ Targeted Learning is extremly powerful because it provides taylored estimation s
 
 ## Installation
 
-Since TarGene is a Nextflow pipeline, all you need is:
+If you are using TarGene on a High-Performance Computing platform, it is likely software dependencies are already available. Since TarGene is a Nextflow pipeline, all you need is:
 
-- Nextflow >= 24.04.4
+- [Nextflow](https://www.nextflow.io/docs/latest/install.html) >= 24.04.4
 
-And one of:
+For reproducibility TarGene uses containeraziation technologies so you will also need one of:
 
-- Singularity >= 3.8.6
-- Docker >= 27.0.3
+- [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html) >= 3.8.6
+- [Docker](https://docs.docker.com/engine/install/) >= 27.0.3
 
-If you are executing TarGene on a High-Performance Computing platform, it is likely these software are already installed. Versions are indicative, any recent version should work.
+Versions are indicative, any recent version should work.
+
+## Basic Usage
+
+TarGene can be run from the command line through Nextflow:
+
+```bash
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r TARGENE_VERSION -c CONFIG_FILE -resume
+```
+
+where:
+
+- `TARGENE_VERSION` is the latest TarGene version, e.g. `v0.11.0`.
+- `CONFIG_FILE` is a plain Nextflow configuration file describing what you want to do. Writing this configuration file is the hard work that this documentation is all about! However it needs not be scary, can could be as simple as:
+
+```conf
+params {
+    ESTIMANDS_CONFIG = "path to estimands config"
+    ESTIMATOR_CONFIG = "value or path to estimator config"
+    BED_FILES = "path to bed files"
+    ...
+}
+```
 
 ## Citing TarGene
 
+Labayle, O., Tetley-Campbell, K., Slaughter, J., Roskams-Hieter, B., Beentjes, S., Khamseh, A., & Ponting, C. TarGene [Computer software]. https://github.com/TARGENE/targene-pipeline
 
 ## References
 
-- [Dispensing with unnecessary assumptions in population genetics analysis](https://www.biorxiv.org/content/10.1101/2022.09.12.507656v1).
+Dispensing with unnecessary assumptions in population genetics analysis. Olivier Labayle Pabet, Kelsey Tetley-Campbell, Mark J. van der Laan, Chris P. Ponting, Sjoerd Viktor Beentjes, Ava Khamseh. bioRxiv 2022.09.12.507656; doi: [https://doi.org/10.1101/2022.09.12.507656](https://www.biorxiv.org/content/10.1101/2022.09.12.507656v1) 
 
 ## Getting in touch
 

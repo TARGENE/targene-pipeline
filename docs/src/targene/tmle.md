@@ -9,7 +9,7 @@ There are two main ways to define targeted estimators, from a predefined configu
 
 ## Predefined estimators
 
-A set of predefined estimators is readily available and can be accessed by using the configuration's name as the `ESTIMATOR_FILE` parameter. For instance, we provide the following:
+A set of predefined estimators is readily available and can be accessed by using the configuration's name as the `ESTIMATOR_CONFIG` parameter. For instance, we provide the following:
 
 - G-superlearning-Q-glm
 - G-superlearning-Q-glmnet

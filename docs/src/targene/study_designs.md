@@ -19,7 +19,7 @@ The following sections describe the available study designs available in TarGene
 
 ## `CUSTOM`
 
-This is the most general setting and should match the needs of any project, however it requires some preliminary work. In this setting, one typically provides a file containing a list of the estimands of interest. If you are interested in only a few estimands, it may be acceptable to write them by hand. Otherwise it is best to generate them using a programming language (for instance using [TMLE.jl](https://targene.github.io/TMLE.jl/stable/)). The path to those estimands is then provided with the `ESTIMANDS_FILE` Nextflow parameter. Estimands are specified via a YAML file as follows:
+This is the most general setting and should match the needs of any project, however it requires some preliminary work. In this setting, one typically provides a file containing a list of the estimands of interest. If you are interested in only a few estimands, it may be acceptable to write them by hand. Otherwise it is best to generate them using a programming language (for instance using [TMLE.jl](https://targene.github.io/TMLE.jl/stable/)). The path to those estimands is then provided with the `ESTIMANDS_CONFIG` Nextflow parameter. Estimands are specified via a YAML file as follows:
 
 ```yaml
 type: "Configuration"
@@ -85,7 +85,7 @@ Note that variants must be encoded via an explicit genotype string representatio
 
 ## `ALLELE_INDEPENDENT`
 
-This mode aims to make it easy to generate estimands without explicitly having to write them down. We still rely on a YAML `ESTIMANDS_FILE`, that contains the following fields:
+This mode aims to make it easy to generate estimands without explicitly having to write them down. We still rely on a YAML `ESTIMANDS_CONFIG`, that contains the following fields:
 
 - `type`: How the variants will be combined to generate estimands (see below).
 - `estimands`: A list of the followings:
