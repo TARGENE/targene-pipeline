@@ -22,7 +22,7 @@ nextflow run https://github.com/TARGENE/targene-pipeline/ -r TAG -entry PERMUTAT
 The workflow will produce the following main outputs in the output directory (`OUTDIR`, defaults to `results`):
 
 - An HDF5 file containing estimation results (`HDF5_OUTPUT`, default: results.hdf5)
-- An optional JSON file containing estimation results (`JSON_OUTPUT`)
+- A JSON file containing estimation results (`JSON_OUTPUT`, default: results.json)
 - A Quantile-Quantile summary plot: QQ.png
 
 ### Arguments

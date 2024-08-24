@@ -44,8 +44,6 @@ makedocs(;
             joinpath("developer_guide", "project_organization.md"),
             joinpath("developer_guide", "contribution_guide.md")
             ],
-        "Associated Softwares" => "associated_softwares.md",
-        "Related Publications" => "publications.md"
     ],
 )
 

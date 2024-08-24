@@ -1,34 +1,52 @@
 # TarGene
 
-Welcome to TarGene, the software that brings Targeted Learning to population genetic studies! TarGene enables the estimation of various effect sizes including the Average Treatment Effect and the Interaction Average Treatment Effect (GxG and GxE) up to any order (GxGxGxEx...!). Because we follow the Targeted Learning framework, the final estimates provided by TarGene are covered by mathematical guarantees. The software is delivered as a [Nexflow](https://www.nextflow.io/) pipeline to bring scalability and reproducibility to your research.
+## What is TarGene?
 
-Why using TarGene:
+TarGene is a [Nexflow](https://www.nextflow.io/) workflow that estimates the effect of genetic variations on human traits via Targeted Learning. Targeted Learning is a modern framework that combines advances in causal inference, machine-learning and statistical theory to answer impactful scientific questions. In population genetics, these questions are diverse: single variant effect, epistatic interactions, gene-environment interactions and more! In TarGene, we thus provide targeted estimators that leverage machine-learning algorithms to answer these questions, while preserving valid statistical inference.
 
-- To cover effect sizes with asymptotic mathematical guarantees.
-- To dispense with unrealistic and unnecessary parametric assumptions.
-- To embed a causal interpretation into reported estimates.
-- To perform any higher-order interaction (`>=2`) analysis, including GxG and GxE.
+In a nutshell, TarGene uses machine-learning models to estimate two predictive functions: the outcome model ``Q_Y`` and the propensity score ``G``. These models are then optimally combined to obtain a targeted estimate for the genetic effect of interest, which is here denoted by ``\beta``. Genetic effects are defined as causal quantities that measure they effect of change (but see below). The following picture illustrates two distinct genotype changes: ``\mathrm{CC} \rightarrow \mathrm{CT}`` and ``\mathrm{CT} \rightarrow \mathrm{TT}``. Note that there is no need for parametric assumption like linearity and flexible modelling strategies can be employed. However, linear models are also part of the machine-learning family, so you can use them as well if you like. You could actually combine multiple models in a more powerful [Super Learner](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6089257/), this is all integrated into TarGene.
 
-## Overview of the pipeline
+!["Illustrated Causal Model"](assets/illustrated_causal_model.png)
 
-The pipeline can roughly be decoupled into three steps. The first, aims at pre-processing the data sources to convert them in a table data format that can be wielded by Targeted Maximum Likelihood Estimation (TMLE). The second is the TMLE itself. The third and final optional step is the Sieve Variance Plateau correction which revises the variance estimate to account for the fact that individuals in the population are not necessarily independent. The following diagram provides a high level interface of the organisation of the pipeline.
+!!! note "Causal Interpretation"
+    The fact that genetic effects can be interpreted as causal effects is entirely dependent on the validity of the causal model, which rely on two critical assumptions
+    1. No unobserved confounders. In TarGene, confounding variables are currently learnt via Principal Component Analysis. While PCA could partly capture genetic ancestry, the problem of [linkage disequilibrium](https://www.nature.com/articles/s43586-021-00056-9) remains.
+    2. Positivity. This means that the genetic variants under investigation should have non-zero probability under all confounding variables values. In TarGene, we tackle this issue via a heuristic, which is similar to the usual minor allele frequency threshold employed in GWAS.
 
-```@raw html
-<div style="text-align:center">
-<img src="assets/targene_diagram.png" alt="Targene Pipeline" style="width:800px;"/>
-</div>
-```
+### What TarGene Can Do
 
-## Requirements
+TarGene provides baked-in facilities for most popular study designs that aim at understanding the effect of genetic variations on human traits. Hopefully you can find what you are looking for in the following list of supported study-designs:
 
-The pipeline should work with:
+- Genome-Wide Association Studies
+- Phenome-Wide Association Studies
+- Focused Study of:
+    - Single or Joint variants effects
+    - Gene-Gene interactions up to any order
+    - Gene-Environment interactions up to any order
 
-- Nextflow >= 23.10.0
+### What TarGene Can't Do (Yet)
+
+Targeted Learning is extremly powerful because it provides taylored estimation strategies for each question of interest. Most of the questions that can be currently answered with statistical confidence are population level questions. That is, while TarGene uses predictive machine-learning models to estimate genetic effects, these predictive models are not the output of the software themselves. Furthermore, because each estimator is targeted, it means additional work must be done for each new question that comes up. For instance, one thing that TarGene can't do just yet is to estimate Heritability, but if you are interested we'd love to hear from you!
+
+## Installation
+
+Since TarGene is a Nextflow pipeline, all you need is:
+
+- Nextflow >= 24.04.4
+
+And one of:
+
 - Singularity >= 3.8.6
+- Docker >= 27.0.3
 
-## Quick start for Eddie users
+If you are executing TarGene on a High-Performance Computing platform, it is likely these software are already installed. Versions are indicative, any recent version should work.
 
-If you are a University of Edinburgh researcher and have access to the Eddie cluster you may want to use the [Eddie-Template](https://github.com/TARGENE/Eddie-Template) to quickly setup your project. 
+## Citing TarGene
+
+
+## References
+
+- [Dispensing with unnecessary assumptions in population genetics analysis](https://www.biorxiv.org/content/10.1101/2022.09.12.507656v1).
 
 ## Getting in touch
 
