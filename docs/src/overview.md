@@ -34,9 +34,6 @@ These are the configuration details associated with your project, this is usuall
 #### Main Workflows
 
 - [The TarGene Workflow](@ref) (`WORKFLOW_NAME: TARGENE`): It is the main workflow for the targeted estimation of genetic effects.
-- [The Negative Control Workflows](@ref "Negative Control Overview"): These workflows enable the control of the false discovery rate by using the results obtained from a previous TarGene discovery run. There are currently two of them:
-  - [The Permutation Test Workflow](@ref) (`WORKFLOW_NAME: PERMUTATION_TEST`): Performs permutation tests by independently shuffling the individuals in the columns of an aggregated dataset.
-  - [The Randomized Variants Workflow](@ref) (`WORKFLOW_NAME: RANDOMIZATION_TEST`): When there are multiple genetic variants of interest, e.g. in an interaction study, one can replace one of the variant at random by another variant and the effect is expected to be 0 in average.
 
 #### Secondary Workflows
 
