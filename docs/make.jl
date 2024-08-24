@@ -16,7 +16,11 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "Examples" => [
-            
+            joinpath("examples", "setup.md"),
+            joinpath("examples", "gwas.md"),
+            joinpath("examples", "phewas.md"),
+            joinpath("examples", "interactions.md"),
+            joinpath("examples", "custom.md"),
         ],
         "User Guide" => [
             "overview.md",
@@ -35,13 +39,10 @@ makedocs(;
                 joinpath("simulations", "overview.md"),
                 joinpath("simulations", "null_simulation.md"),
             ],
-            "Negative Control" => [
-                joinpath("negative_control", "overview.md"),
-                joinpath("negative_control", "permutation_tests.md"),
-                joinpath("negative_control", "randomized_tests.md")
             ],
-            joinpath("secondary_workflows", "pca.md"),
-            joinpath("secondary_workflows", "make_dataset.md")
+        "Secondary Workflows" => [
+                joinpath("secondary_workflows", "pca.md"),
+                joinpath("secondary_workflows", "make_dataset.md")
             ],
         "Developper Guide" => [
             joinpath("developer_guide", "project_organization.md"),
