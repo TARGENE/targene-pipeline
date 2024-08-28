@@ -5,7 +5,7 @@ using DataFrames
 using TMLE
 using Arrow
 using JLD2
-using TmleCLI
+using TMLECLI
 
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]

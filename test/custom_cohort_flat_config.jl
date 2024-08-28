@@ -4,7 +4,7 @@ using Test
 using Arrow
 using DataFrames
 using JLD2
-using TmleCLI
+using TMLECLI
 using CSV
 using TargeneCore
 

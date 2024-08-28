@@ -41,12 +41,12 @@ function retrieve_failed_results(results; expected_keys=(:TMLE_GLM_GLM, :OSE_GLM
     failed_results = (TMLE_GLM_GLM = [], OSE_GLM_GLM = [])
     for result ∈ results
         @test keys(result) == expected_keys
-        @test result.TMLE_GLM_GLM isa Union{TMLE.TMLEstimate, TmleCLI.FailedEstimate}
-        @test result.OSE_GLM_GLM isa Union{TMLE.OSEstimate, TmleCLI.FailedEstimate}
-        if result.TMLE_GLM_GLM isa TmleCLI.FailedEstimate
+        @test result.TMLE_GLM_GLM isa Union{TMLE.TMLEstimate, TMLECLI.FailedEstimate}
+        @test result.OSE_GLM_GLM isa Union{TMLE.OSEstimate, TMLECLI.FailedEstimate}
+        if result.TMLE_GLM_GLM isa TMLECLI.FailedEstimate
             push!(failed_results.TMLE_GLM_GLM, result.TMLE_GLM_GLM)
         end
-        if result.OSE_GLM_GLM isa TmleCLI.FailedEstimate
+        if result.OSE_GLM_GLM isa TMLECLI.FailedEstimate
             push!(failed_results.OSE_GLM_GLM, result.OSE_GLM_GLM)
         end
     end

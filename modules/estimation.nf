@@ -14,7 +14,7 @@ process MergeOutputs {
         json_option = params.JSON_OUTPUT != "NO_JSON_OUTPUT" ? "--json-output=${params.JSON_OUTPUT}" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TmleCLI.jl/TMLESysimage.so --project=/TmleCLI.jl --startup-file=no /TmleCLI.jl/tmle.jl merge \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TMLECLI.jl/TMLESysimage.so --project=/TMLECLI.jl --startup-file=no /TMLECLI.jl/tmle.jl merge \
         tmle_result \
         ${json_option} \
         --hdf5-output=${params.HDF5_OUTPUT}
@@ -39,7 +39,7 @@ process TMLE {
         save_sample_ids = params.SVP == true ? "--save-sample-ids" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TmleCLI.jl/TMLESysimage.so --project=/TmleCLI.jl --threads=${task.cpus} --startup-file=no /TmleCLI.jl/tmle.jl tmle \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TMLECLI.jl/TMLESysimage.so --project=/TMLECLI.jl --threads=${task.cpus} --startup-file=no /TMLECLI.jl/tmle.jl tmle \
         ${dataset} \
         --estimands=${estimands_file} \
         --estimators=${estimator_file} \
