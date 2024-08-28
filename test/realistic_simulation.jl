@@ -1,7 +1,7 @@
 module TestRealisticSimulation
 
 using Test
-using TmleCLI
+using TMLECLI
 using JLD2
 using DataFrames
 

@@ -35,7 +35,7 @@ Currently, all TarGene building blocks (executables) are provided as docker imag
 | --- | --- |
 | [TargeneCore.jl](https://github.com/TARGENE/TargeneCore.jl) | [tl-core](https://hub.docker.com/r/olivierlabayle/tl-core/tags) |
 | [UKBMain.jl](https://github.com/TARGENE/UKBMain.jl) | [ukbmain](https://hub.docker.com/r/olivierlabayle/ukbmain/tags) |
-| [TmleCLI.jl](https://github.com/TARGENE/TmleCLI.jl) | [targeted-estimation](https://hub.docker.com/r/olivierlabayle/targeted-estimation/tags) |
+| [TMLECLI.jl](https://github.com/TARGENE/TMLECLI.jl) | [targeted-estimation](https://hub.docker.com/r/olivierlabayle/targeted-estimation/tags) |
 
 ## Note on the pipeline's tests
 

@@ -3,7 +3,7 @@ module TestUKBAlleleIndependent
 using Test
 using JLD2
 using TMLE
-using TmleCLI
+using TMLECLI
 using Serialization
 
 # "local" profile assumes singularity is installed
@@ -27,7 +27,7 @@ include("utils.jl")
     treatment_combinations = Set([])
     for result in results_from_hdf5
         Ψ̂ = result.TMLE_GLM_GLM
-        if Ψ̂ isa TmleCLI.FailedEstimate
+        if Ψ̂ isa TMLECLI.FailedEstimate
             nfails += 1
         else
             Ψc = first(Ψ̂.estimand.args)
@@ -41,7 +41,7 @@ include("utils.jl")
     ])
 
     # Dataset
-    dataset = TmleCLI.instantiate_dataset(joinpath("results", "datasets", "all_genotypes.data.arrow"))
+    dataset = TMLECLI.instantiate_dataset(joinpath("results", "datasets", "all_genotypes.data.arrow"))
     @test Set(names(dataset)) == Set(vcat("SAMPLE_ID", TRAITS, PCS, ["2:14983:G:A", "3:3502414:T:C", "1:238411180:T:C"]))
 
     # QQ plot

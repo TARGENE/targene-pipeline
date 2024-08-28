@@ -5,7 +5,7 @@ using DataFrames
 using TMLE
 using Arrow
 using JLD2
-using TmleCLI
+using TMLECLI
 using TargeneCore
 
 # "local" profile assumes singularity is installed
@@ -36,7 +36,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     failed_results = []
     for estimators_results in results
         for (estimatoir, Ψ̂) in zip(keys(estimators_results), estimators_results)
-            if Ψ̂ isa TmleCLI.FailedEstimate
+            if Ψ̂ isa TMLECLI.FailedEstimate
                 push!(failed_results, Ψ̂)
             end
             Ψ = Ψ̂.estimand
