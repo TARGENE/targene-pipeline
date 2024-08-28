@@ -5,7 +5,7 @@ include { RealisticSimulationInputs; NullSimulationEstimation; RealisticSimulati
 
 workflow NULL_SIMULATION {
     // Workflow specific channels
-    estimators = Channel.fromPath(params.ESTIMATORS)
+    estimators = Channel.fromPath(params.ESTIMATOR_CONFIG)
     estimands_files = Channel.value(file("$params.ESTIMANDS_CONFIG"))
     sample_sizes = Channel.fromList(params.SAMPLE_SIZES)
     rngs = Channel.fromList(params.RNGS)
@@ -40,7 +40,7 @@ workflow NULL_SIMULATION {
 workflow REALISTIC_SIMULATION {
     // Workflow specific channels
     ga_trait_table = Channel.value(file(params.GA_TRAIT_TABLE, checkIfExists: true))
-    estimators = Channel.fromPath(params.ESTIMATORS)
+    estimators = Channel.fromPath(params.ESTIMATOR_CONFIG)
     estimands_files = Channel.value(file("$params.ESTIMANDS_CONFIG"))
     sample_sizes = Channel.fromList(params.SAMPLE_SIZES)
     rngs = Channel.fromList(params.RNGS)
