@@ -5,7 +5,7 @@ Perhaps the most common study design in population genetics is the Genome-Wide A
 ```conf
 params {
     ESTIMANDS_CONFIG = "gwas_config.yaml"
-    ESTIMATOR_CONFIG = "tmle-ose--glm"
+    ESTIMATORS_CONFIG = "tmle-ose--glm"
 
     // UK-Biobank specific parameters
     BED_FILES = "unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}"
@@ -16,7 +16,7 @@ params {
 }
 ```
 
-All UK-Biobank specific parameters have been described in the [Setup](@ref) section. The only new parameters are the `ESTIMANDS_CONFIG` and the `ESTIMATOR_CONFIG`. These parameters describe the estimands (questions of interest) and how to estimate them respectively. Since we are performing a GWAS, we are interested in the effect of all variants, across all phenotypes in the `UKB_CONFIG` file. Because a GWAS is expensive, this file will only contain 3 traits/phenotypes here.
+All UK-Biobank specific parameters have been described in the [Setup](@ref) section. The only new parameters are the `ESTIMANDS_CONFIG` and the `ESTIMATORS_CONFIG`. These parameters describe the estimands (questions of interest) and how to estimate them respectively. Since we are performing a GWAS, we are interested in the effect of all variants, across all phenotypes in the `UKB_CONFIG` file. Because a GWAS is expensive, this file will only contain 3 traits/phenotypes here.
 
 ```yaml
 traits:
@@ -46,7 +46,7 @@ outcome_extra_covariates:
 
 Where the optional `outcome_extra_covariates` are variables to be used as extra predictors of the outcome (but not as confounders). Importantly, if this section had been omitted, both `Number of vehicles in household` and `Cheese intake` would be considered as outcomes by TarGene, and 3 GWASs instead of 1 would be run.
 
-Finally, the `ESTIMATOR_CONFIG = "tmle-ose--glm"` says that two different estimation strategies will be used. One using the Targeted Minimum-Loss Estimator and one using the One-Step Estimator. The estimtion results can then be compared. Both methods will use a Generalized Linear Model (glm) to learn the outcome models and propensity scores.
+Finally, the `ESTIMATORS_CONFIG = "tmle-ose--glm"` says that two different estimation strategies will be used. One using the Targeted Minimum-Loss Estimator and one using the One-Step Estimator. The estimtion results can then be compared. Both methods will use a Generalized Linear Model (glm) to learn the outcome models and propensity scores.
 
 The GWAS can be run as follows:
 
@@ -62,6 +62,4 @@ The successful execution will result in the creation of a `results` folder conta
 
 Both `results.hdf5` and `results.json` contain the same estimation results in HDF5 and JSON formats respectively. The `QQ.png` is a Q-Q plot of your results that looks like the following
 
-!["GWAS QQ"](../../assets/gwas_QQ.png)
-
-
+!["GWAS_QQ"](../assets/gwas_QQ.png)
