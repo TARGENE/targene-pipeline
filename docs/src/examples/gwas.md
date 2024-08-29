@@ -15,7 +15,7 @@ params {
 }
 ```
 
-All UK-Biobank specific parameters have been described in the [Setup](@ref) section. The only new parameters are the `ESTIMANDS_CONFIG` and the `ESTIMATORS_CONFIG`. These parameters describe the estimands (questions of interest) and how to estimate them respectively. Since we are performing a GWAS, we are interested in the effect of all variants, across all phenotypes in the `UKB_CONFIG` file. Because a GWAS is expensive, this file will only contain 3 traits/phenotypes here.
+All UK-Biobank specific parameters have been described in the [Setup: Read First](@ref) section. The only new parameters are the `ESTIMANDS_CONFIG` and the `ESTIMATORS_CONFIG`. These parameters describe the estimands (questions of interest) and how to estimate them respectively. Since we are performing a GWAS, we are interested in the effect of all variants, across all phenotypes in the `UKB_CONFIG` file. Because a GWAS is expensive, this file will only contain 3 traits/phenotypes here.
 
 ```yaml
 traits:
