@@ -2,9 +2,22 @@
 
 ## What is TarGene?
 
-TarGene is a [Nexflow](https://www.nextflow.io/) workflow that estimates the effect of genetic variations on human traits via Targeted Learning. Targeted Learning is a modern framework that combines advances in causal inference, machine-learning and statistical theory to answer impactful scientific questions. In population genetics, these questions are diverse: single variant effect, epistatic interactions, gene-environment interactions and more! In TarGene, we thus provide targeted estimators that leverage machine-learning algorithms to answer these questions, while preserving valid statistical inference.
+TarGene is a [Nexflow](https://www.nextflow.io/) workflow that estimates the effect of genetic variations on human traits via Targeted Learning.
 
-In a nutshell, TarGene uses machine-learning models to estimate two predictive functions: the outcome model ``Q_Y`` and the propensity score ``G``. These models are then optimally combined to obtain a targeted estimate for the genetic effect of interest, which is here denoted by ``\beta``. Genetic effects are defined as causal quantities that measure they effect of change (but see below). The following picture illustrates two distinct genotype changes: ``\mathrm{CC} \rightarrow \mathrm{CT}`` and ``\mathrm{CT} \rightarrow \mathrm{TT}``. Note that there is no need for parametric assumption like linearity and flexible modelling strategies can be employed. However, linear models are also part of the machine-learning family, so you can use them as well if you like. You could actually combine multiple models in a more powerful [Super Learner](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6089257/), this is all integrated into TarGene.
+### TarGene Combines Causal Inference, Machine-Learning and Statistical Theory
+
+Targeted Learning is a modern framework that combines advances in causal inference, machine-learning and statistical theory to answer impactful scientific questions. In population genetics, these questions are diverse: single variant effect, epistatic interactions, gene-environment interactions and more! In TarGene, we thus provide targeted estimators that leverage machine-learning algorithms to answer these questions, while preserving valid statistical inference.
+
+In a nutshell, TarGene uses machine-learning models to estimate two predictive functions:
+
+- The outcome regression model: ``Q_Y = \mathbb{E}[Y | V, W]``.
+- The propensity score or variant model: ``G = P(V | W)``.
+
+These models are then optimally combined to obtain a targeted estimate for the genetic effect of interest, which is traditionally denoted by ``\beta``.
+
+### TarGene Estimates the Effect of Change
+
+Genetic effects are defined as causal quantities that measure the effect of change (but see below). The following picture illustrates two distinct genotype changes: ``\mathrm{CC} \rightarrow \mathrm{CT}`` and ``\mathrm{CT} \rightarrow \mathrm{TT}``. Note that there is no need for parametric assumption like linearity and flexible modelling strategies can be employed. However, linear models are also part of the machine-learning family, so you can use them as well if you like. You could actually combine multiple models in a more powerful [Super Learner](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6089257/), this is all integrated into TarGene.
 
 !["Illustrated Causal Model"](assets/illustrated_causal_model.png)
 
