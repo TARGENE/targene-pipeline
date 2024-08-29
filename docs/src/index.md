@@ -57,7 +57,7 @@ where:
 ```conf
 params {
     ESTIMANDS_CONFIG = "path to estimands config"
-    ESTIMATOR_CONFIG = "value or path to estimator config"
+    ESTIMATORS_CONFIG = "value or path to estimator config"
     BED_FILES = "path to bed files"
     ...
 }

@@ -40,7 +40,7 @@ params.ESTIMATOR_KEY = "TMLE"
 params.KEEP_IC = params.SVP == true ? true : false
 params.PVAL_THRESHOLD = 0.05
 params.TL_SAVE_EVERY = params.BATCH_SIZE
-params.ESTIMATOR_CONFIG = "glmnet"
+params.ESTIMATORS_CONFIG = "wtmle-ose--tunedxgboost--tunedxgboost"
 
 // Outputs Parameters
 params.JSON_OUTPUT = "results.json"
