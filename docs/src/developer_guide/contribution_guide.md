@@ -39,12 +39,24 @@ Currently, all TarGene building blocks (executables) are provided as docker imag
 
 ## Note on the pipeline's tests
 
-The pipeline is automatically tested for every push/pull-request made to the github repository. To run the tests locally, you will need Julia and the container engine of your choice to be installed (see below). Each test corresponds to a pipeline run and a file in the `test` directory is associated with it. Each test run can be launched locally as follows:
+The pipeline is automatically tested for every push/pull-request against a variety of tasks listed in the `testrun` section of the [CI YAML file](https://github.com/TARGENE/targene-pipeline/blob/main/.github/workflows/CI.yml). To add a new test, you thus need to add a testrun in this section and a corresponding Julia file in the test folder.
+
+In can also be useful to run the tests locally for debugging. This can be done if you have Nextflow, Julia and Singularity installed and requires a Linux machine. If you have instantiated the `test` project, a test can be fully run like so:
 
 ```bash
-julia --project=test --startup-file=no test/TESTFILE -profile PROFILE -resume
+julia --project=test --startup-file=no test/TESTFILE -profile local -resume
 ```
 
-where `TESTFILE` is the corresponding file and `PROFILE` is one of: 'local' (local with singularity engine), 'ci' (local with singularity engine), 'eddie' (SGE with singularity engine.).
+Alternatively, within the Julia REPL you can manually run the code sequentially.
 
-The tests can also be run interactively via the Julia REPL.
+## Updating the Documentation
+
+The documentation is built and deployed using [Documenter.jl](https://documenter.juliadocs.org/stable/). It only relies on Markdown files which can simply be edited.
+
+However, it may be useful to see how your changes will be reflected within the documentation as you are working in real time. For that, you can use the following workflow (steps 1 and 2 are done only once):
+
+1. Install [Julia](https://julialang.org/)
+2. From the Julia REPL, install in the main Julia environment the [LiveServer](https://tlienart.github.io/LiveServer.jl/dev/) package: `add LiveServer`.
+3. In the project directory (targene-pipeline) run: `julia --startup-file=no --project=docs -e'using LiveServer; servedocs()'`
+
+The documentation should be accessible in your browser at [http://localhost:8000/](http://localhost:8000/).
