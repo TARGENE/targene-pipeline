@@ -9,7 +9,6 @@ params {
 
     // UK-Biobank specific parameters
     BED_FILES = "unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}"
-    TRAITS_DATASET = "dataset.csv"
     UKB_CONFIG = "ukbconfig_gwas.yaml"
     TRAITS_DATASET = "dataset.csv"
     UKB_WITHDRAWAL_LIST = "withdrawal_list.txt"
