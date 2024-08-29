@@ -62,4 +62,4 @@ The successful execution will result in the creation of a `results` folder conta
 
 Both `results.hdf5` and `results.json` contain the same estimation results in HDF5 and JSON formats respectively. The `QQ.png` is a Q-Q plot of your results that looks like the following
 
-!["GWAS_QQ"](../assets/gwas_QQ.png)
+![GWAS_QQ](../assets/gwas_QQ.png)
