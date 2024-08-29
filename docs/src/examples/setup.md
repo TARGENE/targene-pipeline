@@ -1,6 +1,6 @@
-# Setup
+# Setup: Read First
 
-In order to run TarGene, 3 steps need to be taken.
+A population genetics analysis via TarGene is a 4 steps process where steps 1 and 2 are done only once.
 
 ## 1. Installation
 
@@ -30,8 +30,6 @@ Write a run configuration file for your project, this can be decomposed further 
 1. Write the part of your configuration file specific to your platform. Here we will simply use the `local` profile.
 2. Write the part of your configuration file specific to your run. This is the topic of the remainder of the following sections.
 
-## Let's Get Started
+## 4. Analyse the Results
 
-Steps 1., 2. and 3.1. can be time consuming if you are new to computer science but the good news is that they are typically done only once!
-
-We are now ready to look at some use cases, let's get started!
+Hopefully, this is where you'll find something new or interesting in some way. This section is up to you but we recommend to read the section [Understanding TarGene's Outputs](@ref) or you will likely be a little lost...

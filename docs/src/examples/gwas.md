@@ -52,13 +52,3 @@ The GWAS can be run as follows:
 ```bash
 nextflow run https://github.com/TARGENE/targene-pipeline -r v0.11.0 -profile local
 ```
-
-The successful execution will result in the creation of a `results` folder containing at least 3 files:
-
-- results.hdf5
-- results.json
-- QQ.png
-
-Both `results.hdf5` and `results.json` contain the same estimation results in HDF5 and JSON formats respectively. The `QQ.png` is a Q-Q plot of your results that looks like the following
-
-![GWAS_QQ](../assets/gwas_QQ.png)
