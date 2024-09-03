@@ -1,41 +1,35 @@
-# Overview
+# Nextflow Basics
 
 ## Running the Workflows
 
 Since TarGene uses [Nextflow](https://www.nextflow.io/), all workflows can be run in the same way from the command line:
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r TAG -entry WORKFLOW_NAME -profile P -resume
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r TARGENE_VERSION -entry WORKFLOW_NAME -profile P -resume
 ```
 
 where:
 
-- `TAG` is the latest TarGene version, e.g. `v0.9.0`
+- `TARGENE_VERSION` is the latest TarGene version, e.g. `v0.11.0`
 - `WORKFLOW_NAME` is any of the [TarGene workflows](@ref "Project Configuration")
-- `P` is a [Nextflow profile](https://www.nextflow.io/docs/latest/config.html) describing your run environment (see [Environment Configuration](@ref)).
+- `P` is an optional [Nextflow profile](https://www.nextflow.io/docs/latest/config.html) describing the computing platform (see [Platform Configuration](@ref)).
 
-Additional Nextflow command line arguments can be found in their documentation, for example:
+Additional Nextflow command line arguments can be found in the official documentation, for example important options are:
 
 - `-resume`: Tells Nextflow to try to resume the pipeline if an error occurred during the execution (if you forgot to specify a parameter for instance)
 - `-with-trace` and `-with-report` will generate additional report files.
 
 ## Workflows Configurations
 
-There are mainly two parts to configuring a workflow run. The first part describes the execution and environment and the second part describes your actual project. When running the `nextflow run` command, Nextflow will look for a `nextflow.config` configuration file in your current directory. If you are new to Nextflow, we suggest you use this file to setup both the environment and project configurations. As your project grows you may want to benefit from splitting this file in more [modular components](https://www.nextflow.io/docs/latest/config.html#configuration).
+There are mainly two parts to configuring a workflow run. The first part describes the computing environment, it tells Nextflow how it should execute the various processes of the workflow. The second part provides the actual inputs to the TarGene workflows. When running the `nextflow run` command, Nextflow will look for a `nextflow.config` configuration file in your current directory. If you are new to Nextflow, you can use this file to setup both the platform and project configurations. As your project grows you may want to split them in [distinct files](https://www.nextflow.io/docs/latest/config.html#configuration). This is so that the platform configuration can be easily reused across many TarGene runs.
 
-### Environment Configuration
+### Platform Configuration
 
-It is likely that you will run TarGene on a HPC platform, in particular the [Executors](https://www.nextflow.io/docs/latest/executor.html) and [Singularity](https://www.nextflow.io/docs/latest/container.html#singularity) configurations are required. Since Nextflow is so widespread, it is probable that such a configuration file is already available from your HPC administrators. Since this configuration only describes de computing platform and not your project, it is often described as a [Profile](https://www.nextflow.io/docs/latest/config.html#config-profiles). If your HPC uses the SGE executor, the `-profile eddie` may work with no, or minor adjustment (it can also serve as a template for other executors [see file](https://github.com/TARGENE/targene-pipeline/blob/main/conf/eddie.config)).
+It is likely that you will run TarGene on a HPC platform, in particular the [Executors](https://www.nextflow.io/docs/latest/executor.html) and [Singularity](https://www.nextflow.io/docs/latest/container.html#singularity) configurations are required. Since Nextflow is so widespread, it is probable that such a configuration file is already available from your HPC administrators. Since this configuration only describes de computing platform and not your project, it is often described as a [Profile](https://www.nextflow.io/docs/latest/config.html#config-profiles).
+
+!!! tip "University of Edinburgh"
+    If you are using the University of Edinburgh [Eddie cluster](https://www.ed.ac.uk/information-services/research-support/research-computing/ecdf/high-performance-computing), you can simply use TarGene with the `-profile eddie` option.
 
 ### Project Configuration
 
-These are the configuration details associated with your project, this is usually done in a `nextflow.config` file living at the root of your project's directory. The configuration parameters are specific to each workflow and described in the following sections. There are currently two main workflows and two secondary workflows within TarGene.
-
-#### Main Workflows
-
-- [The Discovery Workflow](@ref) (`WORKFLOW_NAME: TARGENE`): It is the main workflow for the targeted estimation of genetic effects.
-
-#### Secondary Workflows
-
-- [The PCA Workflow](@ref) (`WORKFLOW_NAME: PCA`): This workflow computes principal components.
-- [The Make Dataset Workflow](@ref) (`WORKFLOW_NAME: MAKE_DATASET`): This workflow generates an aggregated dataset from traits and genetic data.
+These are the configuration details associated with your project, this is usually done in a `nextflow.config` file living at the root of your project's directory. The configuration parameters are specific to each workflow and described in the following sections.
