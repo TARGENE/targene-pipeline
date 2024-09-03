@@ -26,7 +26,6 @@ params.FLASHPCA_EXCLUSION_REGIONS = "${projectDir}/assets/exclusion_regions_hg19
 params.BATCH_SIZE = 400
 
 // CUSTOM
-params.STUDY_DESIGN = "CUSTOM"
 params.ESTIMANDS_CONFIG = "NO_ESTIMANDS_CONFIG"
 
 // SVP Parameters
@@ -34,7 +33,7 @@ params.SVP = false
 params.GRM_NSPLITS = 100
 params.NB_SVP_ESTIMATORS = 100
 params.MAX_SVP_THRESHOLD = 0.9
-params.ESTIMATOR_KEY = "TMLE"
+params.ESTIMATOR_KEY = "1"
 
 // TMLE Parameters
 params.KEEP_IC = params.SVP == true ? true : false
@@ -76,7 +75,6 @@ log.info """\
          ${workflow.manifest.name} v${workflow.manifest.version}
          ==========================
          Cohort Type  : ${params.COHORT}
-         Study Design : ${params.STUDY_DESIGN}
          --
          run as       : ${workflow.commandLine}
          started at   : ${workflow.start}

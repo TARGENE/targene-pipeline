@@ -18,7 +18,7 @@ The workflow will produce the following main outputs in the output directory (`O
 
 ## Main Options
 
-- **`STUDY_DESIGN` (default: CUSTOM)**: How genetic variants and effect sizes are specified. See [the study design section](@ref "Study Designs").
+- **`ESTIMANDS_CONFIG`**: YAML configuration file describing the effect sizes of interest, see the [Defining the Estimands of Interest](@ref) section.
 - **`COHORT` (default: "UKBB")**: Current default for this is UKBB. If set to a value other than UKBB, this will not run UKBB-specific trait extraction.
 - **`POSITIVITY_CONSTRAINT` (default: 0.01)**: When the list of estimands is generated or validated. Treatment variables' rarest configuration should have at least that frequency. For example if the treatment variables are two variants with minor allele A and T respectively. The rarest configuration will be (AA, TT) and should have a frequency of at least `POSITIVITY_CONSTRAINT`.
 - **`NB_PCS` (default: 6)**: The number of PCA components to extract.
@@ -34,30 +34,13 @@ The workflow will produce the following main outputs in the output directory (`O
 - **`UKB_WITHDRAWAL_LIST`**: List of participants withdrawn from the study.
 - **`QC_FILE`**: Genotyping quality control file from the UK-Biobank study.
 
-### If `STUDY_DESIGN=CUSTOM` (default)
-
-- **`ESTIMANDS_CONFIG`**: YAML configuration file describing the effect sizes of interest, see the [custom study design section](@ref "`CUSTOM`")
-
-### If `STUDY_DESIGN=ALLELE_INDEPENDENT`
-
-- **`ESTIMANDS_CONFIG`**: YAML configuration file describing the effect sizes of interest, see the [allele independent section](@ref "`ALLELE_INDEPENDENT`").
-
-### If `STUDY_DESIGN=FROM_ACTORS`
-
-- **`BQTLS`**: A CSV file containing binding quantitative trait loci (bQTLs). If multiple transcription factors (TFs) are included in a single run, you must include a column called `TF`, which specifies the TF associated with each bQTL.
-- **`TRANS_ACTORS`**: A prefix to CSV files containing quantitative trait loci potentially interacting with the previous bqtls. If multiple transcription factors (TFs) are included in a single run, you must include a column called `TF`, which specifies the TF associated with each transactor.
-- **`EXTRA_CONFOUNDERS`, default: nothing**: Path to additional confounders file, one per line, no header.
-- **`EXTRA_COVARIATES`, default: nothing**: Path to additional covariates file, one per line, no header.
-- **`ENVIRONMENTALS`, default: nothing**: Path to additional environmental treatments file, one per line, no header.
-- **`ORDERS`, default: "1,2"**: Comma separated list describing the order of desired interaction estimands, 1 for the ATE (no interaction), 2 for pairwise interactions etc... e.g. "1,2"
-
 ### If `SVP=true`
 
 - **`GRM_NSPLITS`, default: 100**: To fasten GRM computation, it is typically split in batches.
 - **`NB_SVP_ESTIMATORS`, default: 100**: Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
 - **`MAX_SVP_THRESHOLD`, default: 0.9**: Variance estimates are computed for tau ranging from 0 to MAX_SVP_THRESHOLD
 - **`PVAL_THRESHOLD`, default: 0.05**: Only results with a p-value below this threshold are considered for Sieve Plateau Variance correction.
-- **`ESTIMATOR_KEY`, default: TMLE**: The p-value for `PVAL_THRESHOLD` is computed using the result from this estimator.
+- **`ESTIMATOR_KEY`, default: 1**: The p-value for `PVAL_THRESHOLD` is computed using the result from this estimator.
 
 ## Secondary Options
 

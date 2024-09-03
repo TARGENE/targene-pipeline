@@ -33,7 +33,7 @@ These are the configuration details associated with your project, this is usuall
 
 #### Main Workflows
 
-- [The TarGene Workflow](@ref) (`WORKFLOW_NAME: TARGENE`): It is the main workflow for the targeted estimation of genetic effects.
+- [The Discovery Workflow](@ref) (`WORKFLOW_NAME: TARGENE`): It is the main workflow for the targeted estimation of genetic effects.
 
 #### Secondary Workflows
 

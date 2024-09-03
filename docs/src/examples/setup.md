@@ -4,7 +4,17 @@ A population genetics analysis via TarGene is a 4 steps process where steps 1 an
 
 ## 1. Installation
 
-Install TarGene's dependencies as per the [Installation](@ref) section. Here I will assume that both Nextflow and Singularity are installed.
+Install TarGene's dependencies as per the [Installation](@ref) section. Here I will assume that both Nextflow and Singularity are installed. To make sure this is the case you can for instance try
+
+```bash
+nextflow -v
+```
+
+and
+
+```bash
+singularity --version
+```
 
 ## 2. Obtaining the Data
 
