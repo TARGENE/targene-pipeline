@@ -1,6 +1,6 @@
-# The Discovery Workflow
+# Overview
 
-## Overview
+## General Workflow Structure
 
 This is the main workflow within TarGene, its purpose is to estimate a wide variety of genetic effects using Targeted Learning. This is an end-to-end workflow, meaning that you don't need to perform any QC on your genotypes files. The workflow can be roughly decomposed into three main steps:
 

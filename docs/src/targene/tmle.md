@@ -1,63 +1,22 @@
 # Specifying a Targeted Estimator
 
-TarGene is a flexible procedure that does not impose any constraint on the functional form of the relationship between genetic variants, environmental variables and traits. In practice, we rely on [MLJ](https://alan-turing-institute.github.io/MLJ.jl/dev/) to provide machine learning algorithms. In population genetics studies, there are two learning algorithms we need to specify:
+TarGene is a flexible procedure that does not impose any constraint on the functional form of the relationship between genetic variants, environmental variables and traits. In practice, we rely on [MLJ](https://alan-turing-institute.github.io/MLJ.jl/dev/) for all machine learning algorithms. In population genetics studies, there are two learning algorithms we need to specify:
 
-- `E[Y|T, W, C]`: The mean outcome given the treatment, confounders and extra covariates. It is commonly denoted by `Q` in the Targeted Learning literature. In reality, we will need one specification for continuous outcomes and one specification for binary outcomes.
-- `p(T|W)`: The propensity score, which enables the targeting step of the estimation procedure. It is commonly denoted by `G` in the Targeted Learning literature.
+- ``Q_Y = \mathbb{E}[Y|T, W, C]``: The mean outcome given the treatment, confounders and extra covariates.
+- ``G = P(T|W)``: The propensity score, which enables the targeting step of the estimation procedure.
 
-There are two main ways to define targeted estimators, from a predefined configuration or from a custom file.
+In TarGene, the default it to use for both models, a cross-validated version of [XGBoost](https://xgboost.readthedocs.io/en/stable/) over 3-folds and a range of hyper-parameters.
 
-## Predefined estimators
+Furthermore, we estimate genetic effects using both weighted Targeted Minimum-Loss Estimation (wTMLE) and One-Step Estimation (OSE). Note that these estimators are not combined in a single estimator, two distinct estimation procedures are performed. The reason for this is that the finite sample behavior of semi-parametric estimators in population genetics is still under study. Providing the results for both estimation methods thus enables a straightforward comparison.
 
-A set of predefined estimators is readily available and can be accessed by using the configuration's name as the `ESTIMATORS_CONFIG` parameter. For instance, we provide the following:
+!!! info "Note"
+    Rest assured though, from our experience, these results should be almost indistinguishable. Furthermore, the computational cost of the OSE is almost negligible if (w)TMLE is performed and vice versa.
 
-- G-superlearning-Q-glm
-- G-superlearning-Q-glmnet
-- glm-with-interactions-for-Q
-- glm
-- glmnet-with-interactions-for-Q
-- glmnet
-- superlearning-with-interactions-for-Q
-- superlearning
-- tuned-xgboost
+A default TarGene run will thus result in two estimates for each estimand:
 
-all using TMLE as the meta statistical inference method. While these should cover most use cases, it may be useful to define a custom estimation strategy. This can be achieved by writing a small [Julia](https://julialang.org/) file described below.
+- wTMLE using XGBoost for both ``Q_Y`` and ``G``
+- OSE using XGBoost for both ``Q_Y`` and ``G``
 
-## Custom estimators from a file
+Note however that this is not compulsory. A single estimator can be used and the machine-learning models customised. This is done via the `ESTIMATORS_CONFIG` which is either a simple configuration string or a more elaborate Julia file. Both options are further discussed [here](https://targene.github.io/TMLECLI.jl/stable/tmle_estimation/#Specifying-Estimators).
 
-Writing a [Julia](https://julialang.org/) estimators file is the most flexible way to define an estimation strategy for your study.
-
-This file should simply define a [NamedTuple](https://docs.julialang.org/en/v1/base/base/#Core.NamedTuple) called `ESTIMATORS` and listing estimators to be used for inference. For example, the following:
-
-```julia
-default_models = TMLE.default_models(
-  # For the estimation of E[Y|W, T]: continuous outcome
-  Q_continuous = LinearRegressor(),
-  # For the estimation of E[Y|W, T]: binary target
-  Q_binary = LogisticClassifier(lambda=0.),
-  # For the estimation of p(T| W)
-  G = LogisticClassifier(lambda=0.)
-)
-
-ESTIMATORS = (
-  TMLE_weighted   = TMLEE(models=default_models, weighted=true),
-  TMLE_unweighted = TMLEE(models=default_models, weighted=false),
-  OSE             = OSE(models=default_models)
-)
-```
-
-defines three estimators:
-
-1. A weighted-fluctuation Targeted Maximum Likelihood Estimator: `TMLE`
-2. An unweighted-fluctuation Targeted Maximum Likelihood Estimator: `TMLE`
-3. A One-Step Estimator: `OSE`
-
-All estimators will learn the nuisance functions `Q` and `G` with the provided `models` `NamedTuple`:
-
-- `Q_continuous`: A MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is continuous.
-- `Q_binary`: A MLJ model used for the estimation of `E[Y|T, W, C]` when the outcome `Y` is binary.
-- `G`: A MLJ model used for the estimation of `p(T|W)`.
-
-For the list of available models and resampling strategies, checkout the [TMLECLI documentation](https://targene.github.io/TMLECLI.jl/stable/models/).
-
-For full details, on available estimators and how to specify them, visit the [TMLE.jl documentation](https://targene.github.io/TMLE.jl/stable/).
+For example, using a configuration string, a computationally cheaper run with `ESTIMATORS_CONFIG=ose--glmnet` uses only One-Step Estimation with a [GLMNet](https://www.jstatsoft.org/article/view/v033i01) model for both ``Q_Y`` and ``G``.

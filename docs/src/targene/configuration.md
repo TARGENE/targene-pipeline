@@ -1,4 +1,4 @@
-# Configuration
+# Index of Discovery Workflow Parameters
 
 ## Main Outputs
 
@@ -11,14 +11,15 @@ The workflow will produce the following main outputs in the output directory (`O
 
 ## Arguments
 
+- **`ESTIMANDS_CONFIG`**: YAML configuration file describing the effect sizes of interest, see the [Defining the Estimands of Interest](@ref) section.
 - **`ESTIMATORS_CONFIG`**: Estimator name or Julia file containing the description of the Targeted Estimators to use. To be consistent it should match the argument provided to the previous TarGene run.
-- **`BGEN_FILES`**: Path to imputed BGEN files from which the variants in `VARIANTS_LIST` will be extracted.
-- **`BED_FILES`**: Path expression to PLINK BED files.
+- **`BGEN_FILES`**: Path to imputed BGEN files (optional for a GWAS).
+- **`BED_FILES`**: Path to PLINK BED files.
 - **`TRAITS_DATASET`**: Path to a traits dataset. If you are running this for a non-UKBB cohort, your sample IDs must be specified in the first column of this CSV file, with the column name `SAMPLE_ID`.
 
 ## Main Options
 
-- **`ESTIMANDS_CONFIG`**: YAML configuration file describing the effect sizes of interest, see the [Defining the Estimands of Interest](@ref) section.
+- **`BATCH_SIZE`, default: 400**: The set of estimands to be estimated is batched and the Targeted Learning processes will run in parallel across batches. This is the main driver of computational speed on High Performance Computing Platforms.
 - **`COHORT` (default: "UKBB")**: Current default for this is UKBB. If set to a value other than UKBB, this will not run UKBB-specific trait extraction.
 - **`POSITIVITY_CONSTRAINT` (default: 0.01)**: When the list of estimands is generated or validated. Treatment variables' rarest configuration should have at least that frequency. For example if the treatment variables are two variants with minor allele A and T respectively. The rarest configuration will be (AA, TT) and should have a frequency of at least `POSITIVITY_CONSTRAINT`.
 - **`NB_PCS` (default: 6)**: The number of PCA components to extract.
@@ -40,12 +41,11 @@ The workflow will produce the following main outputs in the output directory (`O
 - **`NB_SVP_ESTIMATORS`, default: 100**: Number of sieve variance estimates per curve. Setting this value to 0 results in skipping sieve variance correction.
 - **`MAX_SVP_THRESHOLD`, default: 0.9**: Variance estimates are computed for tau ranging from 0 to MAX_SVP_THRESHOLD
 - **`PVAL_THRESHOLD`, default: 0.05**: Only results with a p-value below this threshold are considered for Sieve Plateau Variance correction.
-- **`ESTIMATOR_KEY`, default: 1**: The p-value for `PVAL_THRESHOLD` is computed using the result from this estimator.
+- **`ESTIMATOR_KEY`, default: 1**: Identifies an estimator from `ESTIMATORS_CONFIG`. The p-value for `PVAL_THRESHOLD` is computed using the result from this estimator.
 
 ## Secondary Options
 
 - **`RNG`, default: 123**: General random seed used to induce permutation.
 - **`VERBOSITY`, default: 0**: Verbosity level of the the Workflow's processes.
-- **`BATCH_SIZE`, default: 400**: The set of estimands to be estimated is batched and the Targeted Learning processes will run in parallel across batches.
-- **`TL_SAVE_EVERY`, default: 50**: During the estimation process, results are appended to the file in chunks to free memory.
+- **`TL_SAVE_EVERY`, default: BATCH_SIZE**: During the estimation process, results are appended to the file in chunks to free memory.
 - **`KEEP_IC`, default: SVP**: To save the Influence Curves for each estimate. Depending on the size of your dataset, this can result in massive disk usage.
