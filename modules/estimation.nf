@@ -36,7 +36,9 @@ process GenerateOutputs {
         path results_file
 
     output:
-        path "*.png"
+        path "QQ.png"
+        path "results.hdf5", emit: hdf5_results
+        path "results.summary.yaml"
 
     script:
         """
