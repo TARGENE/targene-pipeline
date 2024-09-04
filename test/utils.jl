@@ -39,7 +39,7 @@ end
 
 function retrieve_failed_results(results; expected_keys=(:TMLE_GLM_GLM, :OSE_GLM_GLM))
     failed_results = (TMLE_GLM_GLM = [], OSE_GLM_GLM = [])
-    for result ∈ results
+    for result ∈ eachrow(results)
         @test keys(result) == expected_keys
         @test result.TMLE_GLM_GLM isa Union{TMLE.TMLEstimate, TMLECLI.FailedEstimate}
         @test result.OSE_GLM_GLM isa Union{TMLE.OSEstimate, TMLECLI.FailedEstimate}

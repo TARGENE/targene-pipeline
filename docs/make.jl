@@ -32,6 +32,7 @@ makedocs(;
                 joinpath("targene", "sieve_variance.md"),
                 joinpath("targene", "miscellaneous.md"),
                 joinpath("targene", "configuration.md"),
+                joinpath("targene", "outputs.md"),
                 joinpath("targene", "runtime_considerations.md")
             ],
             "The Simulation Workflows (Experimental)" => [
