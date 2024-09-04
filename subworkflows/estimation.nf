@@ -16,5 +16,5 @@ workflow EstimationWorkflow {
         GenerateOutputs(TMLE.out.collect())
 
     emit:
-        hdf5_result = GenerateOutputs.out
+        hdf5_result = GenerateOutputs.out.hdf5_results
 }
