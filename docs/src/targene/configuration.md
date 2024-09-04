@@ -1,14 +1,5 @@
 # Index of Discovery Workflow Parameters
 
-## Main Outputs
-
-The workflow will produce the following main outputs in the output directory (`OUTDIR`, defaults to `results`):
-
-- An HDF5 file containing full estimation results
-- An summary YAML file containing estimation results
-- A Quantile-Quantile summary plot: QQ.png
-- An optional `svp.hdf5` containing Sieve Variance Plateau corrected variance estimates.
-
 ## Arguments
 
 - **`ESTIMANDS_CONFIG`**: YAML configuration file describing the effect sizes of interest, see the [Defining the Estimands of Interest](@ref) section.
