@@ -1,5 +1,4 @@
-include { TMLE; MergeOutputs } from '../modules/estimation.nf'
-include { GenerateSummaryPlots } from '../modules/plot.nf'
+include { TMLE; GenerateOutputs } from '../modules/estimation.nf'
 
 workflow EstimationWorkflow {
     take:
@@ -12,12 +11,10 @@ workflow EstimationWorkflow {
             dataset_and_estimands,
             estimators_config,
         )
-        // Merge results files together
-        MergeOutputs(TMLE.out.collect())
 
-        // Generate Plots
-        GenerateSummaryPlots(MergeOutputs.out.hdf5_file)
+        // Generate TarGene Outputs
+        GenerateOutputs(TMLE.out.collect())
 
     emit:
-        hdf5_result = MergeOutputs.out.hdf5_file
+        hdf5_result = GenerateOutputs.out
 }
