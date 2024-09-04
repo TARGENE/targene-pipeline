@@ -34,9 +34,10 @@ makedocs(;
                 joinpath("targene", "configuration.md"),
                 joinpath("targene", "runtime_considerations.md")
             ],
-            "The Simulation Workflows" => [
+            "The Simulation Workflows (Experimental)" => [
                 joinpath("simulations", "overview.md"),
                 joinpath("simulations", "null_simulation.md"),
+                joinpath("simulations", "realistic_simulation.md"),
             ],
             ],
         "Secondary Workflows" => [
