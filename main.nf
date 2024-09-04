@@ -41,10 +41,6 @@ params.PVAL_THRESHOLD = 0.05
 params.TL_SAVE_EVERY = params.BATCH_SIZE
 params.ESTIMATORS_CONFIG = "wtmle-ose--tunedxgboost--tunedxgboost"
 
-// Outputs Parameters
-params.JSON_OUTPUT = "results.json"
-params.HDF5_OUTPUT = "results.hdf5"
-
 // Simulations
 params.TRAIN_RATIO = 6
 params.SAMPLE_GA_HITS = true
