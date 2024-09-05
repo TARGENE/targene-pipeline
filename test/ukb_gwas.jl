@@ -54,7 +54,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
         end
     end
     @test Set(string(v)[1] for v ∈ variants) == Set(['1', '2', '3'])
-    @test length(failed_results) == 0
+    @test size(failed_results, 1) == 0
 
     # Check summary file
     summary_results = YAML.load_file(joinpath("results", "results.summary.yaml"))
