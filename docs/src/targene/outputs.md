@@ -23,6 +23,12 @@ We have discussed single variant effects, but interactions are defined exactly i
 - ``V_1: CT \rightarrow TT, V_2: AG \rightarrow GG``
 
 
+## The `QQ.png`
+
+If you understood the previous section, now you know there is one p-value per genetic effect, even if this effect has multiple components. These p-values can be plotted against the p-values that would be obtained if null hypothesis was true in a QQ plot. Because a TarGene run may comprise multiple estimators, there can be multiple overlapping QQ plots, one for each estimator.
+
+![QQ](../assets/gwas_QQ.png)
+
 ## The `results.summary.yaml`
 
 The `results.summary.yaml` is a summary file which probably contains all the information you need. It provides a list of estimates corresponding to your run specification. The following example illustrates the format.
