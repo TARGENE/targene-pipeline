@@ -35,9 +35,11 @@ The `results.summary.yaml` is a summary file which probably contains all the inf
     - rs238411180: "CT => TT"
   OSE:
     PVALUE: 0.5270550612752147
-    EFFECT_SIZE:
-      - 0.024949606886375153
-      - -0.011347513140075703
+    COMPONENTS:
+      - PVALUE: 3.1691860303379483e-24
+        EFFECT_SIZE: 0.03549905917106507
+      - PVALUE: 0.011507985165943658
+        EFFECT_SIZE: -0.0011000033630272567
 - EFFECT_TYPE: "AIE"
   OUTCOME: C50-C50 Malignant neoplasm of breast
   TREATMENTS:
@@ -49,19 +51,37 @@ The `results.summary.yaml` is a summary file which probably contains all the inf
       Cheese intake: "1 => 4"
   OSE:
     PVALUE: 0.6007356699283757
-    EFFECT_SIZE:
-      - 0.03549905917106507
-      - -0.0011000033630272567
-      - 0.09190645731696134
+    COMPONENTS:
+      - PVALUE: 3.1691860303379483e-24
+        EFFECT_SIZE: 0.03549905917106507
+      - PVALUE: 0.011507985165943658
+        EFFECT_SIZE: -0.0011000033630272567
+      - PVALUE: 0.98
+        EFFECT_SIZE: 0.09190645731696134
+- EFFECT_TYPE: "ATE"
+  OUTCOME: L50-L54 Urticaria and erythema
+  TREATMENTS:
+    rs117913124: "GG => GA"
+    rs53453: "GG => GA"
+  OSE:
+    PVALUE: .NaN
+    EFFECT_SIZE: "Failed"
 ```
 
-The first estimate corresponds to the Average Treatment Effect (ATE) of rs238411180 on hypothyroidism/myxoedema. The `TREATMENTS` section contains all variables whose effect on outcome is estimated. In this case, the two genotype changes are presented, indicating that all genotypes passed the positivity constraint. Then one section per estimator is reported (see [Specifying a Targeted Estimator](@ref)). In this case a single estimator, the One-Step Estimator, corresponding to the `OSE` section. The joint p-value of the total effect is provided in `PVALUE` as well as the list of effect sizes in `EFFECT_SIZE`.
+The first estimate corresponds to the Average Treatment Effect (ATE) of rs238411180 on hypothyroidism/myxoedema. The `TREATMENTS` section contains all variables whose effect on outcome is estimated. In this case, the two genotype changes are presented, indicating that all genotypes passed the positivity constraint. Then one section per estimator is reported (see [Specifying a Targeted Estimator](@ref)). In this case a single estimator, the One-Step Estimator, corresponding to the `OSE` section. The joint p-value of the effect is provided in `PVALUE` together with the list of changes' effect sizes in `COMPONENTS`. Each component actually contain both an effect size `EFFECT_SIZE` and a p-value `PVALUE` corresponding to the single change's test.
 
-The second element corresponds to the Average Interaction Effect (AIE) of rs3502414 and Cheese intake on C50-C50 Malignant neoplasm of breast. Only the ``TT \rightarrow CT`` change is presented, indicating that the other change did not pass the positivity constraint. The other sections are similar to the previous estimate.
+The second estimate corresponds to the Average Interaction Effect (AIE) of rs3502414 and Cheese intake on C50-C50 Malignant neoplasm of breast. Only the ``TT \rightarrow CT`` change is presented, indicating that the other change did not pass the positivity constraint. The other sections are similar to the previous estimate.
+
+Finally, the third element corresponds to the Average Treatment Effect of two variants (rs117913124, rs53453) on L50-L54 Urticaria and erythema. In this case, only a single change was requested by the user. We can see that because the `TREATMENTS` section is not a list. Also, in some cases, estimation can fail as reported here.
+
+Together, these three examples should help you get started with post processing your results!
 
 ## The `results.hdf5` (Advanced)
 
-In some cases, you may want to perform additional operations on your estimates. For example, if you would like to compute differential allelic effects, are the ``\beta_{CC \rightarrow CT}`` and  ``\beta_{CT \rightarrow TT}`` statisticaly identical? This can be done using the comprehensive `results.hdf5` file, which retains all the estimation information (e.g., covariance matrices).
+In some cases, you may want to perform additional operations on your estimates. For example, if you would like to compute differential allelic effects corresponding to the following question: are the ``\beta_{CC \rightarrow CT}`` and  ``\beta_{CT \rightarrow TT}`` identical? This can be done using the comprehensive `results.hdf5` file, which retains all the estimation information (e.g., covariance matrices).
 
 This file contains a DataFrame which can be loaded within a [Julia](https://julialang.org/) session for instance. This DataFrame contains one column per estimator for the TarGene run (only OSE in the example above). Each element of a column is an estimation result corresponding to a given genetic effect (there were 2 in the above example). These are objects that are defined within the [TMLE.jl](https://targene.github.io/TMLE.jl/stable/) package and it is recommended to use it for downstream analysis. The DataFrame also contains an additional p-value column for each of these estimators. In the previous example there would be a total of only 2 columns: [OSE, OSE_PVALUE].
 
+## The `svp.hdf5` (Experimental)
+
+This file is similar to the `results.hdf5` except that the standard errors are computed with a corrected variance estimator.
