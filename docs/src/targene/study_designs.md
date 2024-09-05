@@ -81,7 +81,7 @@ extra_confounders:
 - Average Treatment Effects of `order` 1 (default) for all (RSID_17, RSID_99, RSID_102, TREAT_1) are generated
 - Interaction Effects of `order` 2 and 3 for all combinations of (RSID_17, RSID_99, RSID_102, TREAT_1) are generated. Some of these combinations are (RSID_17, RSID_99), (RSID_102, TREAT_1) or (RSID_102, RSID_99, TREAT_1).
 
-### Grouped Configuration
+## Grouped Configuration
 
 When the number of variants becomes large, estimating all combinations becomes both computationally expensive and reduces power due to the associated multiple testing burden. If the genetic variants are not chosen at random but based on some biological mechanism (e.g. a transcription factor), it is more efficient to group them. Within each group further subgroups can be defined for the roles played by each variant, only combinations across groups are considered.
 
