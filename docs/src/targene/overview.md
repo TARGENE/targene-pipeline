@@ -2,14 +2,13 @@
 
 ## General Workflow Structure
 
-This is the main workflow within TarGene, its purpose is to estimate a wide variety of genetic effects using Targeted Learning. This is an end-to-end workflow, meaning that you don't need to perform any QC on your genotypes files. The workflow can be roughly decomposed into three main steps:
+This is the main workflow within TarGene, its purpose is to estimate a wide variety of genetic effects using the Targeted Learning framework. This is an end-to-end workflow, meaning that you don't need to perform any QC on your genotypes files. The workflow can be roughly decomposed into two main steps:
 
-1. In the first step, all data sources are brought together to build:
-   - An aggregated dataset containing all variables in an Arrow tabular format.
-   - A set of estimands files that contain all the effect sizes to be estimated.
-2. In the second step all effect sizes are estimated via Targeted Learning in parallel across the generated estimands files.
-3. In the third step, results are aggregated into summary files and a Q-Q plot is generated.
-4. A fourth, optional step constructs Sieve Variance Plateau correction of the variance estimates to account for potential population relatedness.
+1. In the first step, an integrated tabular dataset is built, it contains
+   - Phenotypes: Potentially extracted from the UK Biobank
+   - Variants of Interest: Extracted from genotyping data.
+   - PCs: Constructed from genotyping data using standard methodology (A LOCO approach is used for GWAS)
+2. In the second step, all genetic effects are estimated via Targeted Learning in parallel using the estimators of your choice.
 
 An overview of the workflow is presented in the following diagram.
 

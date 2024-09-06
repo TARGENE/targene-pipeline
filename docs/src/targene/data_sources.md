@@ -28,7 +28,7 @@ TarGene supports custom traits datasets in CSV format, that can be provided via 
 
 ### UK-Biobank
 
-Select with `COHORT = "UKBB"`.
+Select with `COHORT = "UKB"`.
 
 If the dataset provided as `TRAITS_DATASET` is the encrypted dataset (potentially suffixed by `enc_ukb`), then the decryption file must be provided via `UKB_ENCODING_FILE`. If you have already decrypted the dataset, you don't need to provide a `UKB_ENCODING_FILE`. We refer to either the encrypted or decrypted dataset as the main dataset.
 
