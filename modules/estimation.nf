@@ -1,26 +1,3 @@
-process MergeOutputs {
-    publishDir "$params.OUTDIR", mode: 'symlink'
-    label "bigmem"
-    label 'tmle_image'
-
-    input:
-        path tmle_files
-
-    output:
-        path "${params.HDF5_OUTPUT}", emit: hdf5_file
-        path "${params.JSON_OUTPUT}", optional: true, emit: json_file
-
-    script:
-        json_option = params.JSON_OUTPUT != "NO_JSON_OUTPUT" ? "--json-output=${params.JSON_OUTPUT}" : ""
-        """
-        TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TMLECLI.jl/TMLESysimage.so --project=/TMLECLI.jl --startup-file=no /TMLECLI.jl/tmle.jl merge \
-        tmle_result \
-        ${json_option} \
-        --hdf5-output=${params.HDF5_OUTPUT}
-        """
-}
-
 process TMLE {
     publishDir "$params.OUTDIR/tmle_outputs/", mode: 'symlink', pattern: "*.hdf5"
     label 'tmle_image'
@@ -50,3 +27,25 @@ process TMLE {
         """
 }
 
+process GenerateOutputs {
+    publishDir "${params.OUTDIR}", mode: 'symlink'
+    label "bigmem"
+    label 'targenecore_image'
+
+    input:
+        path results_file
+
+    output:
+        path "QQ.png"
+        path "results.hdf5", emit: hdf5_results
+        path "results.summary.yaml"
+
+    script:
+        """
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
+        make-outputs tmle_result \
+        --output-prefix="." \
+        --verbosity=${params.VERBOSITY}
+        """
+}

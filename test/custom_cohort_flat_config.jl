@@ -7,6 +7,7 @@ using JLD2
 using TMLECLI
 using CSV
 using TargeneCore
+using YAML
 
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
@@ -20,11 +21,20 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     dataset_origin = CSV.read(joinpath("test", "assets", "traits.csv"), DataFrame)
     dataset = DataFrame(Arrow.Table(joinpath("results", "datasets", "all_genotypes.data.arrow")))
     @test issubset(names(dataset_origin), names(dataset))
-    
-    results = jldopen(io -> io["results"], "results/results.hdf5")
-    @test length(results) > 100
 
-    svp_results = jldopen(io -> io["results"], "results/svp.hdf5")
+    # Check QQ plot is here
+    @test isfile(joinpath("results", "QQ.png"))
+    
+    # Check full HDF5 results
+    results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
+    @test size(results, 1) > 100
+
+    # Check summary file
+    summary_results = YAML.load_file(joinpath("results", "results.summary.yaml"))
+    @test size(summary_results, 1) == size(results, 1)
+    
+    # Check SVP
+    svp_results = jldopen(io -> io["results"], joinpath("results", "svp.hdf5"))
     @test length(svp_results) > 100
 
     # Check properly resumed

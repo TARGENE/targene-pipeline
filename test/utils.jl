@@ -37,9 +37,9 @@ function check_fails_are_extremely_rare_traits(results, dataset; ncases=3)
     end
 end
 
-function retrieve_failed_results(results; expected_keys=(:TMLE_GLM_GLM, :OSE_GLM_GLM))
+function retrieve_failed_results(results; expected_keys=[:TMLE_GLM_GLM, :OSE_GLM_GLM, :TMLE_GLM_GLM_PVALUE, :OSE_GLM_GLM_PVALUE])
     failed_results = (TMLE_GLM_GLM = [], OSE_GLM_GLM = [])
-    for result ∈ results
+    for result ∈ eachrow(results)
         @test keys(result) == expected_keys
         @test result.TMLE_GLM_GLM isa Union{TMLE.TMLEstimate, TMLECLI.FailedEstimate}
         @test result.OSE_GLM_GLM isa Union{TMLE.OSEstimate, TMLECLI.FailedEstimate}

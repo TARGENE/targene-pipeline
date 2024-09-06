@@ -47,7 +47,9 @@ Targeted Learning is extremly powerful because it provides taylored estimation s
 
 ## Installation
 
-If you are using TarGene on a High-Performance Computing platform, it is likely software dependencies are already available. Since TarGene is a Nextflow pipeline, all you need is:
+If you are using TarGene on a High-Performance Computing platform, it is likely software dependencies are already available.
+
+Since TarGene is a Nextflow pipeline, all you need is:
 
 - [Nextflow](https://www.nextflow.io/docs/latest/install.html) >= 24.04.4
 

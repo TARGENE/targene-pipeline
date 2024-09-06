@@ -5,13 +5,12 @@ import org.yaml.snakeyaml.Yaml
 
 // Misc Parameters
 params.VERBOSITY = 0
-params.RNG = 123
 params.TRAITS_DATASET = "You need to provide a Traits dataset."
 params.UKB_ENCODING_FILE = "NO_UKB_ENCODING_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
 params.MAF_THRESHOLD = 0.01
-params.COHORT = "UKBB"
+params.COHORT = "UKB"
 params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
 params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
@@ -23,7 +22,7 @@ params.LD_BLOCKS = "${projectDir}/assets/NO_LD_BLOCKS"
 params.FLASHPCA_EXCLUSION_REGIONS = "${projectDir}/assets/exclusion_regions_hg19.txt"
 
 // Estimands Generation 
-params.BATCH_SIZE = 400
+params.BATCH_SIZE = 50
 
 // CUSTOM
 params.ESTIMANDS_CONFIG = "NO_ESTIMANDS_CONFIG"
@@ -39,11 +38,7 @@ params.ESTIMATOR_KEY = "1"
 params.KEEP_IC = params.SVP == true ? true : false
 params.PVAL_THRESHOLD = 0.05
 params.TL_SAVE_EVERY = params.BATCH_SIZE
-params.ESTIMATORS_CONFIG = "wtmle-ose--tunedxgboost--tunedxgboost"
-
-// Outputs Parameters
-params.JSON_OUTPUT = "results.json"
-params.HDF5_OUTPUT = "results.hdf5"
+params.ESTIMATORS_CONFIG = "wtmle-ose--tunedxgboost"
 
 // Simulations
 params.TRAIN_RATIO = 6

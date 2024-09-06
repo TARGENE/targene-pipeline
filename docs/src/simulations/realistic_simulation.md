@@ -25,3 +25,7 @@ To run the null simulation, the `REALISTIC_SIMULATION` entry should be added to 
 ```bash
 nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.11.0 -entry REALISTIC_SIMULATION
 ```
+
+## Output
+
+The output is a "realistic\_simulation\_results.hdf5" file (see [Description of Simulations Outputs](@ref)).
