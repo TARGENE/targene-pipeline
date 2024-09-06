@@ -39,6 +39,7 @@ makedocs(;
                 joinpath("simulations", "overview.md"),
                 joinpath("simulations", "null_simulation.md"),
                 joinpath("simulations", "realistic_simulation.md"),
+                joinpath("simulations", "simulation_outputs.md")
             ],
             ],
         "Secondary Workflows" => [

@@ -22,7 +22,6 @@ We have discussed single variant effects, but interactions are defined exactly i
 - ``V_1: CC \rightarrow CT, V_2: AG \rightarrow GG``
 - ``V_1: CT \rightarrow TT, V_2: AG \rightarrow GG``
 
-
 ## The `QQ.png`
 
 If you understood the previous section, now you know there is one p-value per genetic effect, even if this effect has multiple components. These p-values can be plotted against the p-values that would be obtained if null hypothesis was true in a QQ plot. Because a TarGene run may comprise multiple estimators, there can be multiple overlapping QQ plots, one for each estimator.
