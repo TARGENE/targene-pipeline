@@ -7,6 +7,7 @@ using Arrow
 using JLD2
 using TMLECLI
 using TargeneCore
+using YAML
 
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
@@ -29,13 +30,17 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
         @test all(startswith(colname, string(chr)) for colname in variant_columns)
     end
 
+    # Check QQ
+    @test isfile(joinpath("results", "QQ.png"))
+
     # Check results
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
-    @test length(results) > 80
+    @test size(results, 1) > 80
     variants = []
     failed_results = []
-    for estimators_results in results
-        for (estimatoir, Ψ̂) in zip(keys(estimators_results), estimators_results)
+    estimator_names = filter(x -> !endswith(x, "PVALUE"), names(results))
+    for estimator_name in estimator_names
+        for Ψ̂ in results[!, estimator_name]
             if Ψ̂ isa TMLECLI.FailedEstimate
                 push!(failed_results, Ψ̂)
             end
@@ -49,10 +54,11 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
         end
     end
     @test Set(string(v)[1] for v ∈ variants) == Set(['1', '2', '3'])
-    @test length(failed_results) == 0
+    @test size(failed_results, 1) == 0
 
-    # Check QQ
-    @test isfile(joinpath("results", "QQ.png"))
+    # Check summary file
+    summary_results = YAML.load_file(joinpath("results", "results.summary.yaml"))
+    @test size(summary_results, 1) == size(results, 1)
 
     # Check properly resumed
     resume_time = @elapsed run(cmd)

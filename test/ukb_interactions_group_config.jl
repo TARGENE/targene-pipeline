@@ -5,6 +5,7 @@ using JLD2
 using TMLE
 using TMLECLI
 using Serialization
+using YAML
 
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
@@ -18,20 +19,21 @@ include("utils.jl")
     r = run(cmd)
     @test r.exitcode == 0
 
-    ## Checking main output
-    # Results
-    results_from_hdf5 = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
-    nresults = length(results_from_hdf5)
+    # QQ plot
+    @test isfile("results/QQ.png")
+
+    # Check HDF5 results
+    results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
+    nresults = size(results, 1)
     @test nresults > 20
     nfails = 0
     treatment_combinations = Set([])
-    for result in results_from_hdf5
-        Ψ̂ = result.TMLE_GLM_GLM
+    for Ψ̂ in results.TMLE_GLM_GLM
         if Ψ̂ isa TMLECLI.FailedEstimate
             nfails += 1
         else
-            Ψc = first(Ψ̂.estimand.args)
-            push!(treatment_combinations, Tuple(keys(Ψc.treatment_values)))
+            Ψ = first(Ψ̂.estimand.args)
+            push!(treatment_combinations, Tuple(keys(Ψ.treatment_values)))
         end
     end
     @test nfails / nresults < 1/4
@@ -40,14 +42,15 @@ include("utils.jl")
         (Symbol("1:238411180:T:C"), Symbol("2:14983:G:A"))
     ])
 
+    # Check summary file
+    summary_results = YAML.load_file(joinpath("results", "results.summary.yaml"))
+    @test size(summary_results, 1) == nresults
+
     # Dataset
     dataset = TMLECLI.instantiate_dataset(joinpath("results", "datasets", "all_genotypes.data.arrow"))
     @test Set(names(dataset)) == Set(vcat("SAMPLE_ID", TRAITS, PCS, ["2:14983:G:A", "3:3502414:T:C", "1:238411180:T:C"]))
 
-    # QQ plot
-    @test isfile("results/QQ.png")
-
-     # Check properly resumed
+    # Check properly resumed
     resume_time = @elapsed run(cmd)
     @test resume_time < 1000
 end
