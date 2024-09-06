@@ -8,7 +8,7 @@ workflow ExtractTraits {
         ukb_encoding_file
         
     main:
-        if (params.COHORT == "UKBB") {
+        if (params.COHORT == "UKB") {
             if (ukb_encoding_file != "NO_UKB_ENCODING_FILE") {
                 UKBFieldsList(ukb_config)
                 decrypted_dataset = UKBConv(
