@@ -37,7 +37,7 @@ process AggregateGRM {
 }
 
 process SVP {
-    label 'tmle_image'
+    label 'targenecore_image'
     publishDir "${params.OUTDIR}", mode: 'symlink'
 
     input:
@@ -52,7 +52,7 @@ process SVP {
         hdf5_prefix = longest_prefix(hdf5_results)
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TMLECLI.jl/TMLESysimage.so --project=/TMLECLI.jl --startup-file=no /TMLECLI.jl/tmle.jl svp \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl svp \
         ${hdf5_prefix} \
         --n-estimators=${params.NB_SVP_ESTIMATORS} \
         --max-tau=${params.MAX_SVP_THRESHOLD} \
