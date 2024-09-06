@@ -37,7 +37,7 @@ Also, depending on the study design, some of the YAML file sections are the same
 
 ## Genome-Wide Association Study (GWAS)
 
-This is the most popular study design in population genetics. To run a GWAS, simply provide an `ESTIMANDS_CONFIG` as follows:
+This is the most popular study design in population genetics and a traditional Leave One Chromosome Out (LOCO) strategy is used to build principal components. To run a GWAS, simply provide an `ESTIMANDS_CONFIG` as follows:
 
 ```yaml
 type: gwas

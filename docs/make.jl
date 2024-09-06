@@ -24,6 +24,7 @@ makedocs(;
         "User Guide" => [
             "overview.md",
             "all_workflows_parameters.md",
+            "runtime_considerations.md",
             "The Discovery Workflow" => [
                 joinpath("targene", "overview.md"),
                 joinpath("targene", "data_sources.md"),
@@ -33,7 +34,6 @@ makedocs(;
                 joinpath("targene", "sieve_variance.md"),
                 joinpath("targene", "miscellaneous.md"),
                 joinpath("targene", "outputs.md"),
-                joinpath("targene", "runtime_considerations.md")
             ],
             "The Simulation Workflows (Experimental)" => [
                 joinpath("simulations", "overview.md"),
