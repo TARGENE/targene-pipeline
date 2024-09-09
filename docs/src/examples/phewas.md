@@ -23,7 +23,7 @@ outcome_extra_covariates:
 The `estimands` section is set to include Average Treatment Effects (`ATE`) which correspond to single variant effects. Because there are 3 variants in the `variants` section, 3 PheWAS will actually be run in paralllel. These will be run for all traits in the `UKB_CONFIG` that are not in the `outcome_extra_covariates` section.
 
 !!! note "Note on variant IDs"
-    The variant IDs must match the IDs of your BGEN files. Here they are identified by chr:pos:ref:alt as but in your case it may be via the rsID.
+    The variant IDs must match the IDs of your BGEN files. Here they are identified by chr:pos:ref:alt but in your files it may be via the rsID. If this is the case, multi-allelic variants are currently not supported.
 
 The `nextflow.config` file for this study is:
 
