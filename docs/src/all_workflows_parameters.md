@@ -9,7 +9,7 @@ These must be provided, or the workflow will not run.
 - `ESTIMANDS_CONFIG`: YAML configuration file describing the effect sizes of interest.
 - `TRAITS_DATASET`: Path to a traits dataset. If you are running this for a non-UKB cohort, your sample IDs must be specified in the first column of this CSV file, with the column name `SAMPLE_ID`.
 - `BED_FILES`: Path to PLINK BED files.
-- `BGEN_FILES`: Path to imputed BGEN files (optional for a GWAS).
+- `BGEN_FILES`: Path to **indexed** imputed BGEN files (optional for a GWAS).
 
 ## Main Options
 
@@ -61,7 +61,7 @@ These apply to both null and realistic simulations (`-entry NULL_SIMULATION` or 
 - `SAMPLE_SIZES (default: [500000])`: The dataset sample sizes for which the simulations will be run.
 - `MIN_FACTOR_LEVEL_OCCURENCES (default: 10)`: Each level of each factor should be sampled at least this amount of time.
 - `MAX_SAMPLING_ATTEMPTS (default: 10000)`: Number of sampling attempts to be made to respect `MIN_FACTOR_LEVEL_OCCURENCES`.
-- `NSAMPLES_FOR_TRUTH (default: 1000000)`: Monte Carlo samples used to evaluate the true effets.
+- `NSAMPLES_FOR_TRUTH (default: 1000000)`: Monte Carlo samples used to evaluate the true effects.
 
 ### Realistic Simulation Specific
 
