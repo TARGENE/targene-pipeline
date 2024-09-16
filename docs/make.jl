@@ -15,9 +15,17 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "Workflows" => [
+        "Examples" => [
+            joinpath("examples", "setup.md"),
+            joinpath("examples", "gwas.md"),
+            joinpath("examples", "phewas.md"),
+            joinpath("examples", "interactions.md"),
+        ],
+        "User Guide" => [
             "overview.md",
-            "The TarGene Workflow " => [
+            "all_workflows_parameters.md",
+            "runtime_considerations.md",
+            "The Discovery Workflow" => [
                 joinpath("targene", "overview.md"),
                 joinpath("targene", "data_sources.md"),
                 joinpath("targene", "confounding_adjustment.md"),
@@ -25,23 +33,23 @@ makedocs(;
                 joinpath("targene", "tmle.md"),
                 joinpath("targene", "sieve_variance.md"),
                 joinpath("targene", "miscellaneous.md"),
-                joinpath("targene", "configuration.md"),
-                joinpath("targene", "runtime_considerations.md")
+                joinpath("targene", "outputs.md"),
             ],
-            "Negative Control" => [
-                joinpath("negative_control", "overview.md"),
-                joinpath("negative_control", "permutation_tests.md"),
-                joinpath("negative_control", "randomized_tests.md")
+            "The Simulation Workflows (Experimental)" => [
+                joinpath("simulations", "overview.md"),
+                joinpath("simulations", "null_simulation.md"),
+                joinpath("simulations", "realistic_simulation.md"),
+                joinpath("simulations", "simulation_outputs.md")
             ],
-            joinpath("secondary_workflows", "pca.md"),
-            joinpath("secondary_workflows", "make_dataset.md")
+            ],
+        "Secondary Workflows" => [
+                joinpath("secondary_workflows", "pca.md"),
+                joinpath("secondary_workflows", "make_dataset.md")
             ],
         "Developper Guide" => [
-            joinpath("developper_guide", "project_organization.md"),
-            joinpath("developper_guide", "contribution_guide.md")
+            joinpath("developer_guide", "project_organization.md"),
+            joinpath("developer_guide", "contribution_guide.md")
             ],
-        "Associated Softwares" => "associated_softwares.md",
-        "Related Publications" => "publications.md"
     ],
 )
 

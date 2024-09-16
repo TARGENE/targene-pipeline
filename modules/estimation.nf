@@ -1,35 +1,9 @@
-process MergeOutputs {
-    container "olivierlabayle/targeted-estimation:0.8"
-    publishDir "$params.OUTDIR", mode: 'symlink'
-    label "bigmem"
-    
-    input:
-        path tmle_files
-
-    output:
-        path "${params.HDF5_OUTPUT}", emit: hdf5_file
-        path "${params.JSON_OUTPUT}", optional: true, emit: json_file
-
-    script:
-        json_option = params.JSON_OUTPUT != "NO_JSON_OUTPUT" ? "--json-output=${params.JSON_OUTPUT}" : ""
-        """
-        TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --startup-file=no /TargetedEstimation.jl/tmle.jl merge \
-        tmle_result \
-        ${json_option} \
-        --hdf5-output=${params.HDF5_OUTPUT}
-        """
-}
-
 process TMLE {
-    container "olivierlabayle/targeted-estimation:0.8"
     publishDir "$params.OUTDIR/tmle_outputs/", mode: 'symlink', pattern: "*.hdf5"
-    label "bigmem"
-    label "multithreaded"
+    label 'tmle_image'
 
     input:
-        path data
-        path estimands_file
+        tuple path(dataset), path(estimands_file)
         path estimator_file
     
     output:
@@ -38,17 +12,40 @@ process TMLE {
     script:
         basename = "tmle_result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
-        pval_option = params.KEEP_IC == true ? ",${params.PVAL_THRESHOLD}" : ""
-        sample_ids = params.SVP == true ? ",true" : ""
-        output_option = "--hdf5-output=${hdf5out}${pval_option}${sample_ids}"
+        pvalue_threhsold = params.KEEP_IC == true ? "--pvalue-threshold=${params.PVAL_THRESHOLD}" : ""
+        save_sample_ids = params.SVP == true ? "--save-sample-ids" : ""
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TargetedEstimation.jl/TMLESysimage.so --project=/TargetedEstimation.jl --threads=${task.cpus} --startup-file=no /TargetedEstimation.jl/tmle.jl tmle \
-        $data \
-        --estimands=$estimands_file \
-        --estimators=$estimator_file \
-        $output_option \
-        --chunksize=${params.TL_SAVE_EVERY} \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TMLECLI.jl/TMLESysimage.so --project=/TMLECLI.jl --threads=${task.cpus} --startup-file=no /TMLECLI.jl/tmle.jl tmle \
+        ${dataset} \
+        --estimands=${estimands_file} \
+        --estimators=${estimator_file} \
+        --hdf5-output=${hdf5out} \
+        ${pvalue_threhsold} \
+        ${save_sample_ids} \
+        --chunksize=${params.TL_SAVE_EVERY}
         """
 }
 
+process GenerateOutputs {
+    publishDir "${params.OUTDIR}", mode: 'symlink'
+    label "bigmem"
+    label 'targenecore_image'
+
+    input:
+        path results_file
+
+    output:
+        path "QQ.png"
+        path "results.hdf5", emit: hdf5_results
+        path "results.summary.yaml"
+
+    script:
+        """
+        TEMPD=\$(mktemp -d)
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
+        make-outputs tmle_result \
+        --output-prefix="." \
+        --verbosity=${params.VERBOSITY}
+        """
+}
