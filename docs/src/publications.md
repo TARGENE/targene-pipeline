@@ -1,3 +1,0 @@
-# Publications
-
-- [Dispensing with unnecessary assumptions in population genetics analysis](https://www.biorxiv.org/content/10.1101/2022.09.12.507656v1). With accompanying code repository [tag](https://git.ecdf.ed.ac.uk/tfomics/uk-biobank/tmle-rs1421085/-/tags/fto+pairwise) for PheWAS' and pairwise interactions and this [tag](https://git.ecdf.ed.ac.uk/tfomics/uk-biobank/tmle-rs1421085/-/tags/3points) for 3 points interactions.
