@@ -15,11 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         testrun:
-          - "ukb_from_actors.jl"
-          - "ukb_custom.jl"
-          - "ukb_allele_independent.jl"
-          - "custom_from_actors.jl"
+          - "ukb_gwas.jl"
+          - "ukb_estimands_file.jl"
+          - "custom_cohort_flat_config.jl"
+          - "ukb_interactions_group_config.jl"
           - "make_dataset.jl"
+          - "null_simulation.jl"
+          - "realistic_simulation.jl"
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
@@ -43,38 +45,22 @@ jobs:
         run: julia --project=test --startup-file=no test/${{ matrix.testrun }} -profile ci -resume
   docs:
     name: Documentation
-    runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: write
+      pull-requests: read
+      statuses: write
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
         with:
           version: '1'
-      - uses: julia-actions/julia-buildpkg@v1
-      # - uses: julia-actions/julia-docdeploy@v1
-      #   with:
-      #     install-package: false
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install GitHubActions.jl in its own (shared) environment
-        run: |
-          using Pkg
-          Pkg.activate("docs-logger-env"; shared=true)
-          Pkg.add(Pkg.PackageSpec(name="GitHubActions", version="0.1"))
-        shell: julia --color=yes {0}
-      - run: |
-          # The Julia command that will be executed
-          julia_cmd=( julia --color=yes --project=docs/ -e 'using Pkg; Pkg.instantiate();
-              @eval Module() begin
-                  push!(LOAD_PATH, "@docs-logger-env") # access GitHubActions.jl
-                  import Logging, GitHubActions
-                  Logging.global_logger(GitHubActions.GitHubActionsLogger())
-                  pop!(LOAD_PATH)
-              end
-              include("docs/make.jl")' )
-          # Run the Julia command
-          "${julia_cmd[@]}"
-        shell: bash
+      - uses: julia-actions/cache@v1
+      - name: Install dependencies
+        run: julia --project=docs/ -e 'using Pkg; Pkg.instantiate()'
+      - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        run: julia --project=docs/ docs/make.jl

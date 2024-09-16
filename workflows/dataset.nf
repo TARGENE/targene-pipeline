@@ -1,6 +1,7 @@
 include { MakeDataset } from '../modules/dataset.nf'
-include { IIDGenotypes; GeneticConfounders } from '../subworkflows/confounders.nf'
+include { IIDGenotypes } from '../subworkflows/confounders.nf'
 include { ExtractTraits } from '../subworkflows/extract_traits.nf'
+include { FlashPCA } from '../modules/confounders.nf'
 
 workflow MAKE_DATASET {
     // Traits params
@@ -36,13 +37,13 @@ workflow MAKE_DATASET {
     )
 
     // Genetic confounders
-    GeneticConfounders(IIDGenotypes.out)
+    FlashPCA(IIDGenotypes.out)
 
     // Dataset
     MakeDataset(
         bgen_files,
         ExtractTraits.out,
-        GeneticConfounders.out,
+        FlashPCA.out,
         variant_list
     )
 }
