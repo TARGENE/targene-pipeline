@@ -1,25 +1,20 @@
-include { TMLE; MergeOutputs } from '../modules/estimation.nf'
-include { GenerateSummaryPlots } from '../modules/plot.nf'
+include { TMLE; GenerateOutputs } from '../modules/estimation.nf'
 
 workflow EstimationWorkflow {
     take:
-        dataset
-        estimands_configs
+        dataset_and_estimands
         estimators_config
 
     main:
         // Run the estimation process for each estimands configuration
-        TMLE(
-            dataset,
-            estimands_configs,
+        tmle_results = TMLE(
+            dataset_and_estimands,
             estimators_config,
-        )
-        // Merge results files together
-        MergeOutputs(TMLE.out.collect())
+        ).collect()
 
-        // Generate Plots
-        GenerateSummaryPlots(MergeOutputs.out.hdf5_file)
+        // Generate TarGene Outputs
+        GenerateOutputs(tmle_results)
 
     emit:
-        hdf5_result = MergeOutputs.out.hdf5_file
+        hdf5_result = tmle_results
 }

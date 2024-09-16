@@ -1,16 +1,14 @@
-# The TarGene Workflow
+# Overview
 
-## Overview
+## General Workflow Structure
 
-The main purpose of the TarGene workflow is to estimate a wide variety of genetic effect sizes using the Targeted Learning framework. Contrary to a GWAS setting, this workflow assumes that a set of genetic variants and/or environmental variables have been pre-identified and are provided as an input to the workflow. The workflow can be roughly decomposed into three main steps:
+This is the main workflow within TarGene, its purpose is to estimate a wide variety of genetic effects using the Targeted Learning framework. This is an end-to-end workflow, meaning that you don't need to perform any QC on your genotypes files. The workflow can be roughly decomposed into two main steps:
 
-1. In the first step, all data sources are brought together to build:
-
-   - An aggregated dataset containing all variables in an Arrow tabular format.
-   - A set of estimands files that contain all the effect sizes to be estimated.
-
-2. In the second step all effect sizes are estimated via Targeted Learning in a parallel manner across the generated estimands files. Results are then merged into a single file.
-3. Finally, an optional Sieve Variance Plateau correction of the variance estimates is performed.
+1. In the first step, an integrated tabular dataset is built, it contains
+   - Phenotypes: Potentially extracted from the UK Biobank
+   - Variants of Interest: Extracted from genotyping data.
+   - PCs: Constructed from genotyping data using standard methodology (A LOCO approach is used for GWAS)
+2. In the second step, all genetic effects are estimated via Targeted Learning in parallel using the estimators of your choice.
 
 An overview of the workflow is presented in the following diagram.
 
@@ -19,7 +17,7 @@ An overview of the workflow is presented in the following diagram.
 ## Example Run Command
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r TAG -entry TARGENE -profile P -resume
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.11.0 -profile local -resume
 ```
 
 We now describe step by step how to setup a TarGene run configuration.
