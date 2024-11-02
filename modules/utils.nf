@@ -25,3 +25,16 @@ def leave_chr_out(chr_prefix, bed_files){
     def bed_files_not_matching_chr_prefix = bed_files.findAll{ fp -> !filepath_matches_chr_prefix(fp, chr_prefix) }
     return [chr_prefix, bed_files_not_matching_chr_prefix]
 }
+
+def processEstimatorsConfig() {
+    def configValue = params.ESTIMATORS_CONFIG
+    def configFile = file(configValue)
+
+    // If it's not an existing file, create an empty file with this name
+    if (!configFile.exists()) {
+        configFile = file("${launchDir}/${configValue}")
+        configFile.text = '' // Create an empty file
+    }  
+
+    return configFile.toString()
+}
