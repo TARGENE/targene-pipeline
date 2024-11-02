@@ -26,15 +26,33 @@ def leave_chr_out(chr_prefix, bed_files){
     return [chr_prefix, bed_files_not_matching_chr_prefix]
 }
 
-def processEstimatorsConfig() {
-    def configValue = params.ESTIMATORS_CONFIG
+def processEstimatorsConfig(configValue) {
+    // If it's a list, take the first element (ex: in NULL simulation test config)
+    if (configValue instanceof List) {
+        if (configValue.size() == 0) {
+            error "ESTIMATORS_CONFIG list is empty"
+        }
+        configValue = configValue[0]
+    }
+
+    // At this point, configValue should be a string
+    if (!(configValue instanceof String)) {
+        error "ESTIMATORS_CONFIG must be a string, a list containing a string, or a file path"
+    }
+
+    // Remove brackets and quotes if present
+    configValue = configValue.replaceAll(/^\[|\]$|"/, '')
+
     def configFile = file(configValue)
 
     // If it's not an existing file, create an empty file with this name
     if (!configFile.exists()) {
         configFile = file("${launchDir}/${configValue}")
         configFile.text = '' // Create an empty file
-    }  
+        println "Created empty estimators config file: ${configFile}"
+    } else {
+        println "Using existing estimators config file: ${configFile}"
+    }
 
     return configFile.toString()
 }
