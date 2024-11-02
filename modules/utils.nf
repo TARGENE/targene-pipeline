@@ -33,15 +33,8 @@ def processEstimatorsConfig(configValue) {
             error "ESTIMATORS_CONFIG list is empty"
         }
         configValue = configValue[0]
+        configValue = configValue.replaceAll(/^\[|\]$|"/, '') // remove brackets if present
     }
-
-    // At this point, configValue should be a string
-    if (!(configValue instanceof String)) {
-        error "ESTIMATORS_CONFIG must be a string, a list containing a string, or a file path"
-    }
-
-    // Remove brackets and quotes if present
-    configValue = configValue.replaceAll(/^\[|\]$|"/, '')
 
     def configFile = file(configValue)
 
