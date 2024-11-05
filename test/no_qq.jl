@@ -27,7 +27,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     
     # Check full HDF5 results
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
-    @test size(results, 1) > 100
+    @test size(results, 1) == 1
 
     # Check summary file
     summary_results = YAML.load_file(joinpath("results", "results.summary.yaml"))
