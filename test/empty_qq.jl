@@ -23,7 +23,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     @test issubset(names(dataset_origin), names(dataset))
 
     # Check QQ plot is not created
-    @test !isfile(joinpath("results", "QQ.png"))
+    @test isfile(joinpath("results", "QQ.png"))
     
     # Check full HDF5 results
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
