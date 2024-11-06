@@ -11,7 +11,7 @@ The goal of the Null Generating Process is to result in the theoretical null hyp
 To run the null simulation, the `NULL_SIMULATION` entry should be added to the Nextflow command-line as follows
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.11.0 -entry NULL_SIMULATION
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.11.1 -entry NULL_SIMULATION
 ```
 
 ## Output
