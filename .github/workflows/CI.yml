@@ -19,7 +19,6 @@ jobs:
           - "ukb_estimands_file.jl"
           - "custom_cohort_flat_config.jl"
           - "ukb_interactions_group_config.jl"
-          - "no_qq.jl"
           - "make_dataset.jl"
           - "null_simulation.jl"
           - "realistic_simulation.jl"
