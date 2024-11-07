@@ -26,6 +26,37 @@ def leave_chr_out(chr_prefix, bed_files){
     return [chr_prefix, bed_files_not_matching_chr_prefix]
 }
 
+def ProcessEstimatorsConfig(configValue) {
+    def configFiles = []
+    
+    // Ensure configValue is a list
+    if (!(configValue instanceof List)) {
+        configValue = [configValue]
+    } 
+
+    // Iterate through each value of this list
+    for (estimator in configValue) {
+        def configFile = file(estimator)
+        // If it's not an existing file, prepare a path for a new file
+        if (!configFile.exists()) {
+            configFile = file("${params.OUTDIR}/${estimator}")
+        }
+        configFiles.add(configFile)
+    }
+
+    createEmptyFiles(configFiles)
+    return configFiles
+}
+
+def createEmptyFiles(files) {
+    files.each { file ->
+        if (!file.exists()) {
+            file.text = ''
+        }
+    }
+}
+
+// This works for only existing files at the moment
 def CreateEstimatorsConfigChannel(configValue) {
     configFiles = []
     // Ensure configValue is a list
@@ -33,57 +64,24 @@ def CreateEstimatorsConfigChannel(configValue) {
         configValue = [configValue]
     } 
 
-    // Return the list of estimator names or paths
+    // Iterate through each value of this list
     for (estimator in configValue) {
         def configFile = file(estimator)
         // If it's not an existing file, create an empty file with this name
         if (!configFile.exists()) {
             configFile = file("${params.OUTDIR}/${estimator}")
             configFile.text = '' // Create an empty file
-        }
-        configFiles.add(configFile)
-    }
-
-    return Channel.fromList(configFiles).collect()
-/*
-    return Channel.fromList(configValueList)
-        .map { estimator ->
-            def configFile = file(estimator)
-            if (!configFile.exists()) {
-                configFile = file("${params.OUTDIR}/${estimator}")
-                configFile.text = '' // Create an empty file
-            }
-            return configFile
-        }
-        .collect() */
-}
-
-/*
-def processEstimatorsConfig(configValue) {
-    def configFiles = []
-
-    // Ensure configValue is a list
-    if (!(configValue instanceof List)) {
-        configValue = [configValue]
-    }
-
-    for (estimator in configValue) {
-        def configFile = file(estimator)
-
-        // If it's not an existing file, create an empty file with this name
-        if (!configFile.exists()) {
-            configFile = file("${params.OUTDIR}/${estimator}")
-            configFile.text = '' // Create an empty file
+            log.info "Created empty estimators config file: ${configFile}"
+        } else {
+            log.info "Using existing estimators config file: ${configFile}"
         }
 
         configFiles.add(configFile)
     }
 
-    // Return the list of configFiles
-    println configFiles
-    return configFiles
+    return Channel.fromList(configFiles).collect()
 }
-*/
+
 /*
 def processEstimatorsConfig(configValue) {
     if (configValue instanceof List) {
