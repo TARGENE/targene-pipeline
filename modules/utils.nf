@@ -37,14 +37,15 @@ def ProcessEstimatorsConfig(configValue) {
     // Iterate through each value of this list
     for (estimator in configValue) {
         def configFile = file(estimator)
-        // If it's not an existing file, prepare a path for a new file
+        // If it's not an existing file, create empty file
         if (!configFile.exists()) {
-            configFile = file("${launchDir}/${estimator}")
+            configFile = file("${params.OUTDIR}/${estimator}")
+            configFile.getParent().mkdirs() // Create OUTDIR if it doesn't exist
+            configFile.text = '' // Create an empty file
         }
         configFiles.add(configFile)
     }
 
-    createEmptyFiles(configFiles)
     return configFiles
 }
 
@@ -56,9 +57,8 @@ def createEmptyFiles(files) {
     }
 }
 
-// This works for only existing files at the moment
 def CreateEstimatorsConfigChannel(configValue) {
-    configFiles = []
+    estimators_ch = Channel.empty()
     // Ensure configValue is a list
     if (!(configValue instanceof List)) {
         configValue = [configValue]
@@ -69,17 +69,14 @@ def CreateEstimatorsConfigChannel(configValue) {
         def configFile = file(estimator)
         // If it's not an existing file, create an empty file with this name
         if (!configFile.exists()) {
+            file(params.OUTDIR).mkdirs() // Create OUTDIR if it doesn't exist
             configFile = file("${params.OUTDIR}/${estimator}")
             configFile.text = '' // Create an empty file
-            log.info "Created empty estimators config file: ${configFile}"
-        } else {
-            log.info "Using existing estimators config file: ${configFile}"
         }
-
-        configFiles.add(configFile)
+        estimators_ch = estimators_ch.mix(Channel.value(configFile))
     }
 
-    return Channel.fromList(configFiles).collect()
+    return estimators_ch
 }
 
 /*
