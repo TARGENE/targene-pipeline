@@ -3,8 +3,7 @@ process TMLE {
     label 'tmle_image'
 
     input:
-        tuple path(dataset), path(estimands_file)
-        path estimator_file
+        tuple path(dataset), path(estimands_file), path(estimator_file)
     
     output:
         path "${hdf5out}"
