@@ -22,7 +22,7 @@ params {
 
 Apart from the data related parameters, there are two main parameters here: `ESTIMANDS_CONFIG` and the `ESTIMATORS_CONFIG`. These parameters describe the estimands (questions of interest) and how to estimate them respectively. 
 
-The `ESTIMANDS_CONFIG` here follows the same format as the `flat` configuration detailed in the `PheWas` section. Here we are estimating the ATE of the FTO variant (encoded as chr16:53767042:T:C in the BGEN data for the AoU cohort) on the traits present in our `allofus_traits.csv` file. We have also added `sex_at_birth` as a covariate. 
+The `ESTIMANDS_CONFIG` here follows the same format as the `flat` configuration detailed in the [PheWAS](@ref) section. Here we are estimating the ATE of the FTO variant (encoded as chr16:53767042:T:C in the BGEN data for the AoU cohort) on the traits present in our `allofus_traits.csv` file. We have also added `Sex at birth` as a covariate. 
 
 ```yaml
 type: flat
@@ -34,14 +34,14 @@ variants:
   - chr16:53767042:T:C
 
 outcome_extra_covariates:
-  - "sex_at_birth"
+  - "Sex at birth"
 ```
 
 The optional `outcome_extra_covariates` are variables to be used as extra predictors of the outcome (but not as confounders). This information must be contained in the `allofus_traits.csv` file, along with your outcomes-of-interest. 
 
 The `allofus_traits.csv` might look as follows:
 
-| SAMPLE_ID | sex_at_birth | Height (cm) |
+| SAMPLE_ID | Sex at birth | Height (cm) |
 |-----------|--------------|-------------|
 | 100000    | Male         | 180         |
 | 100002    | Female       | 165         |
@@ -51,10 +51,10 @@ The `allofus_traits.csv` might look as follows:
 
 Here we have not specified any value for `ESTIMATORS_CONFIG`, and so the default, `ESTIMATORS_CONFIG = "wtmle-ose--tunedxgboost"`, will be used. This defines the estimation strategy, and more specifically, that we will be using Targeted Minimum-Loss Estimator as well as a One Step Estimator with a tuned XGBoost model to learn the outcome models (``Q_Y``) and propensity scores (``G``).
 
-The TarGene can then be run on the AoU Researcher Workbench as follows:
+Then TarGene can then be run on the AoU Researcher Workbench as follows:
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline -r v0.11.1 -profile gls,allofus
+nextflow run https://github.com/TARGENE/targene-pipeline -r v0.12.0 -profile gls,allofus
 ```
 
 By default, this will generate results in the `results/` directory in your `Cloud Analysis Terminal`. Once complete, you can upload these to your Workspace bucket using the following command:
