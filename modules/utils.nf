@@ -26,6 +26,39 @@ def leave_chr_out(chr_prefix, bed_files){
     return [chr_prefix, bed_files_not_matching_chr_prefix]
 }
 
+def CreateEstimatorsConfigChannel(configValue) {
+    configFiles = []
+    // Ensure configValue is a list
+    if (!(configValue instanceof List)) {
+        configValue = [configValue]
+    } 
+
+    // Return the list of estimator names or paths
+    for (estimator in configValue) {
+        def configFile = file(estimator)
+        // If it's not an existing file, create an empty file with this name
+        if (!configFile.exists()) {
+            configFile = file("${params.OUTDIR}/${estimator}")
+            configFile.text = '' // Create an empty file
+        }
+        configFiles.add(configFile)
+    }
+
+    return Channel.fromList(configFiles).collect()
+/*
+    return Channel.fromList(configValueList)
+        .map { estimator ->
+            def configFile = file(estimator)
+            if (!configFile.exists()) {
+                configFile = file("${params.OUTDIR}/${estimator}")
+                configFile.text = '' // Create an empty file
+            }
+            return configFile
+        }
+        .collect() */
+}
+
+/*
 def processEstimatorsConfig(configValue) {
     def configFiles = []
 
@@ -34,7 +67,7 @@ def processEstimatorsConfig(configValue) {
         configValue = [configValue]
     }
 
-    configValue.each { estimator ->
+    for (estimator in configValue) {
         def configFile = file(estimator)
 
         // If it's not an existing file, create an empty file with this name
@@ -43,8 +76,31 @@ def processEstimatorsConfig(configValue) {
             configFile.text = '' // Create an empty file
         }
 
-        configFiles << configFile.toString()
+        configFiles.add(configFile)
     }
 
+    // Return the list of configFiles
+    println configFiles
     return configFiles
 }
+*/
+/*
+def processEstimatorsConfig(configValue) {
+    if (configValue instanceof List) {
+        if (configValue.size() == 0) {
+            error "ESTIMATORS_CONFIG list is empty"
+        }
+        configValue = configValue[0]
+    }
+
+    def configFile = file(configValue)
+
+    // If it's not an existing file, create an empty file with this name
+    if (!configFile.exists()) {
+        configFile = file("${launchDir}/${configValue}")
+        configFile.text = '' // Create an empty file
+    } 
+
+    return configFile.toString()
+}
+*/
