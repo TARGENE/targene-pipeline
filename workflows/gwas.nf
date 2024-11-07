@@ -22,7 +22,6 @@ workflow GWAS {
 
     // Estimation
     EstimationWorkflow(
-        EstimationInputs.out.transpose(),
-        estimator_config,
+        EstimationInputs.out.transpose().combine(estimator_config),
     )
 }
