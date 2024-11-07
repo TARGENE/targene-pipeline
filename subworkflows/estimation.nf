@@ -7,10 +7,7 @@ workflow EstimationWorkflow {
 
     main:
         // Run the estimation process for each estimands configuration
-        tmle_results = TMLE(
-            dataset_and_estimands,
-            estimators_config,
-        ).collect()
+        tmle_results = TMLE(dataset_and_estimands.combine(estimators_config)).collect()
 
         // Generate TarGene Outputs
         GenerateOutputs(tmle_results)
