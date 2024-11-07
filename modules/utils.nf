@@ -27,25 +27,24 @@ def leave_chr_out(chr_prefix, bed_files){
 }
 
 def processEstimatorsConfig(configValue) {
-    // If it's a list, take the first element (ex: in NULL simulation test config)
-    if (configValue instanceof List) {
-        if (configValue.size() == 0) {
-            error "ESTIMATORS_CONFIG list is empty"
+    def configFiles = []
+
+    // Ensure configValue is a list
+    if (!(configValue instanceof List)) {
+        configValue = [configValue]
+    }
+
+    configValue.each { estimator ->
+        def configFile = file(estimator)
+
+        // If it's not an existing file, create an empty file with this name
+        if (!configFile.exists()) {
+            configFile = file("${params.OUTDIR}/${estimator}")
+            configFile.text = '' // Create an empty file
         }
-        configValue = configValue[0]
-        configValue = configValue.replaceAll(/^\[|\]$|"/, '') // remove brackets if present
+
+        configFiles << configFile.toString()
     }
 
-    def configFile = file(configValue)
-
-    // If it's not an existing file, create an empty file with this name
-    if (!configFile.exists()) {
-        configFile = file("${launchDir}/${configValue}")
-        configFile.text = '' // Create an empty file
-        println "Created empty estimators config file: ${configFile}"
-    } else {
-        println "Using existing estimators config file: ${configFile}"
-    }
-
-    return configFile.toString()
+    return configFiles
 }
