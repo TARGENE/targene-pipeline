@@ -23,7 +23,7 @@ The second requirement for the simulation to be realistic is that the density es
 To run the null simulation, the `REALISTIC_SIMULATION` entry should be added to the Nextflow command-line as follows
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.11.1 -entry REALISTIC_SIMULATION
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.12.0 -entry REALISTIC_SIMULATION
 ```
 
 ## Output
