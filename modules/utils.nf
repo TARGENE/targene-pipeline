@@ -79,7 +79,7 @@ def CreateEstimatorsConfigChannel(configValue) {
     return estimators_ch
 }
 
-/*
+
 def processEstimatorsConfig(configValue) {
     if (configValue instanceof List) {
         if (configValue.size() == 0) {
@@ -98,4 +98,3 @@ def processEstimatorsConfig(configValue) {
 
     return configFile.toString()
 }
-*/
