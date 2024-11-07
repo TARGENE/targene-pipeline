@@ -17,7 +17,7 @@ An overview of the workflow is presented in the following diagram.
 ## Example Run Command
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.11.0 -profile local -resume
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.12.0 -profile local -resume
 ```
 
 We now describe step by step how to setup a TarGene run configuration.

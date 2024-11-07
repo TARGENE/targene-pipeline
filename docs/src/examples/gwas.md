@@ -52,5 +52,5 @@ Finally, the `ESTIMATORS_CONFIG = "wtmle--glm"` defines the estimation strategy.
 The GWAS can then be run as follows:
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline -r v0.11.1 -profile local
+nextflow run https://github.com/TARGENE/targene-pipeline -r v0.12.0 -profile local
 ```
