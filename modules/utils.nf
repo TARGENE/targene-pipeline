@@ -39,7 +39,7 @@ def ProcessEstimatorsConfig(configValue) {
         def configFile = file(estimator)
         // If it's not an existing file, prepare a path for a new file
         if (!configFile.exists()) {
-            configFile = file("${params.OUTDIR}/${estimator}")
+            configFile = file("${launchDir}/${estimator}")
         }
         configFiles.add(configFile)
     }
