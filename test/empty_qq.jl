@@ -11,7 +11,7 @@ using YAML
 
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"] 
 
-@testset "Test custom_cohort_flat.config" begin
+@testset "Test that pipeline finishes even when no test can be computed" begin
     cmd = `nextflow run main.nf -c test/configs/empty_qq.config $args`
     @info string("The following command will be run:\n", cmd)
 
@@ -22,7 +22,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     dataset = DataFrame(Arrow.Table(joinpath("results", "datasets", "all_genotypes.data.arrow")))
     @test issubset(names(dataset_origin), names(dataset))
 
-    # Check QQ plot is not created
+    # Check QQ plot is still created
     @test isfile(joinpath("results", "QQ.png"))
     
     # Check full HDF5 results
