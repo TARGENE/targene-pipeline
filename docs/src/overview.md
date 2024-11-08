@@ -10,7 +10,7 @@ nextflow run https://github.com/TARGENE/targene-pipeline/ -r TARGENE_VERSION -en
 
 where:
 
-- `TARGENE_VERSION` is the latest TarGene version, e.g. `v0.12.0`
+- `TARGENE_VERSION` is the latest TarGene version, e.g. `v0.11.1`
 - `WORKFLOW_NAME` is any of the [TarGene workflows](@ref "Project Configuration")
 - `P` is an optional [Nextflow profile](https://www.nextflow.io/docs/latest/config.html) describing the computing platform (see [Platform Configuration](@ref)).
 

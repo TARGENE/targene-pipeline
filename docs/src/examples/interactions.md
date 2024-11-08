@@ -55,5 +55,5 @@ params {
 As usual, the pipeline can then be run as follows:
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline -r v0.12.0 -profile local
+nextflow run https://github.com/TARGENE/targene-pipeline -r v0.11.1 -profile local
 ```

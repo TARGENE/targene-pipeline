@@ -54,7 +54,7 @@ Here we have not specified any value for `ESTIMATORS_CONFIG`, and so the default
 Then TarGene can then be run on the AoU Researcher Workbench as follows:
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline -r v0.12.0 -profile gls,allofus
+nextflow run https://github.com/TARGENE/targene-pipeline -r v0.11.1 -profile gls,allofus
 ```
 
 By default, this will generate results in the `results/` directory in your `Cloud Analysis Terminal`. Once complete, you can upload these to your Workspace bucket using the following command:
