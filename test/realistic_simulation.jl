@@ -17,13 +17,12 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 
     @test all(length(x) == 4 - nf for (x, nf) in zip(results.ESTIMATES, results.N_FAILED)) # 2 bootstraps per run * 2 random seeds
     @test all(x == 1000 for x in results.SAMPLE_SIZE)
-    @test all(x -> x in [:OSE_GLM_GLM, :TMLE_GLM_GLM], results.ESTIMATOR)
+    @test all(x == :OSE_GLM_GLM for x in results.ESTIMATOR)
     # For the first joint estimand: 
     # Total number of traits = 11 - (Number of vehicles in household + Skin colour) = 9
     # For the second estimand, only 1 outcome
-    # Total = 9 + 1 = 10 estimands per-estimator 
-    # 2 estimators so 20 total estimands
-    @test nrow(results) == 20
+    # Total = 9 + 1 = 10 estimands 
+    @test nrow(results) == 10
 
     # Check properly resumed
     resume_time = @elapsed run(cmd)
