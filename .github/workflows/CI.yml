@@ -15,6 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         testrun:
+          - "ukb_gwas.jl"
+          - "ukb_estimands_file.jl"
+          - "custom_cohort_flat_config.jl"
+          - "ukb_interactions_group_config.jl"
+          - "empty_qq.jl"
+          - "make_dataset.jl"
+          - "null_simulation.jl"
           - "realistic_simulation.jl"
     steps:
       - uses: actions/checkout@v2
@@ -35,8 +42,6 @@ jobs:
       - uses: nf-core/setup-nextflow@v1.2.0
       - name: Instantiate test environment
         run: julia --project=test --startup-file=no -e'using Pkg;Pkg.instantiate()'
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Run tests
         run: julia --project=test --startup-file=no test/${{ matrix.testrun }} -profile ci -resume
   docs:
