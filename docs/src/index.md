@@ -70,7 +70,7 @@ nextflow run https://github.com/TARGENE/targene-pipeline/ -r TARGENE_VERSION -c 
 
 where:
 
-- `TARGENE_VERSION` is the latest TarGene version, e.g. `v0.12.0`.
+- `TARGENE_VERSION` is the latest TarGene version, e.g. `v0.11.1`.
 - `CONFIG_FILE` is a plain Nextflow configuration file describing what you want to do. Writing this configuration file is the hard work that this documentation is all about! However it needs not be scary, can could be as simple as:
 
 ```conf
