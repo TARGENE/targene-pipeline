@@ -62,7 +62,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 
     # Check properly resumed
     resume_time = @elapsed run(cmd)
-    @test resume_time < 200
+    @test resume_time < 100
 end
 
 end
