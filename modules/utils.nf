@@ -25,3 +25,28 @@ def leave_chr_out(chr_prefix, bed_files){
     def bed_files_not_matching_chr_prefix = bed_files.findAll{ fp -> !filepath_matches_chr_prefix(fp, chr_prefix) }
     return [chr_prefix, bed_files_not_matching_chr_prefix]
 }
+
+def CreateEstimatorsConfigChannel(configValue) {
+    estimators_ch = Channel.empty()
+    // Ensure configValue is a list
+    if (!(configValue instanceof List)) {
+        configValue = [configValue]
+    } 
+
+    // Iterate through each value of this list
+    for (estimator in configValue) {
+        def configFile = file(estimator)
+        def alreadyCreatedFile = file("${params.OUTDIR}/${estimator}") // Check if created from previous run
+        // If it's not an existing file, create an empty file with this name
+        if (!configFile.exists() && !alreadyCreatedFile.exists()) {
+            file(params.OUTDIR).mkdirs() // Create OUTDIR if it doesn't exist
+            configFile = file("${params.OUTDIR}/${estimator}")
+            configFile.text = '' // Create an empty file
+        } else if (alreadyCreatedFile.exists()) {
+            configFile = alreadyCreatedFile
+        }
+        estimators_ch = estimators_ch.mix(Channel.value(configFile))
+    }
+
+    return estimators_ch
+}
