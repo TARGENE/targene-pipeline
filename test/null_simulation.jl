@@ -22,7 +22,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     # For the first joint estimand: 
     # Total number of traits = 11 - (Number of vehicles in household + Skin colour) = 9
     # For the second estimand, only 1 outcome
-    # Total = 9 + 1 = 10 estimands
+    # Total = 9 + 1 = 10 estimands 
     @test nrow(results) == 10
 
     # Check properly resumed

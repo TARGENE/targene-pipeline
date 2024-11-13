@@ -14,6 +14,7 @@ docs/Manifest.toml
 *.DS_Store
 trace.txt*
 trace.txt
+trace*txt
 simulation/
 null_simulation/
 causal_gap_test/

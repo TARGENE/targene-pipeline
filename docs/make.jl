@@ -20,6 +20,7 @@ makedocs(;
             joinpath("examples", "gwas.md"),
             joinpath("examples", "phewas.md"),
             joinpath("examples", "interactions.md"),
+            joinpath("examples", "allofus.md")
         ],
         "User Guide" => [
             "overview.md",
