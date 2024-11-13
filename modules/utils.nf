@@ -36,11 +36,14 @@ def CreateEstimatorsConfigChannel(configValue) {
     // Iterate through each value of this list
     for (estimator in configValue) {
         def configFile = file(estimator)
+        def alreadyCreatedFile = file("${params.OUTDIR}/${estimator}") // Check if created from previous run
         // If it's not an existing file, create an empty file with this name
-        if (!configFile.exists()) {
+        if (!configFile.exists() && !alreadyCreatedFile.exists()) {
             file(params.OUTDIR).mkdirs() // Create OUTDIR if it doesn't exist
             configFile = file("${params.OUTDIR}/${estimator}")
             configFile.text = '' // Create an empty file
+        } else if (alreadyCreatedFile.exists()) {
+            configFile = alreadyCreatedFile
         }
         estimators_ch = estimators_ch.mix(Channel.value(configFile))
     }
