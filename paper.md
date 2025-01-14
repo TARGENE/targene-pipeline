@@ -41,7 +41,6 @@ affiliations:
 
 date: 14 January 2025
 bibliography: paper.bib
-
 ---
 
 # Summary
@@ -50,14 +49,17 @@ Genetic variations are the foundation of biological diversity, they play a cruci
 
 # Statement of Need
 
-All existing software for the estimation of genetic effects are based on restrictive parametric models, usually assuming linearity. Because they cannot account for complex dependencies, the estimates they report can be biased if such complexity exists in the data. REGENIE has the benefit to fit a whole-genome model for each phenotype of interest but still assumes linearity and normality. DeepNull is a semi-parametric method which models non-linear covariate effects but still assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants. KnockoffGWAS, aims at controlling the false discovery rate in genome-wide association studies. It does not rely on strong parametric assumptions but does not estimate effect sizes.
+All currently existing software for the estimation of genetic effects are based on parametric models, usually assuming linearity and normality. If these assumptions are violated, the effect sizes reported by these sofware will be biased. This can lead to spurious associations, hence inflating false discovery rates and leading to suboptimal resources allocation. We list here a few recent methods that address some of the limitations pointed out. REGENIE has the benefit to fit a whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but still assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS, aims at controlling the false discovery rate in genome-wide association studies. It does not rely on strong parametric assumptions but does not estimate effect sizes [@sesia2021false].
 
-# Mathematics
+# Mention
 
-# Citations
+TarGene
+- was used to evaluate the performance of semi-parametric estimators in real-world data scenarios using the the UK-Biobank in
+- is being used to discover causal genetic variants acting through biological mechanisms via interaction analyses 
 
-# Figures
 
 # Acknowledgements
 
-# References
+This work was supported by the United Kingdom Research and Innovation (grant EP/S02431X/1), UKRI Centre for Doctoral Training in Biomedical AI at the University of Edinburgh, School of Informatics.
+
+# References {#references .unnumbered}
