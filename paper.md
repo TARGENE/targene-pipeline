@@ -46,7 +46,11 @@ bibliography: paper.bib
 
 # Summary
 
+Genetic variations are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variations affect human traits is an ongoing challenge with applications in health and medicine. In some cases, genetic variations have an obvious effect because they change the coding sequence of a gene and thus its associated function. In the vast majority of cases however, variations occur in places of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline that enables the estimation of genetic effects on human traits from large-scale modern biomedical databases. It leverages both highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions.
+
 # Statement of need
+
+
 
 # Mathematics
 
