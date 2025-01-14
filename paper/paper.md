@@ -26,7 +26,7 @@ authors:
   - name: Sjoerd Viktor Beentjes
     affiliation: "1, 3, 4"
     orcid: 0000-0002-7998-4262
-  - Ava Khamseh
+  - name: Ava Khamseh
     affiliation: "1, 2, 4"
     orcid: 0000-0001-5203-2205
 affiliations:
@@ -45,7 +45,30 @@ bibliography: paper.bib
 
 # Summary
 
-Genetic variations are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variations affect human traits is an ongoing challenge with applications in healthcare and medicine. In some cases, genetic variations have an obvious effect because they change the coding sequence of a gene and thus its associated function. In the vast majority of cases however, variations occur in places of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions. In particular, TarGene enables the estimation of genetic effects on human traits from large-scale modern biomedical databases such as the UK-Biobank or the All of Us cohort.
+Genetic variations are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variations affect human traits is an ongoing challenge with applications in healthcare and medicine. In some cases, genetic variations have an obvious effect because they change the coding sequence of a gene and thus its function. In the vast majority of cases however, variations occur in places of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions. In particular, TarGene enables the estimation of genetic effects on human traits from large-scale modern biomedical databases such as the UK-Biobank or the All of Us cohort.
+
+## Features
+
+### Study Designs
+
+TarGene supports traditional study designs in population genetics, that is, genome-wide association studies (GWAS) and phenome-wide association studies (PheWAS). Because TarGene has a focus on complex effects, higher-order interactions (e.g. Gene x Gene x ... or Environment x Gene x ...) can also be investigated.
+
+### Databases
+
+TarGene works with standard formats:
+
+- plink `.bed` and `.bgen` formats for genotypes. 
+- `.csv` or `.arrow` format for phenotypes.
+
+Furthermore, TarGene has direct support for two large scale biomedical databases, the UK-Biobank and the All of Us cohort.
+
+### Genetic Effects
+
+TarGene can currently estimate both marginal variant effect and interaction effects up to any order including gene-environment interactions.
+
+### Scalability
+
+Machine-learning methods are computationally more intensive than traditional linear models. For this reason, TarGene leverages Nextflow and can parallelise independent estimation tasks across HPC platforms.
 
 # Statement of Need
 
