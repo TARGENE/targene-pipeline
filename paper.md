@@ -9,34 +9,39 @@ tags:
   - causal inference
 authors:
   - name: Olivier Labayle
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-3708-3706
     equal-contrib: true
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Author Without ORCID
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
-    affiliation: 2
-  - name: Author with no affiliation
-    corresponding: true # (This is how to denote the corresponding author)
-    affiliation: 3
-  - given-names: Ludwig
-    dropping-particle: van
-    surname: Beethoven
-    affiliation: 3
+    affiliation: "1, 2"
+  - name: Breeshey Roskams-Hieter
+    affiliation: "1, 2"
+    orcid: 0000-0002-1119-2576
+  - name: Joshua Slaughter
+    affiliation: "1, 2"
+    orcid: 0000-0002-1400-6599
+  - name: Kelsey Tetley-Campbell
+    affiliation: "1, 2"
+  - name: Chris P. Ponting
+    affiliation: "3"
+    orcid: 0000-0003-0202-7816
+  - name: Sjoerd Viktor Beentjes
+    affiliation: "1, 3, 4"
+    orcid: 0000-0002-7998-4262
+  - Ava Khamseh
+    affiliation: "1, 2, 4"
+    orcid: 0000-0001-5203-2205
 affiliations:
- - name: Lyman Spitzer, Jr. Fellow, Princeton University, United States
-   index: 1
-   ror: 00hx57361
- - name: Institution Name, Country
-   index: 2
- - name: Independent Researcher, Country
-   index: 3
-date: 13 August 2017
+  - name: MRC Human Genetics Unit, Institute of Genetics and Cancer, University of Edinburgh, Edinburgh EH4 2XU, United Kingdom.
+    index: 1
+  - name: School of Informatics, University of Edinburgh, Edinburgh EH8 9AB, United Kingdom
+    index: 2
+  - name: School of Mathematics and Maxwell Institute, University of Edinburgh, Edinburgh EH9 3FD, United Kingdom
+    index: 3
+  - name: Division of Biostatistics, University of California, Berkeley, CA, USA
+    index: 4
+
+date: 14 January 2025
 bibliography: paper.bib
 
-# Optional fields if submitting to a AAS journal too, see this blog post:
-# https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
-aas-doi: 10.3847/xxxxx <- update this with the DOI from AAS once you know it.
-aas-journal: Astrophysical Journal <- The name of the AAS journal.
 ---
 
 # Summary
