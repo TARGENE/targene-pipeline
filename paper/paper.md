@@ -45,34 +45,63 @@ bibliography: paper.bib
 
 # Summary
 
-Genetic variations are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variations affect human traits is an ongoing challenge with applications in healthcare and medicine. In some cases, genetic variations have an obvious effect because they change the coding sequence of a gene and thus its function. In the vast majority of cases however, variations occur in places of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions. In particular, TarGene enables the estimation of genetic effects on human traits from large-scale modern biomedical databases such as the UK-Biobank or the All of Us cohort.
-
-## Features
-
-### Study Designs
-
-TarGene supports traditional study designs in population genetics, that is, genome-wide association studies (GWAS) and phenome-wide association studies (PheWAS). Because TarGene has a focus on complex effects, higher-order interactions (e.g. Gene x Gene x ... or Environment x Gene x ...) can also be investigated.
-
-### Databases
-
-TarGene works with standard formats:
-
-- plink `.bed` and `.bgen` formats for genotypes. 
-- `.csv` or `.arrow` format for phenotypes.
-
-Furthermore, TarGene has direct support for two large scale biomedical databases, the UK-Biobank and the All of Us cohort.
-
-### Genetic Effects
-
-TarGene can currently estimate both marginal variant effect and interaction effects up to any order including gene-environment interactions.
-
-### Scalability
-
-Machine-learning methods are computationally more intensive than traditional linear models. For this reason, TarGene leverages Nextflow and can parallelise independent estimation tasks across HPC platforms.
+Genetic variations are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variations affect human traits is an ongoing challenge with applications in healthcare and medicine. In some cases, genetic variations have an obvious effect because they change the coding sequence of a gene and thus its function. In the vast majority of cases however, variations occur in places of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions.
 
 # Statement of Need
 
 All currently existing software for the estimation of genetic effects are based on parametric models, usually assuming linearity and normality. If these assumptions are violated, the effect sizes reported by these sofware will be biased. This can lead to spurious associations, hence inflating false discovery rates and leading to suboptimal resources allocation. We list here a few recent methods that address some of the limitations pointed out. REGENIE has the benefit to fit a whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but still assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS, aims at controlling the false discovery rate in genome-wide association studies. It does not rely on strong parametric assumptions but does not estimate effect sizes [@sesia2021false].
+
+# Features
+
+## Nextflow
+
+Machine-learning methods are computationally more intensive than traditional linear models. For this reason, TarGene leverages Nextflow [@di2017nextflow], a pipeline management system that can parallelize independent estimation tasks across HPC platforms.
+
+TarGene can be run via the command line
+
+```
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r TARGENE_VERSION -c CONFIG_FILE -resume
+```
+
+Below we list some important features of TarGene. The following `CONFIG_FILE` will serve as a running example.
+
+```
+params {
+    ESTIMANDS_CONFIG = "gwas_config.yaml"
+    ESTIMATORS_CONFIG = "wtmle--glm"
+
+    // UK-Biobank specific parameters
+    BED_FILES = "unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}"
+    UKB_CONFIG = "ukbconfig_gwas.yaml"
+    TRAITS_DATASET = "dataset.csv"
+}
+```
+
+## Databases
+
+TarGene works with standard formats, plink `.bed` and `.bgen` formats for genotypes, `.csv` or `.arrow` format for human traits. Furthermore, TarGene has direct support for two large scale biomedical databases, the UK-Biobank and the All of Us cohort. The example considers the UK-Biobank for which genotypes and traits are provided via `BED_FILES` and `TRAITS_DATASET` respectively. Because the UK-Biobank has a non-standard format, the `UKB_CONFIG` provides traits definition rules. The following is an illustration for BMI, but the default is to consider all 766 traits as defined by the geneAtlas [@canela2018atlas].
+
+```
+traits:
+  - fields:
+      - "21001"
+    phenotypes:
+      - name: "Body mass index (BMI)"
+```
+
+## Study Designs
+
+TarGene supports traditional study designs in population genetics, that is, genome-wide association studies (GWAS) and phenome-wide association studies (PheWAS). Because TarGene has a focus on complex effects, higher-order interactions (e.g. gene-gene-... or gene-environment-...) can also be investigated.
+
+The study design is specified in the `ESTIMANDS_CONFIG` YAML file. For a routine GWAS this can be as simple as:
+
+```
+type: gwas
+```
+
+## Estimators
+
+Semi-parametric estimators exist in multiple flavors, all with different properties. In TarGene we default to using Targeted Maximum-Likelihood Estimation [@van2018targeted] and XGboost [@chen2016xgboost] as the machine-learning model. This is because this was the best performing estimator in simulations for a variety of tasks. But if computational restrictions exist, tradeoffs must be made. In the running example, XGBoost is replaced by a generalised linear model.
 
 # Mention
 
