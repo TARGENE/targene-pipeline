@@ -46,11 +46,11 @@ bibliography: paper.bib
 
 # Summary
 
-Genetic variations are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variations affect human traits is an ongoing challenge with applications in health and medicine. In some cases, genetic variations have an obvious effect because they change the coding sequence of a gene and thus its associated function. In the vast majority of cases however, variations occur in places of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline that enables the estimation of genetic effects on human traits from large-scale modern biomedical databases. It leverages both highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions.
+Genetic variations are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variations affect human traits is an ongoing challenge with applications in healthcare and medicine. In some cases, genetic variations have an obvious effect because they change the coding sequence of a gene and thus its associated function. In the vast majority of cases however, variations occur in places of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions. In particular, TarGene enables the estimation of genetic effects on human traits from large-scale modern biomedical databases such as the UK-Biobank or the All of Us cohort.
 
-# Statement of need
+# Statement of Need
 
-
+All existing software for the estimation of genetic effects are based on restrictive parametric models, usually assuming linearity. Because they cannot account for complex dependencies, the estimates they report can be biased if such complexity exists in the data. REGENIE has the benefit to fit a whole-genome model for each phenotype of interest but still assumes linearity and normality. DeepNull is a semi-parametric method which models non-linear covariate effects but still assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants. KnockoffGWAS, aims at controlling the false discovery rate in genome-wide association studies. It does not rely on strong parametric assumptions but does not estimate effect sizes.
 
 # Mathematics
 
