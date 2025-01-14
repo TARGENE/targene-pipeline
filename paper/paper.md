@@ -49,7 +49,7 @@ Genetic variations are the foundation of biological diversity, they play a cruci
 
 # Statement of Need
 
-All currently existing software for the estimation of genetic effects are based on parametric models, usually assuming linearity and normality. If these assumptions are violated, the effect sizes reported by these sofware will be biased. This can lead to spurious associations, hence inflating false discovery rates and leading to suboptimal resources allocation. We list here a few recent methods that address some of the limitations pointed out. REGENIE has the benefit to fit a whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but still assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS, aims at controlling the false discovery rate in genome-wide association studies. It does not rely on strong parametric assumptions but does not estimate effect sizes [@sesia2021false].
+All currently existing software for the estimation of genetic effects are based on parametric models, usually assuming linearity and normality. If these assumptions are violated, the effect sizes reported by these sofware will be biased. This can lead to spurious associations, hence inflating false discovery rates and leading to suboptimal resources allocation. We list here a few recent methods that address part of the limitations pointed out but lack the full flexibility of TarGene. REGENIE has the benefit to fit a whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but still assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS, aims at controlling the false discovery rate in genome-wide association studies. It does not rely on strong parametric assumptions but does not estimate effect sizes [@sesia2021false].
 
 # Features
 
@@ -60,7 +60,10 @@ Machine-learning methods are computationally more intensive than traditional lin
 TarGene can be run via the command line
 
 ```
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r TARGENE_VERSION -c CONFIG_FILE -resume
+nextflow run https://github.com/TARGENE/targene-pipeline/ \
+  -r TARGENE_VERSION \
+  -c CONFIG_FILE \
+  -resume
 ```
 
 Below we list some important features of TarGene. The following `CONFIG_FILE` will serve as a running example.
