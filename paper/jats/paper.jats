@@ -71,7 +71,7 @@ methods.</article-title>
 <surname>Ponting</surname>
 <given-names>Chris P.</given-names>
 </name>
-<xref ref-type="aff" rid="aff-3"/>
+<xref ref-type="aff" rid="aff-1"/>
 </contrib>
 <contrib contrib-type="author">
 <contrib-id contrib-id-type="orcid">https://orcid.org/0000-0001-5203-2205</contrib-id>
@@ -152,14 +152,14 @@ a Creative Commons Attribution 4.0 International License (CC BY
 <body>
 <sec id="summary">
   <title>Summary</title>
-  <p>Genetic variations are the foundation of biological diversity, they
+  <p>Genetic variants are the foundation of biological diversity, they
   play a crucial role in the adaptability, survival, and evolution of
-  populations. Discovering which and how genetic variations affect human
+  populations. Discovering which and how genetic variants affect human
   traits is an ongoing challenge with applications in healthcare and
-  medicine. In some cases, genetic variations have an obvious effect
+  medicine. In some cases, genetic variants have an obvious effect
   because they change the coding sequence of a gene and thus its
-  function. In the vast majority of cases however, variations occur in
-  places of unknown function and could impact human traits or disease
+  function. In the vast majority of cases however, variants occur in
+  sequences of unknown function and could impact human traits or disease
   mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging
   highly flexible machine-learning methods and semi-parametric
   estimation theory to capture these complex genetic dependencies
@@ -175,11 +175,11 @@ a Creative Commons Attribution 4.0 International License (CC BY
   zhou2018efficiently</xref>). If these assumptions are violated, the
   reported effect sizes will be biased and error rates inflated. In
   particular, this can lead to inflated false discovery rates and
-  suboptimal resources allocation. Some recently published software also
-  account for more complex relationships but do not offer the full
-  modelling flexibility provided by TarGene. REGENIE has the benefit to
-  fit a whole-genome model for each phenotype of interest but still
-  assumes linearity and normality
+  suboptimal allocation of computational resources and research funding.
+  Some recently published software also account for more complex
+  relationships but do not offer the full modelling flexibility provided
+  by TarGene. REGENIE has the benefit to fit a whole-genome model for
+  each phenotype of interest but still assumes linearity and normality
   (<xref alt="Mbatchou et al., 2021" rid="ref-mbatchou2021computationally" ref-type="bibr">Mbatchou
   et al., 2021</xref>). DeepNull is a semi-parametric method which
   models non-linear covariate effects but also assumes genetic effects
@@ -197,7 +197,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
   (<xref alt="Van der Laan et al., 2011" rid="ref-van2011targeted" ref-type="bibr">Van
   der Laan et al., 2011</xref>), a framework combining methods from
   causal inference, machine-learning and semi-parametric statistical
-  theory. Succinctly, the estimation process works as follows. In an
+  theory. Succinctly, the estimation process works as follows. In a
   first step, flexible machine-learning algorithms are fitted to the
   data, hence minimizing an appropriate loss function (e.g., negative
   log-likelihood). A second step, known as the targeting step, reduces
@@ -220,7 +220,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
     ESTIMANDS_CONFIG = &quot;gwas_config.yaml&quot;
     ESTIMATORS_CONFIG = &quot;wtmle--tunedxgboost&quot;
 
-    // UK-Biobank specific parameters
+    // UK Biobank specific parameters
     BED_FILES = &quot;unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}&quot;
     UKB_CONFIG = &quot;ukbconfig_gwas.yaml&quot;
     TRAITS_DATASET = &quot;dataset.csv&quot;
@@ -244,12 +244,12 @@ a Creative Commons Attribution 4.0 International License (CC BY
     for genotypes, <monospace>.csv</monospace> or
     <monospace>.arrow</monospace> format for human traits. Furthermore,
     TarGene has direct support for two large scale biomedical databases,
-    the UK-Biobank
+    the UK Biobank
     (<xref alt="Bycroft et al., 2018" rid="ref-bycroft2018uk" ref-type="bibr">Bycroft
     et al., 2018</xref>) and the All of Us cohort
     (<xref alt="Us Research Program Investigators, 2019" rid="ref-all2019all" ref-type="bibr">Us
     Research Program Investigators, 2019</xref>). The example considers
-    the UK-Biobank for which genotypes and traits are provided via
+    the UK Biobank for which genotypes and traits are provided via
     <monospace>BED_FILES</monospace> and
     <monospace>TRAITS_DATASET</monospace> respectively. Because the
     UK-Biobank has a non-standard format, the
@@ -269,9 +269,9 @@ a Creative Commons Attribution 4.0 International License (CC BY
     <p>TarGene supports traditional study designs in population
     genetics, that is, genome-wide association studies (GWAS) and
     phenome-wide association studies (PheWAS). Because TarGene has a
-    focus on complex effects, higher-order interactions
-    (e.g. gene-gene-… or gene-environment-…) can also be
-    investigated.</p>
+    focus on complex effects, interactions (e.g. gene-gene,
+    gene-environment, gene-gene-environment) can also be investigated up
+    to any order.</p>
     <p>The study design is specified in the
     <monospace>ESTIMANDS_CONFIG</monospace> YAML file. For a routine
     GWAS the content of this file can be as simple as:</p>
@@ -293,10 +293,18 @@ a Creative Commons Attribution 4.0 International License (CC BY
 </sec>
 <sec id="acknowledgements">
   <title>Acknowledgements</title>
-  <p>This work was supported by the United Kingdom Research and
+  <p>Olivier Labayle was supported by the United Kingdom Research and
   Innovation (grant EP/S02431X/1), UKRI Centre for Doctoral Training in
-  Biomedical AI at the University of Edinburgh, School of
-  Informatics.</p>
+  Biomedical AI at the University of Edinburgh, School of Informatics.
+  Breeshey Roskams-Hieter was supported by the Health Data Research UK
+  &amp; The Alan Turing Institute Wellcome PhD Programme in Health Data
+  Science (Grant Ref: 218529/Z/19/Z). Mark van der Laan is supported by
+  NIH grant R01AI074345. Chris P. Ponting was funded by the MRC
+  (MC_UU_00007/15). Ava Khamseh was supported by the XDF Programme from
+  the University of Edinburgh and Medical Research Council
+  (MC_UU_00009/2), and by a Langmuir Talent Development Fellowship from
+  the Institute of Genetics and Cancer, and a philanthropic donation
+  from Hugh and Josseline Langmuir.</p>
 </sec>
 </body>
 <back>
