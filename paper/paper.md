@@ -22,7 +22,7 @@ authors:
   - name: Mark J. van der Laan
     affiliation: "4"
   - name: Chris P. Ponting
-    affiliation: "3"
+    affiliation: "1"
     orcid: 0000-0003-0202-7816
   - name: Ava Khamseh
     affiliation: "1, 2, 4"
@@ -46,11 +46,11 @@ bibliography: paper.bib
 
 # Summary
 
-Genetic variations are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variations affect human traits is an ongoing challenge with applications in healthcare and medicine. In some cases, genetic variations have an obvious effect because they change the coding sequence of a gene and thus its function. In the vast majority of cases however, variations occur in places of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions.
+Genetic variants are the foundation of biological diversity, they play a crucial role in the adaptability, survival, and evolution of populations. Discovering which and how genetic variants affect human traits is an ongoing challenge with applications in healthcare and medicine. In some cases, genetic variants have an obvious effect because they change the coding sequence of a gene and thus its function. In the vast majority of cases however, variants occur in sequences of unknown function and could impact human traits or disease mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging highly flexible machine-learning methods and semi-parametric estimation theory to capture these complex genetic dependencies including higher-order interactions.
 
 # Statement of Need
 
-All currently existing software for the estimation of genetic effects are based on parametric distributions, additionally assuming linearity of the relationship between variants and traits [@purcell2007plink,yang2011gcta,loh2018mixed,zhou2018efficiently]. If these assumptions are violated, the reported effect sizes will be biased and error rates inflated. In particular, this can lead to inflated false discovery rates and suboptimal resources allocation. Some recently published software also account for more complex relationships but do not offer the full modelling flexibility provided by TarGene. REGENIE has the benefit to fit a whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but also assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS [@sesia2021false], is non-parametric but does not estimate effect sizes, instead it aims at controlling the false discovery rate in genome-wide association studies. In comparison, TarGene is the only method able to model arbitrarily complex genetic effects while preserving the validity of statistical inferences. It does so by leveraging Targeted Learning [@van2011targeted], a framework combining methods from causal inference, machine-learning and semi-parametric statistical theory. Succinctly, the estimation process works as follows. In an first step, flexible machine-learning algorithms are fitted to the data, hence minimizing an appropriate loss function (e.g., negative log-likelihood). A second step, known as the targeting step, reduces the estimation bias in a theoretically optimal way.
+All currently existing software for the estimation of genetic effects are based on parametric distributions, additionally assuming linearity of the relationship between variants and traits [@purcell2007plink,yang2011gcta,loh2018mixed,zhou2018efficiently]. If these assumptions are violated, the reported effect sizes will be biased and error rates inflated. In particular, this can lead to inflated false discovery rates and suboptimal allocation of computational resources and research funding. Some recently published software also account for more complex relationships but do not offer the full modelling flexibility provided by TarGene. REGENIE has the benefit to fit a whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but also assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS [@sesia2021false], is non-parametric but does not estimate effect sizes, instead it aims at controlling the false discovery rate in genome-wide association studies. In comparison, TarGene is the only method able to model arbitrarily complex genetic effects while preserving the validity of statistical inferences. It does so by leveraging Targeted Learning [@van2011targeted], a framework combining methods from causal inference, machine-learning and semi-parametric statistical theory. Succinctly, the estimation process works as follows. In a first step, flexible machine-learning algorithms are fitted to the data, hence minimizing an appropriate loss function (e.g., negative log-likelihood). A second step, known as the targeting step, reduces the estimation bias in a theoretically optimal way.
 
 # Features
 
@@ -70,7 +70,7 @@ params {
     ESTIMANDS_CONFIG = "gwas_config.yaml"
     ESTIMATORS_CONFIG = "wtmle--tunedxgboost"
 
-    // UK-Biobank specific parameters
+    // UK Biobank specific parameters
     BED_FILES = "unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}"
     UKB_CONFIG = "ukbconfig_gwas.yaml"
     TRAITS_DATASET = "dataset.csv"
@@ -85,7 +85,7 @@ Machine-learning methods are computationally intensive, however statistical gene
 
 ## Databases
 
-TarGene works with standard formats, plink `.bed` and `.bgen` formats for genotypes, `.csv` or `.arrow` format for human traits. Furthermore, TarGene has direct support for two large scale biomedical databases, the UK-Biobank [@bycroft2018uk] and the All of Us cohort [@all2019all]. The example considers the UK-Biobank for which genotypes and traits are provided via `BED_FILES` and `TRAITS_DATASET` respectively. Because the UK-Biobank has a non-standard format, the `UKB_CONFIG` provides traits definition rules. The following is an illustration for BMI, but the default is to consider all 766 traits as defined by the geneAtlas [@canela2018atlas].
+TarGene works with standard formats, plink `.bed` and `.bgen` formats for genotypes, `.csv` or `.arrow` format for human traits. Furthermore, TarGene has direct support for two large scale biomedical databases, the UK Biobank [@bycroft2018uk] and the All of Us cohort [@all2019all]. The example considers the UK Biobank for which genotypes and traits are provided via `BED_FILES` and `TRAITS_DATASET` respectively. Because the UK-Biobank has a non-standard format, the `UKB_CONFIG` provides traits definition rules. The following is an illustration for BMI, but the default is to consider all 766 traits as defined by the geneAtlas [@canela2018atlas].
 
 ```
 traits:
@@ -97,7 +97,7 @@ traits:
 
 ## Study Designs
 
-TarGene supports traditional study designs in population genetics, that is, genome-wide association studies (GWAS) and phenome-wide association studies (PheWAS). Because TarGene has a focus on complex effects, higher-order interactions (e.g. gene-gene-... or gene-environment-...) can also be investigated.
+TarGene supports traditional study designs in population genetics, that is, genome-wide association studies (GWAS) and phenome-wide association studies (PheWAS). Because TarGene has a focus on complex effects, interactions (e.g. gene-gene, gene-environment, gene-gene-environment) can also be investigated up to any order.
 
 The study design is specified in the `ESTIMANDS_CONFIG` YAML file. For a routine GWAS the content of this file can be as simple as:
 
@@ -111,6 +111,10 @@ Semi-parametric estimators exist in multiple flavors, all with different propert
 
 # Acknowledgements
 
-This work was supported by the United Kingdom Research and Innovation (grant EP/S02431X/1), UKRI Centre for Doctoral Training in Biomedical AI at the University of Edinburgh, School of Informatics.
+Olivier Labayle was supported by the United Kingdom Research and Innovation (grant EP/S02431X/1), UKRI Centre for Doctoral Training in Biomedical AI at the University of Edinburgh, School of Informatics.
+Breeshey Roskams-Hieter was supported by the Health Data Research UK & The Alan Turing Institute Wellcome PhD Programme in Health Data Science (Grant Ref: 218529/Z/19/Z).
+Mark van der Laan is supported by NIH grant R01AI074345.
+Chris P. Ponting was funded by the MRC (MC_UU_00007/15).
+Ava Khamseh was supported by the XDF Programme from the University of Edinburgh and Medical Research Council (MC_UU_00009/2), and by a Langmuir Talent Development Fellowship from the Institute of Genetics and Cancer, and a philanthropic donation from Hugh and Josseline Langmuir.
 
 # References {#references .unnumbered}
