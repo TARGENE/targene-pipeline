@@ -1,5 +1,8 @@
 type: gwas
 
+estimands: 
+  - type: ATE
+  
 outcome_extra_covariates:
   - "Number of vehicles in household"
   - "Cheese intake"

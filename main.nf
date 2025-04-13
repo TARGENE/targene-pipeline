@@ -14,6 +14,7 @@ params.COHORT = "UKB"
 params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
 params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
+params.SUBSET_BED_FILES = "NO_SUBSET_BED_FILES"
 
 // Confounding adjustment by PCA
 params.NB_PCS = 6
@@ -22,7 +23,7 @@ params.LD_BLOCKS = "${projectDir}/assets/NO_LD_BLOCKS"
 params.FLASHPCA_EXCLUSION_REGIONS = "${projectDir}/assets/exclusion_regions_hg19.txt"
 
 // Estimands Generation 
-params.BATCH_SIZE = 50
+params.BATCH_SIZE = 500
 
 // CUSTOM
 params.ESTIMANDS_CONFIG = "NO_ESTIMANDS_CONFIG"
