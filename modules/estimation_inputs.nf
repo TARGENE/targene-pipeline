@@ -21,7 +21,7 @@ process EstimationInputs {
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --threads=${task.cpus} --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --threads=1 --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
         estimation-inputs ${config_file} \
         --genotypes-prefix=${genotypes_prefix} \
         --traits-file=${traits} \
