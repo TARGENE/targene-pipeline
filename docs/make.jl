@@ -11,7 +11,7 @@ makedocs(;
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://TARGENE.github.io/targene-pipeline",
         edit_link="main",
-        assets=String[],
+        assets=String["assets/logo.ico"],
     ),
     pages=[
         "Home" => "index.md",
