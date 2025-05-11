@@ -13,7 +13,8 @@ process EstimationInputs {
         path config_file
 
     output:
-        tuple path("${genotypes_id}.data.arrow"), path("${genotypes_id}.*.jls")
+        tuple path("${genotypes_id}.data.arrow"), path("${genotypes_id}.*.jls") emit: inputs
+        path("${genotypes_id}.mapping.txt"), emit: mapping
 
     script:
         genotypes_prefix = longest_prefix(genotypes)
