@@ -85,7 +85,7 @@ Machine-learning methods are computationally intensive, however statistical gene
 
 ## Databases
 
-TarGene works with standard formats, plink `.bed` and `.bgen` formats for genotypes, `.csv` or `.arrow` format for human traits. Furthermore, TarGene has direct support for two large scale biomedical databases, the UK Biobank [@bycroft2018uk] and the All of Us cohort [@all2019all]. The example considers the UK Biobank for which genotypes and traits are provided via `BED_FILES` and `TRAITS_DATASET` respectively. Because the UK-Biobank has a non-standard format, the `UKB_CONFIG` provides traits definition rules. The following is an illustration for BMI, but the default is to consider all 766 traits as defined by the geneAtlas [@canela2018atlas].
+TarGene works with standard formats, plink `.bed` and `.bgen` formats for genotypes, `.csv` or `.arrow` format for human traits. Furthermore, TarGene has direct support for two large scale biomedical databases, the UK Biobank [@bycroft2018uk] and the All of Us cohort [@all2019all]. The example considers the UK Biobank for which genotypes and traits are provided via `BED_FILES` and `TRAITS_DATASET` respectively. Because the UK Biobank has a non-standard format, the `UKB_CONFIG` provides traits definition rules. The following is an illustration for BMI, but the default is to consider all 766 traits as defined by the geneAtlas [@canela2018atlas].
 
 ```
 traits:
