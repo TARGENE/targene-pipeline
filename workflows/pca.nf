@@ -36,7 +36,7 @@ workflow PCA {
     emit:
         traits = ExtractTraits.out
         iid_genotypes = IIDGenotypes.out
-        pcs = FlashPCA.out
+        pcs = FlashPCA.out.pcs
 
 }
 
@@ -75,5 +75,5 @@ workflow LocoPCA {
     emit:
         traits = ExtractTraits.out
         iid_genotypes = loco_genotypes
-        confounders = FlashPCA.out
+        confounders = FlashPCA.out.pcs
 }
