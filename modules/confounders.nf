@@ -92,12 +92,14 @@ process SampleQCFilter {
 process FlashPCA {
     label "multithreaded"
     label 'pca_image'
+    publishDir "${params.OUTDIR}/pve", mode: 'symlink', pattern: "*pve*"
 
     input:
         tuple val(genotypes_id), path(bedfiles)
     
     output:
-        tuple val(genotypes_id), path("pcs.${genotypes_id}.txt")
+        tuple val(genotypes_id), path("pcs.${genotypes_id}.txt"), emit: pcs
+        tuple val(genotypes_id), path("pve.${genotypes_id}.txt")
     
     script:
         input_prefix = bedfiles[0].toString().minus('.bed')
