@@ -33,6 +33,11 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     # Check QQ
     @test isfile(joinpath("results", "QQ.png"))
 
+    # Check pve output files 
+    @test isfile(joinpath("results","pve","pve.ukb_chr1.txt"))
+    @test isfile(joinpath("results","pve","pve.ukb_chr2.txt"))
+    @test isfile(joinpath("results","pve","pve.ukb_chr3.txt"))
+
     # Check results
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
     @test size(results, 1) > 80
