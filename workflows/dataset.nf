@@ -43,7 +43,7 @@ workflow MAKE_DATASET {
     MakeDataset(
         bgen_files,
         ExtractTraits.out,
-        FlashPCA.out,
+        FlashPCA.out.pcs,
         variant_list
     )
 }
