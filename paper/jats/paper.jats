@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.2 20190208//EN"
+                  "JATS-publishing1.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.2" article-type="other">
+<front>
+<journal-meta>
+<journal-id></journal-id>
+<journal-title-group>
+<journal-title>Journal of Open Source Software</journal-title>
+<abbrev-journal-title>JOSS</abbrev-journal-title>
+</journal-title-group>
+<issn publication-format="electronic">2475-9066</issn>
+<publisher>
+<publisher-name>Open Journals</publisher-name>
+</publisher>
+</journal-meta>
+<article-meta>
+<article-id pub-id-type="publisher-id">0</article-id>
+<article-id pub-id-type="doi">N/A</article-id>
+<title-group>
+<article-title>TarGene: A Nextflow pipeline for the estimation of
+genetic effects on human traits via semi-parametric
+methods.</article-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-3708-3706</contrib-id>
+<name>
+<surname>Labayle</surname>
+<given-names>Olivier</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+<xref ref-type="aff" rid="aff-2"/>
+</contrib>
+<contrib contrib-type="author">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-1119-2576</contrib-id>
+<name>
+<surname>Roskams-Hieter</surname>
+<given-names>Breeshey</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+<xref ref-type="aff" rid="aff-2"/>
+</contrib>
+<contrib contrib-type="author">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-1400-6599</contrib-id>
+<name>
+<surname>Slaughter</surname>
+<given-names>Joshua</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+<xref ref-type="aff" rid="aff-2"/>
+</contrib>
+<contrib contrib-type="author">
+<name>
+<surname>Tetley-Campbell</surname>
+<given-names>Kelsey</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+<xref ref-type="aff" rid="aff-2"/>
+</contrib>
+<contrib contrib-type="author">
+<name>
+<surname>van der Laan</surname>
+<given-names>Mark J.</given-names>
+</name>
+<xref ref-type="aff" rid="aff-4"/>
+</contrib>
+<contrib contrib-type="author">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0003-0202-7816</contrib-id>
+<name>
+<surname>Ponting</surname>
+<given-names>Chris P.</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+</contrib>
+<contrib contrib-type="author">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0001-5203-2205</contrib-id>
+<name>
+<surname>Khamseh</surname>
+<given-names>Ava</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+<xref ref-type="aff" rid="aff-2"/>
+<xref ref-type="aff" rid="aff-4"/>
+</contrib>
+<contrib contrib-type="author">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-7998-4262</contrib-id>
+<name>
+<surname>Beentjes</surname>
+<given-names>Sjoerd Viktor</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+<xref ref-type="aff" rid="aff-3"/>
+<xref ref-type="aff" rid="aff-4"/>
+</contrib>
+<aff id="aff-1">
+<institution-wrap>
+<institution>MRC Human Genetics Unit, Institute of Genetics and Cancer,
+University of Edinburgh, Edinburgh EH4 2XU, United
+Kingdom.</institution>
+</institution-wrap>
+</aff>
+<aff id="aff-2">
+<institution-wrap>
+<institution>School of Informatics, University of Edinburgh, Edinburgh
+EH8 9AB, United Kingdom</institution>
+</institution-wrap>
+</aff>
+<aff id="aff-3">
+<institution-wrap>
+<institution>School of Mathematics and Maxwell Institute, University of
+Edinburgh, Edinburgh EH9 3FD, United Kingdom</institution>
+</institution-wrap>
+</aff>
+<aff id="aff-4">
+<institution-wrap>
+<institution>Division of Biostatistics, University of California,
+Berkeley, CA, USA</institution>
+</institution-wrap>
+</aff>
+</contrib-group>
+<pub-date date-type="pub" publication-format="electronic" iso-8601-date="2025-01-14">
+<day>14</day>
+<month>1</month>
+<year>2025</year>
+</pub-date>
+<volume>¿VOL?</volume>
+<issue>¿ISSUE?</issue>
+<fpage>¿PAGE?</fpage>
+<permissions>
+<copyright-statement>Authors of papers retain copyright and release the
+work under a Creative Commons Attribution 4.0 International License (CC
+BY 4.0)</copyright-statement>
+<copyright-year>1970</copyright-year>
+<copyright-holder>The article authors</copyright-holder>
+<license license-type="open-access" xlink:href="https://creativecommons.org/licenses/by/4.0/">
+<license-p>Authors of papers retain copyright and release the work under
+a Creative Commons Attribution 4.0 International License (CC BY
+4.0)</license-p>
+</license>
+</permissions>
+<kwd-group kwd-group-type="author">
+<kwd>nextflow</kwd>
+<kwd>statistics</kwd>
+<kwd>semi-parametric statistics</kwd>
+<kwd>population genetics</kwd>
+<kwd>genetic effects</kwd>
+<kwd>causal inference</kwd>
+</kwd-group>
+</article-meta>
+</front>
+<body>
+<sec id="summary">
+  <title>Summary</title>
+  <p>Genetic variants are the foundation of biological diversity, they
+  play a crucial role in the adaptability, survival, and evolution of
+  populations. Discovering which and how genetic variants affect human
+  traits is an ongoing challenge with applications in healthcare and
+  medicine. In some cases, genetic variants have an obvious effect
+  because they change the coding sequence of a gene and thus its
+  function. In the vast majority of cases however, variants occur in
+  sequences of unknown function and could impact human traits or disease
+  mechanisms in complex ways. TarGene is a Nextflow pipeline leveraging
+  highly flexible machine-learning methods and semi-parametric
+  estimation theory to capture these complex genetic dependencies
+  including higher-order interactions.</p>
+</sec>
+<sec id="statement-of-need">
+  <title>Statement of Need</title>
+  <p>All currently existing software for the estimation of genetic
+  effects are based on parametric distributions, additionally assuming
+  linearity of the relationship between variants and traits
+  (<xref alt="Purcell et al., 2007, pp. yang2011gcta, loh2018mixed, zhou2018efficiently" rid="ref-purcell2007plink" ref-type="bibr">Purcell
+  et al., 2007, pp. yang2011gcta, loh2018mixed,
+  zhou2018efficiently</xref>). If these assumptions are violated, the
+  reported effect sizes will be biased and error rates inflated. In
+  particular, this can lead to inflated false discovery rates and
+  suboptimal allocation of computational resources and research funding.
+  Some recently published software also account for more complex
+  relationships but do not offer the full modelling flexibility provided
+  by TarGene. REGENIE has the benefit to fit a whole-genome model for
+  each phenotype of interest but still assumes linearity and normality
+  (<xref alt="Mbatchou et al., 2021" rid="ref-mbatchou2021computationally" ref-type="bibr">Mbatchou
+  et al., 2021</xref>). DeepNull is a semi-parametric method which
+  models non-linear covariate effects but also assumes genetic effects
+  to be linear and does not allow complex interactions between
+  covariates and genetic variants
+  (<xref alt="McCaw et al., 2022" rid="ref-mccaw2022deepnull" ref-type="bibr">McCaw
+  et al., 2022</xref>). KnockoffGWAS
+  (<xref alt="Sesia et al., 2021" rid="ref-sesia2021false" ref-type="bibr">Sesia
+  et al., 2021</xref>), is non-parametric but does not estimate effect
+  sizes, instead it aims at controlling the false discovery rate in
+  genome-wide association studies. In comparison, TarGene is the only
+  method able to model arbitrarily complex genetic effects while
+  preserving the validity of statistical inferences. It does so by
+  leveraging Targeted Learning
+  (<xref alt="Van der Laan et al., 2011" rid="ref-van2011targeted" ref-type="bibr">Van
+  der Laan et al., 2011</xref>), a framework combining methods from
+  causal inference, machine-learning and semi-parametric statistical
+  theory. Succinctly, the estimation process works as follows. In a
+  first step, flexible machine-learning algorithms are fitted to the
+  data, hence minimizing an appropriate loss function (e.g., negative
+  log-likelihood). A second step, known as the targeting step, reduces
+  the estimation bias in a theoretically optimal way.</p>
+</sec>
+<sec id="features">
+  <title>Features</title>
+  <p>TarGene is a fully featured command-line software, which can be run
+  as follow:</p>
+  <preformat>nextflow run https://github.com/TARGENE/targene-pipeline/ \
+  -r TARGENE_VERSION \
+  -c CONFIG_FILE \
+  -resume</preformat>
+  <p>where the <monospace>CONFIG_FILE</monospace> provides the list of
+  problem specific parameters (data, arguments, options). Below we list
+  some important features of TarGene, the following
+  <monospace>CONFIG_FILE</monospace> will serve as a running
+  example.</p>
+  <preformat>params {
+    ESTIMANDS_CONFIG = &quot;gwas_config.yaml&quot;
+    ESTIMATORS_CONFIG = &quot;wtmle--tunedxgboost&quot;
+
+    // UK Biobank specific parameters
+    BED_FILES = &quot;unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}&quot;
+    UKB_CONFIG = &quot;ukbconfig_gwas.yaml&quot;
+    TRAITS_DATASET = &quot;dataset.csv&quot;
+}</preformat>
+  <p>For detailed explanations, please refer to the online
+  <ext-link ext-link-type="uri" xlink:href="https://targene.github.io/targene-pipeline/stable/">documentation</ext-link>.</p>
+  <sec id="scalability">
+    <title>Scalability</title>
+    <p>Machine-learning methods are computationally intensive, however
+    statistical genetics analyses need to scale to hundreds of thousands
+    of variants and thousands of traits. For this reason, TarGene
+    leverages Nextflow
+    (<xref alt="Di Tommaso et al., 2017" rid="ref-di2017nextflow" ref-type="bibr">Di
+    Tommaso et al., 2017</xref>), a pipeline management system that can
+    parallelize independent estimation tasks across HPC platforms.</p>
+  </sec>
+  <sec id="databases">
+    <title>Databases</title>
+    <p>TarGene works with standard formats, plink
+    <monospace>.bed</monospace> and <monospace>.bgen</monospace> formats
+    for genotypes, <monospace>.csv</monospace> or
+    <monospace>.arrow</monospace> format for human traits. Furthermore,
+    TarGene has direct support for two large scale biomedical databases,
+    the UK Biobank
+    (<xref alt="Bycroft et al., 2018" rid="ref-bycroft2018uk" ref-type="bibr">Bycroft
+    et al., 2018</xref>) and the All of Us cohort
+    (<xref alt="Us Research Program Investigators, 2019" rid="ref-all2019all" ref-type="bibr">Us
+    Research Program Investigators, 2019</xref>). The example considers
+    the UK Biobank for which genotypes and traits are provided via
+    <monospace>BED_FILES</monospace> and
+    <monospace>TRAITS_DATASET</monospace> respectively. Because the
+    UK-Biobank has a non-standard format, the
+    <monospace>UKB_CONFIG</monospace> provides traits definition rules.
+    The following is an illustration for BMI, but the default is to
+    consider all 766 traits as defined by the geneAtlas
+    (<xref alt="Canela-Xandri et al., 2018" rid="ref-canela2018atlas" ref-type="bibr">Canela-Xandri
+    et al., 2018</xref>).</p>
+    <preformat>traits:
+  - fields:
+      - &quot;21001&quot;
+    phenotypes:
+      - name: &quot;Body mass index (BMI)&quot;</preformat>
+  </sec>
+  <sec id="study-designs">
+    <title>Study Designs</title>
+    <p>TarGene supports traditional study designs in population
+    genetics, that is, genome-wide association studies (GWAS) and
+    phenome-wide association studies (PheWAS). Because TarGene has a
+    focus on complex effects, interactions (e.g. gene-gene,
+    gene-environment, gene-gene-environment) can also be investigated up
+    to any order.</p>
+    <p>The study design is specified in the
+    <monospace>ESTIMANDS_CONFIG</monospace> YAML file. For a routine
+    GWAS the content of this file can be as simple as:</p>
+    <preformat>type: gwas</preformat>
+  </sec>
+  <sec id="estimators">
+    <title>Estimators</title>
+    <p>Semi-parametric estimators exist in multiple flavors, all with
+    different properties. In TarGene we default to using Targeted
+    Maximum-Likelihood Estimation
+    (<xref alt="Van der Laan &amp; Rose, 2018" rid="ref-van2018targeted" ref-type="bibr">Van
+    der Laan &amp; Rose, 2018</xref>) and XGboost
+    (<xref alt="Chen &amp; Guestrin, 2016" rid="ref-chen2016xgboost" ref-type="bibr">Chen
+    &amp; Guestrin, 2016</xref>) as the machine-learning model. This is
+    because this was the best performing estimator in simulations for a
+    variety of tasks. But if computational restrictions exist, tradeoffs
+    can be made and simpler models can be used.</p>
+  </sec>
+</sec>
+<sec id="acknowledgements">
+  <title>Acknowledgements</title>
+  <p>Olivier Labayle was supported by the United Kingdom Research and
+  Innovation (grant EP/S02431X/1), UKRI Centre for Doctoral Training in
+  Biomedical AI at the University of Edinburgh, School of Informatics.
+  Breeshey Roskams-Hieter was supported by the Health Data Research UK
+  &amp; The Alan Turing Institute Wellcome PhD Programme in Health Data
+  Science (Grant Ref: 218529/Z/19/Z). Mark van der Laan is supported by
+  NIH grant R01AI074345. Chris P. Ponting was funded by the MRC
+  (MC_UU_00007/15). Ava Khamseh was supported by the XDF Programme from
+  the University of Edinburgh and Medical Research Council
+  (MC_UU_00009/2), and by a Langmuir Talent Development Fellowship from
+  the Institute of Genetics and Cancer, and a philanthropic donation
+  from Hugh and Josseline Langmuir.</p>
+</sec>
+</body>
+<back>
+<ref-list>
+  <title></title>
+  <ref id="ref-mbatchou2021computationally">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Mbatchou</surname><given-names>Joelle</given-names></name>
+        <name><surname>Barnard</surname><given-names>Leland</given-names></name>
+        <name><surname>Backman</surname><given-names>Joshua</given-names></name>
+        <name><surname>Marcketta</surname><given-names>Anthony</given-names></name>
+        <name><surname>Kosmicki</surname><given-names>Jack A</given-names></name>
+        <name><surname>Ziyatdinov</surname><given-names>Andrey</given-names></name>
+        <name><surname>Benner</surname><given-names>Christian</given-names></name>
+        <name><surname>O’Dushlaine</surname><given-names>Colm</given-names></name>
+        <name><surname>Barber</surname><given-names>Mathew</given-names></name>
+        <name><surname>Boutkov</surname><given-names>Boris</given-names></name>
+        <name><surname>others</surname></name>
+      </person-group>
+      <article-title>Computationally efficient whole-genome regression for quantitative and binary traits</article-title>
+      <source>Nature genetics</source>
+      <publisher-name>Nature Publishing Group US New York</publisher-name>
+      <year iso-8601-date="2021">2021</year>
+      <volume>53</volume>
+      <issue>7</issue>
+      <fpage>1097</fpage>
+      <lpage>1103</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-mccaw2022deepnull">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>McCaw</surname><given-names>Zachary R</given-names></name>
+        <name><surname>Colthurst</surname><given-names>Thomas</given-names></name>
+        <name><surname>Yun</surname><given-names>Taedong</given-names></name>
+        <name><surname>Furlotte</surname><given-names>Nicholas A</given-names></name>
+        <name><surname>Carroll</surname><given-names>Andrew</given-names></name>
+        <name><surname>Alipanahi</surname><given-names>Babak</given-names></name>
+        <name><surname>McLean</surname><given-names>Cory Y</given-names></name>
+        <name><surname>Hormozdiari</surname><given-names>Farhad</given-names></name>
+      </person-group>
+      <article-title>DeepNull models non-linear covariate effects to improve phenotypic prediction and association power</article-title>
+      <source>Nature communications</source>
+      <publisher-name>Nature Publishing Group UK London</publisher-name>
+      <year iso-8601-date="2022">2022</year>
+      <volume>13</volume>
+      <issue>1</issue>
+      <fpage>241</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-sesia2021false">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Sesia</surname><given-names>Matteo</given-names></name>
+        <name><surname>Bates</surname><given-names>Stephen</given-names></name>
+        <name><surname>Candès</surname><given-names>Emmanuel</given-names></name>
+        <name><surname>Marchini</surname><given-names>Jonathan</given-names></name>
+        <name><surname>Sabatti</surname><given-names>Chiara</given-names></name>
+      </person-group>
+      <article-title>False discovery rate control in genome-wide association studies with population structure</article-title>
+      <source>Proceedings of the National Academy of Sciences</source>
+      <publisher-name>National Acad Sciences</publisher-name>
+      <year iso-8601-date="2021">2021</year>
+      <volume>118</volume>
+      <issue>40</issue>
+      <fpage>e2105841118</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-di2017nextflow">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Di Tommaso</surname><given-names>Paolo</given-names></name>
+        <name><surname>Chatzou</surname><given-names>Maria</given-names></name>
+        <name><surname>Floden</surname><given-names>Evan W</given-names></name>
+        <name><surname>Barja</surname><given-names>Pablo Prieto</given-names></name>
+        <name><surname>Palumbo</surname><given-names>Emilio</given-names></name>
+        <name><surname>Notredame</surname><given-names>Cedric</given-names></name>
+      </person-group>
+      <article-title>Nextflow enables reproducible computational workflows</article-title>
+      <source>Nature biotechnology</source>
+      <publisher-name>Nature Publishing Group</publisher-name>
+      <year iso-8601-date="2017">2017</year>
+      <volume>35</volume>
+      <issue>4</issue>
+      <fpage>316</fpage>
+      <lpage>319</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-canela2018atlas">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Canela-Xandri</surname><given-names>Oriol</given-names></name>
+        <name><surname>Rawlik</surname><given-names>Konrad</given-names></name>
+        <name><surname>Tenesa</surname><given-names>Albert</given-names></name>
+      </person-group>
+      <article-title>An atlas of genetic associations in UK biobank</article-title>
+      <source>Nature genetics</source>
+      <publisher-name>Nature Publishing Group</publisher-name>
+      <year iso-8601-date="2018">2018</year>
+      <volume>50</volume>
+      <issue>11</issue>
+      <fpage>1593</fpage>
+      <lpage>1599</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-chen2016xgboost">
+    <element-citation publication-type="paper-conference">
+      <person-group person-group-type="author">
+        <name><surname>Chen</surname><given-names>Tianqi</given-names></name>
+        <name><surname>Guestrin</surname><given-names>Carlos</given-names></name>
+      </person-group>
+      <article-title>Xgboost: A scalable tree boosting system</article-title>
+      <source>Proceedings of the 22nd acm sigkdd international conference on knowledge discovery and data mining</source>
+      <year iso-8601-date="2016">2016</year>
+      <fpage>785</fpage>
+      <lpage>794</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-van2018targeted">
+    <element-citation publication-type="book">
+      <person-group person-group-type="author">
+        <name><surname>Van der Laan</surname><given-names>Mark J</given-names></name>
+        <name><surname>Rose</surname><given-names>Sherri</given-names></name>
+      </person-group>
+      <source>Targeted learning in data science</source>
+      <publisher-name>Springer</publisher-name>
+      <year iso-8601-date="2018">2018</year>
+    </element-citation>
+  </ref>
+  <ref id="ref-purcell2007plink">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Purcell</surname><given-names>Shaun</given-names></name>
+        <name><surname>Neale</surname><given-names>Benjamin</given-names></name>
+        <name><surname>Todd-Brown</surname><given-names>Kathe</given-names></name>
+        <name><surname>Thomas</surname><given-names>Lori</given-names></name>
+        <name><surname>Ferreira</surname><given-names>Manuel AR</given-names></name>
+        <name><surname>Bender</surname><given-names>David</given-names></name>
+        <name><surname>Maller</surname><given-names>Julian</given-names></name>
+        <name><surname>Sklar</surname><given-names>Pamela</given-names></name>
+        <name><surname>De Bakker</surname><given-names>Paul IW</given-names></name>
+        <name><surname>Daly</surname><given-names>Mark J</given-names></name>
+        <name><surname>others</surname></name>
+      </person-group>
+      <article-title>PLINK: A tool set for whole-genome association and population-based linkage analyses</article-title>
+      <source>The American journal of human genetics</source>
+      <publisher-name>Elsevier</publisher-name>
+      <year iso-8601-date="2007">2007</year>
+      <volume>81</volume>
+      <issue>3</issue>
+      <fpage>559</fpage>
+      <lpage>575</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-van2011targeted">
+    <element-citation publication-type="book">
+      <person-group person-group-type="author">
+        <name><surname>Van der Laan</surname><given-names>Mark J</given-names></name>
+        <name><surname>Rose</surname><given-names>Sherri</given-names></name>
+        <name><surname>others</surname></name>
+      </person-group>
+      <source>Targeted learning: Causal inference for observational and experimental data</source>
+      <publisher-name>Springer</publisher-name>
+      <year iso-8601-date="2011">2011</year>
+      <volume>4</volume>
+    </element-citation>
+  </ref>
+  <ref id="ref-bycroft2018uk">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Bycroft</surname><given-names>Clare</given-names></name>
+        <name><surname>Freeman</surname><given-names>Colin</given-names></name>
+        <name><surname>Petkova</surname><given-names>Desislava</given-names></name>
+        <name><surname>Band</surname><given-names>Gavin</given-names></name>
+        <name><surname>Elliott</surname><given-names>Lloyd T</given-names></name>
+        <name><surname>Sharp</surname><given-names>Kevin</given-names></name>
+        <name><surname>Motyer</surname><given-names>Allan</given-names></name>
+        <name><surname>Vukcevic</surname><given-names>Damjan</given-names></name>
+        <name><surname>Delaneau</surname><given-names>Olivier</given-names></name>
+        <name><surname>O’Connell</surname><given-names>Jared</given-names></name>
+        <name><surname>others</surname></name>
+      </person-group>
+      <article-title>The UK biobank resource with deep phenotyping and genomic data</article-title>
+      <source>Nature</source>
+      <publisher-name>Nature Publishing Group UK London</publisher-name>
+      <year iso-8601-date="2018">2018</year>
+      <volume>562</volume>
+      <issue>7726</issue>
+      <fpage>203</fpage>
+      <lpage>209</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-all2019all">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Us Research Program Investigators</surname><given-names>All of</given-names></name>
+      </person-group>
+      <article-title>The “all of us” research program</article-title>
+      <source>New England Journal of Medicine</source>
+      <publisher-name>Mass Medical Soc</publisher-name>
+      <year iso-8601-date="2019">2019</year>
+      <volume>381</volume>
+      <issue>7</issue>
+      <fpage>668</fpage>
+      <lpage>676</lpage>
+    </element-citation>
+  </ref>
+</ref-list>
+</back>
+</article>
