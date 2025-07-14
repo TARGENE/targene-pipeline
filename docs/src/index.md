@@ -84,7 +84,7 @@ params {
 
 ## Citing TarGene
 
-Labayle, O., Tetley-Campbell, K., Slaughter, J., Roskams-Hieter, B., Beentjes, S., Khamseh, A., & Ponting, C. TarGene [Computer software]. https://github.com/TARGENE/targene-pipeline
+Olivier Labayle, Breeshey Roskams-Hieter, Joshua Slaughter, Kelsey Tetley-Campbell, Mark J. van der Laan, Chris P. Ponting, Ava Khamseh, & Sjoerd Viktor Beentjes. TarGene: A Nextflow pipeline for the estimation of genetic effects on human traits via semi-parametric methods. [Computer software]. https://github.com/TARGENE/targene-pipeline
 
 ## References
 
