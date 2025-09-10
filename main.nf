@@ -10,6 +10,7 @@ params.UKB_ENCODING_FILE = "NO_UKB_ENCODING_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
 params.MAF_THRESHOLD = 0.01
+params.PREVALENCE = false
 params.COHORT = "UKB"
 params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
 params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
