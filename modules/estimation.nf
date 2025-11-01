@@ -12,7 +12,7 @@ process TMLE {
         basename = "tmle_result." + estimands_file.getName().take(estimands_file.getName().lastIndexOf('.'))
         hdf5out = basename + ".hdf5"
         pvalue_threhsold = params.KEEP_IC == true ? "--pvalue-threshold=${params.PVAL_THRESHOLD}" : ""
-        save_sample_ids = params.SVP == true ? "--save-sample-ids" : "", 
+        save_sample_ids = params.SVP == true ? "--save-sample-ids" : ""
         prevalence = params.PREVALENCE != "NO_SET_PREVALENCE" ? "--prevalence=${params.PREVALENCE}" : ""
         """
         TEMPD=\$(mktemp -d)
