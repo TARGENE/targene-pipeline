@@ -24,6 +24,16 @@ jobs:
           - "null_simulation.jl"
           - "realistic_simulation.jl"
     steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        if: contains(matrix.testrun, 'simulation')
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
         with:
@@ -39,17 +49,7 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@v1
-      - uses: nf-core/setup-nextflow@v1.2.0
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        if: contains(matrix.testrun, 'simulation')
-        with:
-          root-reserve-mb: 512
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
+      - uses: nf-core/setup-nextflow@v1.2.0      
       - name: Instantiate test environment
         run: julia --project=test --startup-file=no -e'using Pkg;Pkg.instantiate()'
       - name: Run tests
