@@ -23,7 +23,7 @@ workflow TARGENE {
 
     // generate estimates
     EstimationWorkflow(
-        EstimationInputs.out.transpose(),
+        EstimationInputs.out.inputs.transpose(),
         estimator_config,
     )
 
