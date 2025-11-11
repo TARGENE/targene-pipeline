@@ -2,6 +2,7 @@ include { CreateEstimatorsConfigChannel } from '../modules/utils.nf'
 include { LocoPCA } from './pca.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
+include { SVPWorkflow } from '../subworkflows/svp.nf'
 
 workflow GWAS {
     // Define Parameters
@@ -30,4 +31,13 @@ workflow GWAS {
     EstimationWorkflow(
         EstimationInputs.out.inputs.transpose(), estimator_config
     )
+
+    // Generate sieve variance plateau estimates
+    if (params.SVP == true){
+        genotypes = LocoPCA.out.iid_genotypes.map{genotypes_id, genotypes -> genotypes}.collect()
+        sieve_results = SVPWorkflow(
+            EstimationWorkflow.out.hdf5_result.collect(), 
+            genotypes,
+        )
+    }
 }
