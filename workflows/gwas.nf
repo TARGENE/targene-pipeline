@@ -33,11 +33,14 @@ workflow GWAS {
     )
 
     // Generate sieve variance plateau estimates
-    if (params.SVP == true){
-        genotypes = LocoPCA.out.iid_genotypes.map{genotypes_id, genotypes -> genotypes}.collect()
-        sieve_results = SVPWorkflow(
-            EstimationWorkflow.out.hdf5_result.collect(), 
-            genotypes,
-        )
-    }
+    // if (params.SVP == true && params.SUBSET_BED_FILES != "NO_SUBSET_BED_FILES"){
+    //     // Only extract merged genotype files for which LOCO was performed
+
+
+    //     genotypes = PCA.out.iid_genotypes.map{genotypes_id, genotypes -> genotypes}.collect()
+    //     sieve_results = SVPWorkflow(
+    //         EstimationWorkflow.out.hdf5_result.collect(), 
+    //         genotypes,
+    //     )
+    // }
 }
