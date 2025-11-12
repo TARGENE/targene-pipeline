@@ -32,5 +32,10 @@ process EstimationInputs {
         ${call_threshold} \
         --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \
         --verbosity=${params.VERBOSITY}
+
+        # Create empty mapping file if it doesn't exist (non-GWAS mode)
+        if [ ! -f "${genotypes_id}.mapping.txt" ]; then
+            touch "${genotypes_id}.mapping.txt"
+        fi
         """
 }
