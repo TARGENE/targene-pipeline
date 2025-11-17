@@ -54,7 +54,7 @@ All currently existing software for the estimation of genetic effects are based 
 
 # Features
 
-TarGene is a fully featured command-line software, which can be run as follow:
+TarGene is Nextflow pipeline which can be run as follow:
 
 ```
 nextflow run https://github.com/TARGENE/targene-pipeline/ \
@@ -63,21 +63,7 @@ nextflow run https://github.com/TARGENE/targene-pipeline/ \
   -resume
 ```
 
-where the `CONFIG_FILE` provides the list of problem-specific parameters (data, arguments, options). Below we list some important features of TarGene, the following `CONFIG_FILE` will serve as a running example.
-
-```
-params {
-    ESTIMANDS_CONFIG = "gwas_config.yaml"
-    ESTIMATORS_CONFIG = "wtmle--tunedxgboost"
-
-    // UK Biobank specific parameters
-    BED_FILES = "unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}"
-    UKB_CONFIG = "ukbconfig_gwas.yaml"
-    TRAITS_DATASET = "dataset.csv"
-}
-```
-
-For detailed explanations, please refer to the online [documentation](https://targene.github.io/targene-pipeline/stable/).
+where the `CONFIG_FILE` provides the list of problem-specific parameters (data, arguments, options). Below we list some important features of TarGene. For detailed explanations, please refer to the online [documentation](https://targene.github.io/targene-pipeline/stable/).
 
 ## Scalability
 
@@ -107,7 +93,7 @@ type: gwas
 
 ## Estimators
 
-Semi-parametric estimators exist in multiple flavors, all with different properties. In TarGene we default to using Targeted Maximum-Likelihood Estimation [@van2018targeted] and XGBoost [@chen2016xgboost] as the machine-learning model. We have selected this default because it was the best performing estimator in simulations across a variety of genetics tasks [@labayle2025semi]. In the presence of computational restrictions, tradeoffs can be made and lighter models can be used.
+In TarGene we default to using Targeted Maximum-Likelihood Estimation [@van2018targeted] and XGBoost [@chen2016xgboost] as the machine-learning model. We have selected this default because it was the best performing estimator in simulations across a variety of genetics tasks [@labayle2025semi]. In the presence of computational restrictions, tradeoffs can be made and lighter models can be used.
 
 # Acknowledgements
 
