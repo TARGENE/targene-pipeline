@@ -50,7 +50,7 @@ Genetic variants are the foundation of biological diversity, they play a crucial
 
 # Statement of Need
 
-All currently existing software for the estimation of genetic effects are based on parametric distributions, additionally assuming linearity of the relationship between variants and traits [@purcell2007plink,yang2011gcta,loh2018mixed,zhou2018efficiently]. If these assumptions are violated, the reported effect sizes will be biased and error rates inflated. In particular, this can lead to inflated false discovery rates and suboptimal allocation of computational resources and research funding. Some recently published software also account for more complex relationships but do not offer the full modelling flexibility provided by TarGene. REGENIE fits a two-stage whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but also assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS [@sesia2021false] is non-parametric but does not estimate effect sizes, instead it aims at controlling the false discovery rate of variant selection in a genome-wide manner. In comparison, TarGene is the only method able to model arbitrarily complex genetic effects while preserving the validity of statistical inference. It does so by leveraging Targeted Learning [@van2011targeted], a framework combining methods from causal inference, machine learning and semi-parametric statistical theory. Succinctly, the estimation process works as follows. In a first step, flexible machine-learning algorithms are fitted to the data, hence minimizing an appropriate loss function (e.g., negative log-likelihood). A second step, known as the targeting step, regularises the estimate of the quantity of interest in a theoretically optimal way.
+All currently existing software for the estimation of genetic effects are based on parametric distributions, additionally assuming linearity of the relationship between variants and traits [@purcell2007plink,yang2011gcta,loh2018mixed,zhou2018efficiently]. If these assumptions are violated, the reported effect sizes will be biased and error rates inflated. In particular, this can lead to inflated false discovery rates and suboptimal allocation of computational resources and research funding. Some recently published software also account for more complex relationships but do not offer the full modelling flexibility provided by TarGene. REGENIE fits a two-stage whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but also assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS [@sesia2021false] is non-parametric but does not estimate effect sizes, instead it aims at controlling the false discovery rate of variant selection in a genome-wide manner. In comparison, TarGene is the only method able to model arbitrarily complex genetic effects while preserving the validity of statistical inference. It does so by leveraging Targeted Learning [@van2011targeted], a framework combining methods from causal inference, machine learning and semi-parametric statistical theory. The estimation process works as follows. In a first step, flexible machine-learning algorithms are fitted to the data. In the second, targeting step, TarGene regularises the estimate of the quantity of interest in a theoretically optimal way.
 
 # Features
 
@@ -84,12 +84,6 @@ traits:
 ## Study Designs
 
 TarGene supports traditional study designs in population genetics, that is, genome-wide association studies (GWAS) and phenome-wide association studies (PheWAS). Because TarGene has a focus on complex effects, interactions (e.g. gene-gene, gene-environment, gene-gene-environment) can also be investigated up to any order.
-
-The study design is specified in the `ESTIMANDS_CONFIG` YAML file. For a routine GWAS the content of this file can be as simple as:
-
-```
-type: gwas
-```
 
 ## Estimators
 
