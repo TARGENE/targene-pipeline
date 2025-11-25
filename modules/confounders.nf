@@ -1,5 +1,23 @@
 include { longest_prefix } from './utils'
 
+process subsetBED{
+    label 'bigmem'
+    label 'plink_image'
+
+    input:
+        tuple val(chr_id), file(bedfiles)
+        path subset_ids
+
+    output:
+        tuple val(chr_id), path("subset.${chr_id}.*"), emit: subset_bed_files
+
+    script:
+        input_prefix = bedfiles[0].toString().minus('.bed')
+        """
+        plink2 --bfile ${input_prefix} --keep ${subset_ids} --make-bed --out subset.${chr_id}
+        """
+}
+
 process filterBED {
     label 'bigmem'
     label 'targenecore_image'
