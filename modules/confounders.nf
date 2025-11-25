@@ -14,9 +14,27 @@ process subsetBED{
     script:
         input_prefix = bedfiles[0].toString().minus('.bed')
         """
-        plink2 --bfile ${input_prefix} --keep ${subset_ids} --make-bed --out subset.${chr_id}
+        plink2 --bfile ${input_prefix} --extract ${subset_ids} --make-bed --out subset.${chr_id}
         """
 }
+
+// process denseBED{
+//     label 'bigmem'
+//     label 'plink_image'
+
+//     input:
+//         tuple val(chr_id), file(bedfiles)
+//         path tss_list
+
+//     output:
+//         tuple val(chr_id), path("dense.${chr_id}.*"), emit: dense_bed_files
+
+//     script:
+//         input_prefix = bedfiles[0].toString().minus('.bed')
+//         """
+//         plink2 --bfile ${input_prefix} --extract ${dense_ids} --make-bed --out dense.${chr_id}
+//         """
+// }
 
 process filterBED {
     label 'bigmem'
