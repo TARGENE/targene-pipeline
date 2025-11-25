@@ -3,6 +3,7 @@ include { LocoPCA } from './pca.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { SVPWorkflow } from '../subworkflows/svp.nf'
+include { subsetBED } from '../modules/confounders.nf'
 
 workflow GWAS {
     // Define Parameters
@@ -15,7 +16,8 @@ workflow GWAS {
     
     // Estimation Inputs
     if (params.SUBSET_BED_FILES != "NO_SUBSET_BED_FILES") {
-        subset_bed_files = Channel.fromFilePairs("$params.SUBSET_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+        subset_ids_file = Channel.value(file("$params.SUBSET_BED_FILES", checkIfExists: true))
+        subset_bed_files = subsetBED(bed_files, subset_ids_file).subset_bed_files
         pcs_and_genotypes = LocoPCA.out.confounders.join(subset_bed_files, failOnDuplicate: true)
     } else {
         pcs_and_genotypes = LocoPCA.out.confounders.join(bed_files, failOnDuplicate: true)
@@ -31,16 +33,4 @@ workflow GWAS {
     EstimationWorkflow(
         EstimationInputs.out.inputs.transpose(), estimator_config
     )
-
-    // Generate sieve variance plateau estimates
-    // if (params.SVP == true && params.SUBSET_BED_FILES != "NO_SUBSET_BED_FILES"){
-    //     // Only extract merged genotype files for which LOCO was performed
-
-
-    //     genotypes = PCA.out.iid_genotypes.map{genotypes_id, genotypes -> genotypes}.collect()
-    //     sieve_results = SVPWorkflow(
-    //         EstimationWorkflow.out.hdf5_result.collect(), 
-    //         genotypes,
-    //     )
-    // }
 }
