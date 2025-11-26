@@ -14,7 +14,8 @@ params.COHORT = "UKB"
 params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
 params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
-params.SUBSET_BED_FILES = "NO_SUBSET_BED_FILES"
+params.SUBSET_FILE = "NO_SUBSET_FILE"
+params.TARGET_BED_FILES = "NO_TARGET_BED_FILES"
 params.PREVALENCE = "NO_SET_PREVALENCE"
 
 // Confounding adjustment by PCA
