@@ -3,6 +3,8 @@ include { longest_prefix } from './utils.nf'
 process EstimationInputs {
     publishDir "$params.OUTDIR/estimands/", mode: 'symlink', pattern: "*.jls"
     publishDir "$params.OUTDIR/datasets/", mode: 'symlink', pattern: "*.arrow"
+    publishDir "$params.OUTDIR/mapping/", mode: 'symlink', pattern: "*.mapping.txt"
+    
     label "bigmem"
     label "multithreaded"
     label 'targenecore_image'
