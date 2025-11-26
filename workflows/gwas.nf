@@ -15,9 +15,11 @@ workflow GWAS {
     LocoPCA()
     
     // Estimation Inputs
-    if (params.SUBSET_BED_FILES != "NO_SUBSET_BED_FILES") {
-        subset_ids_file = Channel.value(file("$params.SUBSET_BED_FILES", checkIfExists: true))
-        subset_bed_files = subsetBED(bed_files, subset_ids_file).subset_bed_files
+    if (params.SUBSET_FILE != "NO_SUBSET_FILE") {
+        subset_ids_file = Channel.value(file("$params.SUBSET_FILE", checkIfExists: true))
+        target_bed_files = Channel.fromFilePairs("$params.TARGET_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+        subset_bed_files = subsetBED(target_bed_files, subset_ids_file).subset_bed_files
+        
         pcs_and_genotypes = LocoPCA.out.confounders.join(subset_bed_files, failOnDuplicate: true)
     } else {
         pcs_and_genotypes = LocoPCA.out.confounders.join(bed_files, failOnDuplicate: true)
