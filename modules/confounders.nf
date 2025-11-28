@@ -1,41 +1,5 @@
 include { longest_prefix } from './utils'
 
-process subsetBED{
-    label 'bigmem'
-    label 'plink_image'
-
-    input:
-        tuple val(chr_id), file(bedfiles)
-        path subset_ids
-
-    output:
-        tuple val(chr_id), path("subset.${chr_id}.*"), emit: subset_bed_files
-
-    script:
-        input_prefix = bedfiles[0].toString().minus('.bed')
-        """
-        plink2 --bfile ${input_prefix} --extract ${subset_ids} --make-bed --out subset.${chr_id}
-        """
-}
-
-// process denseBED{
-//     label 'bigmem'
-//     label 'plink_image'
-
-//     input:
-//         tuple val(chr_id), file(bedfiles)
-//         path tss_list
-
-//     output:
-//         tuple val(chr_id), path("dense.${chr_id}.*"), emit: dense_bed_files
-
-//     script:
-//         input_prefix = bedfiles[0].toString().minus('.bed')
-//         """
-//         plink2 --bfile ${input_prefix} --extract ${dense_ids} --make-bed --out dense.${chr_id}
-//         """
-// }
-
 process filterBED {
     label 'bigmem'
     label 'targenecore_image'
