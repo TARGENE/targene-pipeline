@@ -16,6 +16,8 @@ params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
 params.SUBSET_FILE = "NO_SUBSET_FILE"
 params.TARGET_BED_FILES = "NO_TARGET_BED_FILES"
+params.DENSE_MAPPING_FILE = "NO_DENSE_MAPPING_FILE"
+params.WINDOW_SIZE = 500000
 params.PREVALENCE = "NO_SET_PREVALENCE"
 
 // Confounding adjustment by PCA

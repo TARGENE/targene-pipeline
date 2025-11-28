@@ -1,0 +1,4 @@
+chromosome position label
+1 156365093 CHR1
+2 14983 CHR2
+3 197645995 CHR3
