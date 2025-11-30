@@ -29,6 +29,7 @@ process denseBED{
     script:
         plink_mem = (task.memory.toMega() * 0.75) as int
         input_prefix = bgenfiles[0].toString().minus('.bgen')
+        imputation_filter = params.CALL_THRESHOLD > 0 ? "--mach-r2-filter ${params.CALL_THRESHOLD}" : ""
         """
         awk -v W=${params.WINDOW_SIZE} 'BEGIN { OFS = "\\t" }
             NR > 1 {
@@ -38,6 +39,6 @@ process denseBED{
                 print \$1, start, end, \$3
             }' ${prioritized_variants} > ranges.${chr_id}.txt
 
-        plink2 --memory ${plink_mem} --bgen ${input_prefix}.bgen ref-first --sample ${input_prefix}.sample --make-bed --extract range ranges.${chr_id}.txt --out dense.${chr_id}
+        plink2 --memory ${plink_mem} --bgen ${input_prefix}.bgen ref-first --sample ${input_prefix}.sample ${imputation_filter} --make-bed --extract range ranges.${chr_id}.txt --out dense.${chr_id}
         """
 }
