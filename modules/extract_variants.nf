@@ -17,7 +17,6 @@ process subsetBED{
 }
 
 process denseBED{
-    label 'bigmem'
     label 'plink_image'
 
     input:
@@ -28,6 +27,7 @@ process denseBED{
         tuple val(chr_id), path("dense.${chr_id}.*"), emit: dense_bed_files
 
     script:
+        plink_mem = (task.memory.toMega() * 0.75) as int
         input_prefix = bgenfiles[0].toString().minus('.bgen')
         """
         awk -v W=${params.WINDOW_SIZE} 'BEGIN { OFS = "\\t" }
@@ -38,6 +38,6 @@ process denseBED{
                 print \$1, start, end, \$3
             }' ${prioritized_variants} > ranges.${chr_id}.txt
 
-        plink2 --bgen ${input_prefix}.bgen ref-first --sample ${input_prefix}.sample --make-bed --extract range ranges.${chr_id}.txt --out dense.${chr_id}
+        plink2 --memory ${plink_mem} --bgen ${input_prefix}.bgen ref-first --sample ${input_prefix}.sample --make-bed --extract range ranges.${chr_id}.txt --out dense.${chr_id}
         """
 }
