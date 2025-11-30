@@ -23,7 +23,7 @@ workflow GWAS {
         pcs_and_genotypes = LocoPCA.out.confounders.join(subset_bed_files, failOnDuplicate: true)
     } else if (params.DENSE_MAPPING_FILE != "NO_DENSE_MAPPING_FILE") {
         prioritized_variants = Channel.value(file("$params.DENSE_MAPPING_FILE", checkIfExists: true))
-        imputed_bgen_files = Channel.fromFilePairs("$params.BGEN_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+        imputed_bgen_files = Channel.fromFilePairs("$params.BGEN_FILES", size: 3, checkIfExists: true){ f -> f.name.replaceAll(/\.bgen(\.bgi)?$|\.sample$/,'') }
         dense_bed_files = denseBED(imputed_bgen_files, prioritized_variants).dense_bed_files
 
         pcs_and_genotypes = LocoPCA.out.confounders.join(dense_bed_files, failOnDuplicate: true)
