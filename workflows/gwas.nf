@@ -41,4 +41,13 @@ workflow GWAS {
     EstimationWorkflow(
         EstimationInputs.out.inputs.transpose(), estimator_config
     )
+
+    // Generate sieve variance plateau estimates
+    genotypes = LocoPCA.out.iid_genotypes.map{genotypes_id, genotypes -> genotypes}.collect()
+    if (params.SVP == true && params.PREVALENCE == "NO_SET_PREVALENCE"){
+        sieve_results = SVPWorkflow(
+            EstimationWorkflow.out.hdf5_result.collect(), 
+            genotypes,
+        )
+    }
 }
