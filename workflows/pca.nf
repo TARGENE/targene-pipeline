@@ -60,7 +60,7 @@ workflow LocoPCA {
         ukb_encoding_file,
     )
 
-    // IID Genotypes
+    // LOCO Genotypes for PCA (to avoid proximal contamination)
     loco_genotypes = LOCOGenotypes(
         flashpca_excl_reg,
         ld_blocks,
@@ -69,11 +69,20 @@ workflow LocoPCA {
         ExtractTraits.out
     )
 
+    // IID Genotypes for SVP (needs all chromosomes merged)
+    IIDGenotypes(
+        flashpca_excl_reg,
+        ld_blocks,
+        bed_files,
+        qc_file,
+        ExtractTraits.out,
+    )
+
     // PCA
     FlashPCA(loco_genotypes)
 
     emit:
         traits = ExtractTraits.out
-        iid_genotypes = loco_genotypes
+        iid_genotypes = IIDGenotypes.out
         confounders = FlashPCA.out.pcs
 }
