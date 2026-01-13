@@ -11,12 +11,12 @@ authors:
   - name: Olivier Labayle
     orcid: 0000-0002-3708-3706
     affiliation: "1, 2"
-  - name: Breeshey Roskams-Hieter
-    affiliation: "1, 2"
-    orcid: 0000-0002-1119-2576
   - name: Joshua Slaughter
     affiliation: "1, 2"
     orcid: 0000-0002-1400-6599
+  - name: Breeshey Roskams-Hieter
+    affiliation: "1, 2"
+    orcid: 0000-0002-1119-2576
   - name: Kelsey Tetley-Campbell
     affiliation: "1, 2"
   - name: Mark J. van der Laan
