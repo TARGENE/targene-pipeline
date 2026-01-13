@@ -1,7 +1,7 @@
 # GWAS
 
 !!! note "Read First"
-  Make sure you have read the [Setup (Read First)](@ref) section.
+    Make sure you have read the [Setup (Read First)](@ref) section.
 
 Perhaps the most common study design in population genetics is the Genome-Wide Association Study (GWAS). In TarGene, for computational reasons, a GWAS can only be performed across [plink BED files](https://zzz.bwh.harvard.edu/plink/binary.shtml). For our GWAS example, let's save the following snippet to a `my_gwas.conf` file:
 
