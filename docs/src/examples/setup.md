@@ -64,7 +64,7 @@ Note that the outcomes are defined implicitely, any trait in the `UKB_CONFIG` fi
 - `BED_FILES`: This parameter points to the [plink bed files](https://www.cog-genomics.org/plink/1.9/) containing typed genetic variants information. You will notice the "{1,2,3}.{bed,bim,fam}" suffix of the parameter which is telling Nextflow to group chromosome files together.
 - `BGEN_FILES`: Contain imputed variants information in [BGEN](https://www.chg.ox.ac.uk/~gav/bgen_format/) format. You will notice the "{1,2,3}.{bgen,bgen.bgi,sample}" suffix of the parameter which is telling Nextflow to group chromosome files together.
 
-## 4. Analyse the Results
+## 5. Analyse the Results
 
 Hopefully, this is where you'll find something new or interesting in some way. This section is up to you but we recommend to read the section [Understanding TarGene's Outputs](@ref) or you will likely be a little lost...
 
