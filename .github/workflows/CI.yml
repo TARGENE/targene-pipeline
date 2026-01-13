@@ -25,6 +25,8 @@ jobs:
           - "realistic_simulation.jl"
     steps:
       - uses: actions/checkout@v4
+      - name: Delete huge unnecessary tools folder
+        run: sudo rm -rf /opt/hostedtoolcache && sudo rm -rf /usr/local/share/boost && sudo rm -rf "$AGENT_TOOLSDIRECTORY"
       - uses: julia-actions/setup-julia@v2
         with:
           version: 1.11
