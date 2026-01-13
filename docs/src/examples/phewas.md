@@ -1,7 +1,7 @@
 # PheWAS
 
 !!! note "Read First"
-  Make sure you have read the [Setup (Read First)](@ref) section.
+    Make sure you have read the [Setup (Read First)](@ref) section.
 
 A phenome-wide association study (PheWAS) is a study design whereby the effect of a variant, or set of variants is estimated for a large number of traits or outcomes. In TarGene, running a PheWAS is always done implicitely because the outcomes are defined as all variables in the `TRAITS_DATASET` that do not play a particular role in the `ESTIMANDS_FILE`. This file is a description of the target quantities you wish to estimate (as opposed to how you want to estimate them).
 

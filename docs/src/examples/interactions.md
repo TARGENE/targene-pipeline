@@ -1,7 +1,7 @@
 # Targeted Interaction Study
 
 !!! note "Read First"
-  Make sure you have read the [Setup (Read First)](@ref) section.
+    Make sure you have read the [Setup (Read First)](@ref) section.
 
 In TarGene you can investigate the interacting effects between genetic variants and between genetic variants and the environment up to any order (GxG, GxE, GxGxG, ...). However, the computational complexity associated with interaction testing grows exponentially. Interaction studies are thus very often targeted, for instance towards a specific transcription factor `TF`. For this transcription factor, multiple variants may have been identified because they are believed to play different roles. In TarGene such a scenario can be encoded via the `group` mode of the `ESTIMANDS_CONFIG` file. An example is more informative than a long description. Let's save the following content to a `new_interaction_config.yaml` file.
 
