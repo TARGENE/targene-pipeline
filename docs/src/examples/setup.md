@@ -4,7 +4,7 @@ A population genetics analysis via TarGene is a 4 steps process where steps 1 an
 
 ## 1. Installation
 
-Install TarGene's dependencies as per the [Installation](@ref) section. Here I will assume that both Nextflow and Singularity are installed. To make sure this is the case you can for instance try
+Install TarGene's dependencies as per the [Installation](@ref) section. Here it is assumed that both Nextflow and Singularity are installed. To make sure this is the case you can for instance try
 
 ```bash
 nextflow -v
@@ -57,7 +57,7 @@ traits:
       - name: "Cheese intake"
 ```
 
-Note that the outcomes are defined implicitely, any trait in the `UKB_CONFIG` file which are not in the `outcome_extra_covariates` of the `ESTIMANDS_FILE` (see later) will be considered as outcomes. So you can run multiple GWAS at once by simply adding another trait definition to the above file.
+Note that the outcomes are defined implicitly, any trait in the `UKB_CONFIG` file which are not in the `outcome_extra_covariates` of the `ESTIMANDS_FILE` (see later) will be considered as outcomes. So you can run multiple GWAS at once by simply adding another trait definition to the above file.
 
 - `TRAITS_DATASET`: This is a CSV file containing both covariates and phenotypes of interest. It should also contain an `eid` column to uniquely identify individuals and matching the genotypes individuals' `IID`. In the examples, this file contains raw UK Biobank fields information (e.g. `1160-2.0`) that will be interpreted by the `UKB_CONFIG`.
 - `UKB_WITHDRAWAL_LIST`: List of individuals to be removed from the analysis (one `IID` per line and no header).
