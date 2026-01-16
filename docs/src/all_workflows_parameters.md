@@ -20,6 +20,7 @@ These are optional but important as they can have a significant impact on the wo
 - `COHORT (default: UKB)`: Current default for this is UKB. If set to a value other than UKB, this will not run UKB-specific trait extraction.
 - `POSITIVITY_CONSTRAINT (default: 0.01)`: When the list of estimands is generated or validated. Treatment variables' rarest configuration should have at least that frequency. For example if the treatment variables are two variants with minor allele A and T respectively. The rarest configuration will be (AA, TT) and should have a frequency of at least `POSITIVITY_CONSTRAINT`.
 - `NB_PCS (default: 6)`: The number of PCA components to extract.
+- `PREVALENCE` : The prevalence of a binary trait in the population from which the observations used for analysis were sampled. Must be a float greater than 0 and less than 1.
 
 ### UK Biobank Specific
 
