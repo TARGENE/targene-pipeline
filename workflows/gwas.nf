@@ -39,7 +39,7 @@ workflow GWAS {
 
     // Estimation
     EstimationWorkflow(
-        EstimationInputs.out.inputs.transpose(), estimator_config
+        EstimationInputs.out.transpose(), estimator_config
     )
 
     // Generate sieve variance plateau estimates

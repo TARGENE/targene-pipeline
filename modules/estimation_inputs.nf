@@ -3,7 +3,6 @@ include { longest_prefix } from './utils.nf'
 process EstimationInputs {
     publishDir "$params.OUTDIR/estimands/", mode: 'symlink', pattern: "*.jls"
     publishDir "$params.OUTDIR/datasets/", mode: 'symlink', pattern: "*.arrow"
-    publishDir "$params.OUTDIR/mapping/", mode: 'symlink', pattern: "*.mapping.txt"
     
     label "bigmem"
     label "multithreaded"
@@ -15,8 +14,7 @@ process EstimationInputs {
         path config_file
 
     output:
-        tuple path("${genotypes_id}.data.arrow"), path("${genotypes_id}.*.jls"), emit: inputs
-        path("${genotypes_id}.mapping.txt"), emit: mapping
+        tuple path("${genotypes_id}.data.arrow"), path("${genotypes_id}.*.jls")
 
     script:
         genotypes_prefix = longest_prefix(genotypes)
@@ -24,7 +22,7 @@ process EstimationInputs {
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)
-        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --threads=1 --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
+        JULIA_DEPOT_PATH=\$TEMPD:/opt julia --threads=${task.cpus} --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl \
         estimation-inputs ${config_file} \
         --genotypes-prefix=${genotypes_prefix} \
         --traits-file=${traits} \
@@ -34,10 +32,5 @@ process EstimationInputs {
         ${call_threshold} \
         --positivity-constraint=${params.POSITIVITY_CONSTRAINT} \
         --verbosity=${params.VERBOSITY}
-
-        # Create empty mapping file if it doesn't exist (non-GWAS mode)
-        if [ ! -f "${genotypes_id}.mapping.txt" ]; then
-            touch "${genotypes_id}.mapping.txt"
-        fi
         """
 }
