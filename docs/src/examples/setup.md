@@ -4,6 +4,12 @@ A population genetics analysis via TarGene is a 4 steps process where steps 1 an
 
 ## 1. Installation
 
+<!-- Some pain points:  -->
+<!-- - On arch linux, also needed to install java, -->
+<!--   for which the easiest path was to use conda (so I didn't have to downgrade from v25) -->
+<!-- - To run the tests, needed to install and run with julia 1.11, -->
+<!--   otherwise couldn't instantiate the test project -->
+
 Install TarGene's dependencies as per the [Installation](@ref) section. Here it is assumed that both Nextflow and Singularity are installed. To make sure this is the case you can for instance try
 
 ```bash

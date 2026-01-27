@@ -3,6 +3,14 @@
 !!! note "Read First"
     Make sure you have read the [Setup (Read First)](@ref) section.
 
+<!-- It might seem redundant with the setup, -->
+<!-- But it would be nice to include here which data is being used, -->
+<!-- where it's possible to run this, etc.  -->
+<!---->
+<!-- Eg, if I were unfamiliar with nextflow, -->
+<!-- I might not know that the config files could be put in a different directory, -->
+<!-- and would be irritated thinking that I need to put my own data -->
+<!-- inside this repo to make it work. -->
 Perhaps the most common study design in population genetics is the Genome-Wide Association Study (GWAS). In TarGene, for computational reasons, a GWAS can only be performed across [plink BED files](https://zzz.bwh.harvard.edu/plink/binary.shtml). For our GWAS example, let's save the following snippet to a `my_gwas.conf` file:
 
 ```conf
