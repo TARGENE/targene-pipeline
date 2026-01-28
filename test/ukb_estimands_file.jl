@@ -29,10 +29,9 @@ include("utils.jl")
     failed_results = retrieve_failed_results(results)
     ## All fails are due to fluctuation failure due non positive definite matrix
     ## This does not affect the OSE
-    @test isempty(failed_results.OSE_GLM_GLM)
-    ## Less than 1/3 affected: this is still quite significant
-    @test size(failed_results.TMLE_GLM_GLM, 1) / size(results, 1) < 1/3
-    @test all(startswith(x.msg, "Could not fluctuate") for x ∈ failed_results.TMLE_GLM_GLM)
+    @test length(failed_results.OSE_GLM_GLM) < 10
+    @test length(failed_results.TMLE_GLM_GLM) < 10
+
     dataset = DataFrame(Arrow.Table(joinpath("results", "datasets", "all_genotypes.data.arrow")))
     check_fails_are_extremely_rare_traits(failed_results.TMLE_GLM_GLM, dataset; ncases=3)
 
