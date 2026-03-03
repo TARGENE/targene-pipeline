@@ -21,7 +21,7 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     # Check datasets are created from dense BED files
     traits_and_pcs = ["SAMPLE_ID", "Body mass index (BMI)", "Number of vehicles in household", "Cheese intake", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6"]
     for chr in 1:3
-        dataset = DataFrame(Arrow.Table(joinpath("results", "datasets", "dense_chr$(chr).data.arrow")))
+        dataset = DataFrame(Arrow.Table(joinpath("results", "datasets", "ukb_chr$(chr).data.arrow")))
         @test nrow(dataset) == 500
         columnnames = names(dataset)
         @test issubset(traits_and_pcs, columnnames)
@@ -34,9 +34,9 @@ args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
     @test isfile(joinpath("results", "QQ.png"))
 
     # Check pve output files
-    @test isfile(joinpath("results", "pve", "pve.dense_chr1.txt"))
-    @test isfile(joinpath("results", "pve", "pve.dense_chr2.txt"))
-    @test isfile(joinpath("results", "pve", "pve.dense_chr3.txt"))
+    @test isfile(joinpath("results", "pve", "pve.ukb_chr1.txt"))
+    @test isfile(joinpath("results", "pve", "pve.ukb_chr2.txt"))
+    @test isfile(joinpath("results", "pve", "pve.ukb_chr3.txt"))
 
     # Check results
     results = jldopen(io -> io["results"], joinpath("results", "results.hdf5"))
