@@ -23,8 +23,24 @@ For example, using a configuration string, a computationally cheaper run with `E
 
 ## Addressing Sampling Bias
 
-In population genetics studies, it is possible that the observed population does not adequately represent the population of interest with respect to the frequency of binary traits like disease. This sampling bias persists in case-control studies in which individuals with a particular phenotype of interest, or cases, are targeted for recruitment to increase the power of the study.
+In population genetics studies, it is possible that the observed population does not adequately represent the population from which it was sampled with respect to the frequency of binary traits like disease. This occurs frequently in case-control studies for which diseased participants (cases) are over-recruited for the study to increase power.
 
-Currently, TarGene only uses estimands that are not invariant to sampling strategy and thus interpretation of such effects are relative to the observed population used for analysis. To obtain estimates that are representative of the true population from which the observations were sampled, one can provide TarGene with the prevalence of the binary phenotype in the true population. With this prevalence parameter, we can perform a case-control weighted estimation procedure to appropriately weight the empirical distribution to match the population of interest thereby minimizing sampling bias brought on by the study design.
+### Why TarGene's Estimands Are Affected
 
-This procedure involves the weighting of the learning functions ``Q_Y`` and ``G`` as well as the semi-parametric update step in (w)TMLE. Furthermore, there is no support for the case-control weighting of the OSE and if a custom machine learning algorithm is used for the estimation of ``Q_Y`` or ``G`` it must be able to support weights [MLJ supports weights](https://juliaai.github.io/MLJ.jl/stable/weights/).
+TarGene estimates marginal effects such as the Average Treatment Effect (ATE), which depend on the distribution of covariates in the population. Unlike conditional effects (e.g., conditional odds ratios reported from logistic regression), marginal estimands are not invariant to the sampling strategy. This means that if the covariate distribution in the observed sample differs from the target population, the estimated effect will reflect the sample rather than the true population.
+
+Consider a disease with 1% prevalence in the general population, but a case-control study recruits 50% cases and 50% controls. The ATE estimated from this sample would be computed over a population where half the individuals have the disease-associated covariate profile which is substantially different from the true target population. This can lead to biased estimates of the population-level effect.
+
+### Case-Control Weighted Estimation
+
+To obtain estimates representative of the true population, TarGene supports case-control weighted estimation based on the methodology developed by [Rose and van der Laan (2008)](https://doi.org/10.2202/1557-4679.1115). By providing the known prevalence of the binary phenotype in the target population, we can reweight the empirical distribution to match the population of interest, thereby correcting for sampling bias introduced by the study design.
+
+This procedure involves:
+1. **Assigning weights** ``q_0`` to cases and ``(1-q_0)\frac{1}{J}`` to controls, where ``q_0`` is the true population prevalence of the trait of interest and ``J`` is the integer ratio of controls to cases.   
+2. **Weighting the nuisace functions**: Both ``Q_Y`` and ``G`` are fitted using case-control weights.
+3. **Weighting the targeting step**: The semi-parametric update in (w)TMLE is also appropriately weighted.
+
+A worked example of this bias and the weighted correction procedure can be found [here](https://targene.github.io/TMLE.jl/stable/examples/case_control_experiment/).
+
+!!! warning "Limitations"
+    There is no support for case-control weighting of the One-Step Estimator (OSE). Additionally, if a custom machine learning algorithm is used for ``Q_Y`` or ``G``, it must support sample weights (see [MLJ supports weights](https://juliaai.github.io/MLJ.jl/stable/weights/)).
