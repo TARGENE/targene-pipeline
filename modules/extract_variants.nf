@@ -17,11 +17,12 @@ process subsetBED{
 }
 
 process denseBED{
+    label 'bigmem'
     label 'plink_image'
 
     input:
         tuple val(chr_id), file(bgenfiles)
-        path prioritized_variants
+        path prioritised_variants
 
     output:
         tuple val(chr_id), path("dense.${chr_id}.*"), emit: dense_bed_files
@@ -37,7 +38,7 @@ process denseBED{
                 if (start < 1) start = 1
                 end = \$2 + W
                 print \$1, start, end, \$3
-            }' ${prioritized_variants} > ranges.${chr_id}.txt
+            }' ${prioritised_variants} > ranges.${chr_id}.txt
 
         plink2 --memory ${plink_mem} --bgen ${input_prefix}.bgen ref-first --sample ${input_prefix}.sample ${imputation_filter} --make-bed --extract range ranges.${chr_id}.txt --out dense.${chr_id}
         """
