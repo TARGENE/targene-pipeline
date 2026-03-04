@@ -87,7 +87,7 @@ TarGene supports traditional study designs in population genetics, that is, geno
 
 ## Estimators
 
-In TarGene we default to using Targeted Maximum-Likelihood Estimation [@van2018targeted] and XGBoost [@chen2016xgboost] as the machine-learning model. We have selected this default because it was the best performing estimator in simulations across a variety of genetics tasks [@labayle2025semi]. In the presence of computational restrictions, tradeoffs can be made and lighter models can be used.
+In TarGene we default to using Targeted Maximum-Likelihood Estimation [@van2018targeted] and XGBoost [@chen2016xgboost] as the machine-learning model but any estimators defined in TMLE.jl is valid [@Labayle_TMLE_jl_Targeted_Minimum_2025]. These defaults provided the best performance in simulations across a variety of genetics tasks [@labayle2025semi]. In the presence of computational restrictions, tradeoffs can be made and lighter models can be used.
 
 # Acknowledgements
 
