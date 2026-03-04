@@ -70,7 +70,7 @@ nextflow run https://github.com/TARGENE/targene-pipeline/ -r TARGENE_VERSION -c 
 
 where:
 
-- `TARGENE_VERSION` is the latest TarGene version, e.g. `v0.11.1`.
+- `TARGENE_VERSION` is the latest TarGene version, e.g. `v0.13.0`.
 - `CONFIG_FILE` is a plain Nextflow configuration file describing what you want to do. Writing this configuration file is the hard work that this documentation is all about! However it needs not be scary, can could be as simple as:
 
 ```conf
@@ -84,7 +84,7 @@ params {
 
 ## Citing TarGene
 
-Labayle, O., Tetley-Campbell, K., Slaughter, J., Roskams-Hieter, B., Beentjes, S., Khamseh, A., & Ponting, C. TarGene [Computer software]. https://github.com/TARGENE/targene-pipeline
+Olivier Labayle, Breeshey Roskams-Hieter, Joshua Slaughter, Kelsey Tetley-Campbell, Mark J. van der Laan, Chris P. Ponting, Ava Khamseh, & Sjoerd Viktor Beentjes. TarGene: A Nextflow pipeline for the estimation of genetic effects on human traits via semi-parametric methods. [Computer software]. https://github.com/TARGENE/targene-pipeline
 
 ## References
 
