@@ -1,10 +1,13 @@
 # All of Us
 
+!!! note "Read First"
+  This is more of a description for how to setup TarGene on All of Us rather than a reproducible example since we haven't tried to mock the All of Us data yet. 
+
 Analyses within the All of Us (AoU) Researcher Workbench using genetic data must be run within the `Controlled Tier Access` (See [`Data Access`](https://www.researchallofus.org/data-tools/data-access/)). Workspaces launched within this tier will automatically have nextflow installed and can use TarGene immediately. 
 
 Each Workspace will be assigned a bucket for storage on Google Cloud, that can be found on the right hand panel of the `About` page of your workspace. Each Workspace will also contain Google Cloud-specific credentials in order to submit jobs via the Google Lifesciences API. These can be found in your Workspace-specific nextflow profile, located at `~/.nextflow/config`, and available by using the flag `-profile gls` when you run nextflow. TarGene requires some additional configuration to run on the AoU Researcher workbench that is built into the `allofus` profile, which can be combined with your Workspace-specific `gls` configuration to batch out jobs when running TarGene on this platform.
 
-We reccommend running this by first entering a `Cloud Analysis Terminal` on your current Workspace, creating a configuration for the analysis you would like to run, and running TarGene in a screen session. See [`Workflows in the All of Us Researched Workbench`](https://support.researchallofus.org/hc/en-us/articles/4811899197076-Workflows-in-the-All-of-Us-Researcher-Workbench-Nextflow-and-Cromwell) for more information.
+We recommend running this by first entering a `Cloud Analysis Terminal` on your current Workspace, creating a configuration for the analysis you would like to run, and running TarGene in a screen session. See [`Workflows in the All of Us Researched Workbench`](https://support.researchallofus.org/hc/en-us/articles/4811899197076-Workflows-in-the-All-of-Us-Researcher-Workbench-Nextflow-and-Cromwell) for more information.
 
 A minimalist run configuration to run a flat config run on the AoU Researcher Workbench using TarGene looks like the following:
 
@@ -54,7 +57,7 @@ Here we have not specified any value for `ESTIMATORS_CONFIG`, and so the default
 Then TarGene can then be run on the AoU Researcher Workbench as follows:
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline -r v0.11.1 -profile gls,allofus
+nextflow run https://github.com/TARGENE/targene-pipeline -r v0.13.0 -profile gls,allofus
 ```
 
 By default, this will generate results in the `results/` directory in your `Cloud Analysis Terminal`. Once complete, you can upload these to your Workspace bucket using the following command:

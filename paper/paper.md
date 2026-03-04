@@ -11,12 +11,12 @@ authors:
   - name: Olivier Labayle
     orcid: 0000-0002-3708-3706
     affiliation: "1, 2"
-  - name: Breeshey Roskams-Hieter
-    affiliation: "1, 2"
-    orcid: 0000-0002-1119-2576
   - name: Joshua Slaughter
     affiliation: "1, 2"
     orcid: 0000-0002-1400-6599
+  - name: Breeshey Roskams-Hieter
+    affiliation: "1, 2"
+    orcid: 0000-0002-1119-2576
   - name: Kelsey Tetley-Campbell
     affiliation: "1, 2"
   - name: Mark J. van der Laan
@@ -50,11 +50,11 @@ Genetic variants are the foundation of biological diversity, they play a crucial
 
 # Statement of Need
 
-All currently existing software for the estimation of genetic effects are based on parametric distributions, additionally assuming linearity of the relationship between variants and traits [@purcell2007plink,yang2011gcta,loh2018mixed,zhou2018efficiently]. If these assumptions are violated, the reported effect sizes will be biased and error rates inflated. In particular, this can lead to inflated false discovery rates and suboptimal allocation of computational resources and research funding. Some recently published software also account for more complex relationships but do not offer the full modelling flexibility provided by TarGene. REGENIE fits a two-stage whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but also assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS [@sesia2021false] is non-parametric but does not estimate effect sizes, instead it aims at controlling the false discovery rate of variant selection in a genome-wide manner. In comparison, TarGene is the only method able to model arbitrarily complex genetic effects while preserving the validity of statistical inference. It does so by leveraging Targeted Learning [@van2011targeted], a framework combining methods from causal inference, machine learning and semi-parametric statistical theory. Succinctly, the estimation process works as follows. In a first step, flexible machine-learning algorithms are fitted to the data, hence minimizing an appropriate loss function (e.g., negative log-likelihood). A second step, known as the targeting step, regularises the estimate of the quantity of interest in a theoretically optimal way.
+All currently existing software for the estimation of genetic effects are based on parametric distributions, additionally assuming linearity of the relationship between variants and traits [@purcell2007plink,yang2011gcta,loh2018mixed,zhou2018efficiently]. If these assumptions are violated, the reported effect sizes will be biased and error rates inflated. In particular, this can lead to inflated false discovery rates and suboptimal allocation of computational resources and research funding. Some recently published software also account for more complex relationships but do not offer the full modelling flexibility provided by TarGene. REGENIE fits a two-stage whole-genome model for each phenotype of interest but still assumes linearity and normality [@mbatchou2021computationally]. DeepNull is a semi-parametric method which models non-linear covariate effects but also assumes genetic effects to be linear and does not allow complex interactions between covariates and genetic variants [@mccaw2022deepnull]. KnockoffGWAS [@sesia2021false] is non-parametric but does not estimate effect sizes, instead it aims at controlling the false discovery rate of variant selection in a genome-wide manner. In comparison, TarGene is the only method able to model arbitrarily complex genetic effects while preserving the validity of statistical inference. It does so by leveraging Targeted Learning [@van2011targeted], a framework combining methods from causal inference, machine learning and semi-parametric statistical theory. The estimation process works as follows. In a first step, flexible machine-learning algorithms are fitted to the data. In the second, targeting step, TarGene regularises the estimate of the quantity of interest in a theoretically optimal way.
 
 # Features
 
-TarGene is a fully featured command-line software, which can be run as follow:
+TarGene is Nextflow pipeline which can be run as follow:
 
 ```
 nextflow run https://github.com/TARGENE/targene-pipeline/ \
@@ -63,21 +63,7 @@ nextflow run https://github.com/TARGENE/targene-pipeline/ \
   -resume
 ```
 
-where the `CONFIG_FILE` provides the list of problem-specific parameters (data, arguments, options). Below we list some important features of TarGene, the following `CONFIG_FILE` will serve as a running example.
-
-```
-params {
-    ESTIMANDS_CONFIG = "gwas_config.yaml"
-    ESTIMATORS_CONFIG = "wtmle--tunedxgboost"
-
-    // UK Biobank specific parameters
-    BED_FILES = "unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}"
-    UKB_CONFIG = "ukbconfig_gwas.yaml"
-    TRAITS_DATASET = "dataset.csv"
-}
-```
-
-For detailed explanations, please refer to the online [documentation](https://targene.github.io/targene-pipeline/stable/).
+where the `CONFIG_FILE` provides the list of problem-specific parameters (data, arguments, options). Below we list some important features of TarGene. For detailed explanations, please refer to the online [documentation](https://targene.github.io/targene-pipeline/stable/).
 
 ## Scalability
 
@@ -99,15 +85,9 @@ traits:
 
 TarGene supports traditional study designs in population genetics, that is, genome-wide association studies (GWAS) and phenome-wide association studies (PheWAS). Because TarGene has a focus on complex effects, interactions (e.g. gene-gene, gene-environment, gene-gene-environment) can also be investigated up to any order.
 
-The study design is specified in the `ESTIMANDS_CONFIG` YAML file. For a routine GWAS the content of this file can be as simple as:
-
-```
-type: gwas
-```
-
 ## Estimators
 
-Semi-parametric estimators exist in multiple flavors, all with different properties. In TarGene we default to using Targeted Maximum-Likelihood Estimation [@van2018targeted] and XGBoost [@chen2016xgboost] as the machine-learning model. We have selected this default because it was the best performing estimator in simulations across a variety of genetics tasks [@labayle2025semi]. In the presence of computational restrictions, tradeoffs can be made and lighter models can be used.
+In TarGene we default to using Targeted Maximum-Likelihood Estimation [@van2018targeted] and XGBoost [@chen2016xgboost] as the machine-learning model. We have selected this default because it was the best performing estimator in simulations across a variety of genetics tasks [@labayle2025semi]. In the presence of computational restrictions, tradeoffs can be made and lighter models can be used.
 
 # Acknowledgements
 
