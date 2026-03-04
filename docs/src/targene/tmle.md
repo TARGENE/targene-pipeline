@@ -42,5 +42,7 @@ This procedure involves:
 
 A worked example of this bias and the weighted correction procedure can be found [here](https://targene.github.io/TMLE.jl/stable/examples/case_control_experiment/).
 
+To use the case-control weighted TMLE, simply set the parameter `PREVALENCE` to the true population prevalence ``q_0``. When using the case-control weighted TMLE, the `PREVALENCE` parameter is only set for one outcome trait.
+
 !!! warning "Limitations"
     There is no support for case-control weighting of the One-Step Estimator (OSE). Additionally, if a custom machine learning algorithm is used for ``Q_Y`` or ``G``, it must support sample weights (see [MLJ supports weights](https://juliaai.github.io/MLJ.jl/stable/weights/)).

@@ -68,21 +68,11 @@ workflow LocoPCA {
         qc_file,
         ExtractTraits.out
     )
-
-    // IID Genotypes for SVP (needs all chromosomes merged)
-    IIDGenotypes(
-        flashpca_excl_reg,
-        ld_blocks,
-        bed_files,
-        qc_file,
-        ExtractTraits.out,
-    )
-
+    
     // PCA
     FlashPCA(loco_genotypes)
 
     emit:
         traits = ExtractTraits.out
-        iid_genotypes = IIDGenotypes.out
         confounders = FlashPCA.out.pcs
 }

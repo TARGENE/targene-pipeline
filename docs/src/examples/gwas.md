@@ -58,62 +58,11 @@ Remember that in TarGene we estimate the effect of allelic changes and we do not
 
 For more on TarGene's outputs, see [Understanding TarGene's Outputs](@ref).
 
-## Additional Modes
-
-After running the initial GWAS, certain genomic regions may become of interest for further investigation. However, the sparse coverage of directly genotyped data from BED files does not enable post-GWAS analyses such as fine-mapping and colocalisation, that require dense coverage of the loci of interest. To obtain this dense coverage, one can specify a path to imputed BGEN files in the configuration file. However, due to computational regions, performing estimation across an entire set of imputed variants is not feasible for TarGene. To circumvent this, one can specify the `DENSE_MAPPING_FILE` which is a text file with the following format:
-
-```txt
-chromosome position label
-1 156365093 CHR1
-2 14983 CHR2
-3 197645995 CHR3
-```
-and the `WINDOW_SIZE` parameter which sets for the base range around the loci in the `DENSE_MAPPING_FILE`. An example configuration file would appear as such:
-```conf
-params {
-    BED_FILES = "test/assets/unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}"
-    BGEN_FILES = "test/assets/unphased_bgen/ukb_chr{1,2,3}.{bgen, bgen.bgi, sample}"
-    DENSE_MAPPING_FILE = "test/assets/prioritised_snps.txt"
-    WINDOW_SIZE = 500000
-    ESTIMATORS_CONFIG = "wtmle--glm"
-    TRAITS_DATASET = "test/assets/dataset.csv"
-    UKB_WITHDRAWAL_LIST = "test/assets/withdrawal_list.txt"
-    ESTIMANDS_CONFIG = "test/assets/gwas_config.yaml"
-    UKB_CONFIG = "test/assets/ukbconfig_gwas.yaml"
-}
-```
-
-Additionally, there is a option to investigate loci of interest under GWAS settings without having to run the entire GWAS again. This can be done by specifying `TARGET_BED_FILES` and `SUBSET_FILE` in the configuration file. The `TARGET_BED_FILES` is the set of BED files in which your variants of interest reside whereas the original `BED_FILES` parameter is the full set now used for the computation of PCs to capture population stratification. The `SUBSET_FILE` is simply a list of variants as they appear in the plink BED format:
-
-```text
-1:1593249:G:A
-1:1816878:C:A
-1:3579379:C:G
-2:14983:G:A
-2:1786744:T:C
-2:5274665:A:G
-```
-
-The configuration file appears as such:
-
-```conf
-params {
-    BED_FILES = "test/assets/unphased_bed/ukb_chr{1,2,3}.{bed,bim,fam}"
-    TARGET_BED_FILES = "test/assets/unphased_bed/ukb_chr{1,2}.{bed,bim,fam}"
-    SUBSET_FILE = "test/assets/prioritised_snps.txt"
-    ESTIMATORS_CONFIG = "wtmle--glm"
-    TRAITS_DATASET = "test/assets/dataset.csv"
-    UKB_WITHDRAWAL_LIST = "test/assets/withdrawal_list.txt"
-    ESTIMANDS_CONFIG = "test/assets/gwas_config.yaml"
-    UKB_CONFIG = "test/assets/ukbconfig_gwas.yaml"
-}
-```
-
 # GWIS
 
-Provided there is sufficient power, one may concern themselves with interaction effects at genome-wide scale or a genome-wide interaction study (GWIS). Whether this query concerns how variants interact with other variants (epistasis) or gene-by-environment interaction, both can be addressed using the GWAS configuration. All that is required for this that differs from the traditional GWAS configuation is some minor additions to the `ESTIMANDS_CONFIG` yaml file.
+One may concern themselves with interaction effects at genome-wide scale, also known as a genome-wide interaction study (GWIS). Whether this query concerns how variants interact with other variants (epistasis) or gene-by-environment interaction, both can be addressed using the `gwas` configuration. All that is required for this that differs from the traditional GWAS configuation is some minor additions to the `ESTIMANDS_CONFIG` yaml file.
 
-We can begin by expanding upon our intial estimands configuration. In the first example, we did not need to specify the `estimands` field as they are by default set to be the single order Average Treatment Effects (ATE). Now, that we want more complex estimands we must define the field `estimands` with the subfields `type` and `orders`. Here, we specify that we want to estimate the Average Interaction Effect (AIE) of the second order between each variant and some treatment variable on outcome. These treatment variables are defined under the `extra_treatments` field where we have specified both the genetic variant `1:235342235:C:T` and the environmental variable `Hot drink temperature`. This configuration will then define the AIE between each genetic variant the levels of `1:235342235:C:T` on outcome as well as the AIE of each genetic variant and the levels of `Hot drink temperature`.
+We can begin by expanding upon our intial estimands configuration. In the first example, we did not need to specify the `estimands` field as they are by default set to be the single order Average Treatment Effects (ATE). Now, that we want more complex estimands we must define the field `estimands` with the subfields `type` and `orders`. Here, we specify that we want to estimate the Average Interaction Effect (AIE) of the second order between each variant and some treatment variable on outcome. These treatment variables are defined under the `extra_treatments` field where we have specified both the genetic variant `1:235342235:C:T` and the environmental variable `Hot drink temperature`. This configuration defines the pairwise interaction between each genetic variant in the provided `BED_FILES` and both `1:235342235:C:T` and `Hot drink temperature`.
 
 ```yaml
 type: gwas
@@ -149,7 +98,7 @@ outcome_extra_covariates:
   - "Cheese intake"
 ```
 
-We would then have the previously defined estimands as well as a three-point interaction between each variant and the levels of both of the values in `extra_treatments`.
+We would then have the previously defined estimands as well as a three-point interaction between each variant and both variables in `extra_treatments`.
 
 The GWAS can then be run as before:
 
