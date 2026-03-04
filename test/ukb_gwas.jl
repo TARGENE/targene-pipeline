@@ -12,7 +12,7 @@ using YAML
 # "local" profile assumes singularity is installed
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 
-@testset "Test ukb_estimands_file.config" begin
+@testset "Test ukb_gwas.config" begin
     cmd = `nextflow run main.nf -c test/configs/ukb_gwas.config $args`
     @info string("The following command will be run:\n", cmd)
 

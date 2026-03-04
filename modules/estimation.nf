@@ -13,6 +13,7 @@ process TMLE {
         hdf5out = basename + ".hdf5"
         pvalue_threhsold = params.KEEP_IC == true ? "--pvalue-threshold=${params.PVAL_THRESHOLD}" : ""
         save_sample_ids = params.SVP == true ? "--save-sample-ids" : ""
+        prevalence = params.PREVALENCE != "NO_SET_PREVALENCE" ? "--prevalence=${params.PREVALENCE}" : ""
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TMLECLI.jl/TMLESysimage.so --project=/TMLECLI.jl --threads=${task.cpus} --startup-file=no /TMLECLI.jl/tmle.jl tmle \
@@ -22,7 +23,8 @@ process TMLE {
         --hdf5-output=${hdf5out} \
         ${pvalue_threhsold} \
         ${save_sample_ids} \
-        --chunksize=${params.TL_SAVE_EVERY}
+        --chunksize=${params.TL_SAVE_EVERY} \
+        ${prevalence}
         """
 }
 

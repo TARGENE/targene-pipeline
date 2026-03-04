@@ -20,3 +20,29 @@ A default TarGene run will thus result in two estimates for each estimand:
 Note however that this is not compulsory. A single estimator can be used and the machine-learning models customised. This is done via the `ESTIMATORS_CONFIG` which is either a simple configuration string or a more elaborate Julia file. Both options are further discussed [here](https://targene.github.io/TMLECLI.jl/stable/tmle_estimation/#Specifying-Estimators).
 
 For example, using a configuration string, a computationally cheaper run with `ESTIMATORS_CONFIG=ose--glmnet` uses only One-Step Estimation with a [GLMNet](https://www.jstatsoft.org/article/view/v033i01) model for both ``Q_Y`` and ``G``.
+
+## Addressing Sampling Bias
+
+In population genetics studies, it is possible that the observed population does not adequately represent the population from which it was sampled with respect to the frequency of binary traits like disease. This occurs frequently in case-control studies for which diseased participants (cases) are over-recruited for the study to increase power.
+
+### Why TarGene's Estimands Are Affected
+
+TarGene estimates marginal effects such as the Average Treatment Effect (ATE), which depend on the distribution of covariates in the population. Unlike conditional effects (e.g., conditional odds ratios reported from logistic regression), marginal estimands are not invariant to the sampling strategy. This means that if the covariate distribution in the observed sample differs from the target population, the estimated effect will reflect the sample rather than the true population.
+
+Consider a disease with 1% prevalence in the general population, but a case-control study recruits 50% cases and 50% controls. The ATE estimated from this sample would be computed over a population where half the individuals have the disease-associated covariate profile which is substantially different from the true target population. This can lead to biased estimates of the population-level effect.
+
+### Case-Control Weighted Estimation
+
+To obtain estimates representative of the true population, TarGene supports case-control weighted estimation based on the methodology developed by [Rose and van der Laan (2008)](https://doi.org/10.2202/1557-4679.1115). By providing the known prevalence of the binary phenotype in the target population, we can reweight the empirical distribution to match the population of interest, thereby correcting for sampling bias introduced by the study design.
+
+This procedure involves:
+1. **Assigning weights** ``q_0`` to cases and ``(1-q_0)\frac{1}{J}`` to controls, where ``q_0`` is the true population prevalence of the trait of interest and ``J`` is the integer ratio of controls to cases.   
+2. **Weighting the nuisace functions**: Both ``Q_Y`` and ``G`` are fitted using case-control weights.
+3. **Weighting the targeting step**: The semi-parametric update in (w)TMLE is also appropriately weighted.
+
+A worked example of this bias and the weighted correction procedure can be found [here](https://targene.github.io/TMLE.jl/stable/examples/case_control_experiment/).
+
+To use the case-control weighted TMLE, simply set the parameter `PREVALENCE` to the true population prevalence ``q_0``. When using the case-control weighted TMLE, the `PREVALENCE` parameter is only set for one outcome trait.
+
+!!! warning "Limitations"
+    There is no support for case-control weighting of the One-Step Estimator (OSE). Additionally, if a custom machine learning algorithm is used for ``Q_Y`` or ``G``, it must support sample weights (see [MLJ supports weights](https://juliaai.github.io/MLJ.jl/stable/weights/)).
