@@ -20,6 +20,7 @@ authors:
   - name: Kelsey Tetley-Campbell
     affiliation: "1, 2"
   - name: Mark J. van der Laan
+    orcid: 0000-0003-1432-5511
     affiliation: "4"
   - name: Chris P. Ponting
     affiliation: "1"
@@ -40,7 +41,7 @@ affiliations:
   - name: Division of Biostatistics, University of California, Berkeley, CA, USA
     index: 4
 
-date: 14 January 2025
+date: 10 March 2026
 bibliography: paper.bib
 ---
 
