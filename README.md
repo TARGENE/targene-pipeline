@@ -33,3 +33,8 @@ TarGene is a Nextflow pipeline, please refer to [their documentation](https://ww
 ```bash
 nextflow run TARGENE/targene-pipeline -c myplatform.config -c myproject.config -resume
 ```
+
+## Getting in Touch & Contributing
+
+Guidelines for reporting and contributing are available [here](https://targene.github.io/targene-pipeline/stable/developer_guide/contribution_guide/).
+
