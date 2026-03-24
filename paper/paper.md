@@ -38,7 +38,7 @@ affiliations:
     index: 2
   - name: School of Mathematics and Maxwell Institute for Mathematical Sciences, University of Edinburgh, Edinburgh EH9 3FD, United Kingdom
     index: 3
-  - name: Division of Biostatistics, University of California, Berkeley, CA, USA
+  - name: Division of Biostatistics, University of California, Berkeley, CA, United States of America
     index: 4
 
 date: 10 March 2026
