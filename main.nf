@@ -66,21 +66,21 @@ def isGWAS(){
     return config.type == 'gwas'
 }
 
-def msg = """
-${workflow.manifest.name} v${workflow.manifest.version}
-==========================
-Cohort Type  : ${params.COHORT}
---
-run as       : ${workflow.commandLine}
-started at   : ${workflow.start}
-config files : ${workflow.configFiles}
-container    : ${workflow.containerEngine}
-==========================
-""".stripIndent()
-
-log.info msg
-
 workflow  {
+    def msg = """
+    ${workflow.manifest.name} v${workflow.manifest.version}
+    ==========================
+    Cohort Type  : ${params.COHORT}
+    --
+    run as       : ${workflow.commandLine}
+    started at   : ${workflow.start}
+    config files : ${workflow.configFiles}
+    container    : ${workflow.containerEngine}
+    ==========================
+    """.stripIndent()
+
+    log.info msg
+    
     if (isGWAS()) {
         GWAS()
     }
