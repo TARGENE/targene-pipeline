@@ -1,8 +1,6 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-import org.yaml.snakeyaml.Yaml
-
 // Misc Parameters
 params.VERBOSITY = 0
 params.TRAITS_DATASET = "You need to provide a Traits dataset."
@@ -63,7 +61,8 @@ include { MAKE_DATASET } from './workflows/dataset.nf'
 include { NULL_SIMULATION; REALISTIC_SIMULATION } from './workflows/simulations.nf'
 
 def isGWAS(){
-    config = new Yaml().load(new FileReader(params.ESTIMANDS_CONFIG))
+    def yamlslurper = new groovy.yaml.YamlSlurper()
+    def config = yamlslurper.parse(file("${params.ESTIMANDS_CONFIG}"))
     return config.type == 'gwas'
 }
 
