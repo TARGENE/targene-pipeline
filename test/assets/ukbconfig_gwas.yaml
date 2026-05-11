@@ -1,0 +1,14 @@
+traits:
+  - fields:
+      - "21001"
+    phenotypes:
+      - name: "Body mass index (BMI)"
+  - fields:
+      - "728"
+    phenotypes:
+      - name: "Number of vehicles in household"
+  - fields:
+      - "1408"
+    phenotypes:
+      - name: "Cheese intake"
+      
