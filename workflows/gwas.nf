@@ -2,7 +2,7 @@ include { LocoPCA } from './pca.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { SVPWorkflow } from '../subworkflows/svp.nf'
-include { IIDGenotypes } from '../subworkflows/confounders.nf'
+include { subsetBED; denseBED } from '../modules/extract_variants.nf'
 
 workflow GWAS {
     // Define Parameters
@@ -14,7 +14,21 @@ workflow GWAS {
     LocoPCA()
     
     // Estimation Inputs
-    pcs_and_genotypes = LocoPCA.out.confounders.join(bed_files, failOnDuplicate: true)
+    if (params.SUBSET_FILE != "NO_SUBSET_FILE") {
+        subset_ids_file = channel.value(file("$params.SUBSET_FILE", checkIfExists: true))
+        target_bed_files = channel.fromFilePairs("$params.TARGET_BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+        subset_bed_files = subsetBED(target_bed_files, subset_ids_file).subset_bed_files
+        
+        pcs_and_genotypes = LocoPCA.out.confounders.join(subset_bed_files, failOnDuplicate: true)
+    } else if (params.DENSE_MAPPING_FILE != "NO_DENSE_MAPPING_FILE") {
+        prioritized_variants = channel.value(file("$params.DENSE_MAPPING_FILE", checkIfExists: true))
+        imputed_bgen_files = channel.fromFilePairs("$params.BGEN_FILES", size: 3, checkIfExists: true){ f -> f.name.replaceAll(/\.bgen(\.bgi)?$|\.sample$/,'') }
+        dense_bed_files = denseBED(imputed_bgen_files, prioritized_variants).dense_bed_files
+
+        pcs_and_genotypes = LocoPCA.out.confounders.join(dense_bed_files, failOnDuplicate: true)
+    } else {
+        pcs_and_genotypes = LocoPCA.out.confounders.join(bed_files, failOnDuplicate: true)
+    }
 
     EstimationInputs(
         pcs_and_genotypes,

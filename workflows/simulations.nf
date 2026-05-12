@@ -1,4 +1,3 @@
-
 include { EXTRACT_TRAITS } from './traits.nf'
 include { PCA } from './pca.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'

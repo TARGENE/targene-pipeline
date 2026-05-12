@@ -13,7 +13,12 @@ params.COHORT = "UKB"
 params.UKB_CONFIG = "${projectDir}/assets/ukbconfig.yaml"
 params.UKB_WITHDRAWAL_LIST = "${projectDir}/assets/NO_WITHDRAWAL_LIST"
 params.OUTDIR = "${launchDir}/results"
+params.SUBSET_FILE = "NO_SUBSET_FILE"
+params.TARGET_BED_FILES = "NO_TARGET_BED_FILES"
+params.DENSE_MAPPING_FILE = "NO_DENSE_MAPPING_FILE"
+params.WINDOW_SIZE = 500000
 params.PREVALENCE = "NO_SET_PREVALENCE"
+params.PREVALENCE_RANGE = "NO_PREVALENCE_RANGE"
 
 // Confounding adjustment by PCA
 params.NB_PCS = 6
@@ -57,7 +62,7 @@ params.NSAMPLES_FOR_TRUTH = 1000000
 
 include { GWAS } from './workflows/gwas.nf'
 include { TARGENE } from './workflows/targene.nf'
-include { PCA } from './workflows/pca.nf'
+include { LocoPCA; PCA } from './workflows/pca.nf'
 include { MAKE_DATASET } from './workflows/dataset.nf'
 include { NULL_SIMULATION; REALISTIC_SIMULATION } from './workflows/simulations.nf'
 
@@ -88,6 +93,9 @@ workflow  {
     else if (params.WORKFLOW == "PCA") {
         PCA()
     }
+    else if (params.WORKFLOW == "LOCO_PCA") {
+        LocoPCA()
+    }
     else if (params.WORKFLOW == "NULL_SIMULATION") {
         NULL_SIMULATION()
     }
@@ -103,6 +111,6 @@ workflow  {
         }
     }
     else {
-        error "Unknown WORKFLOW: ${params.WORKFLOW}. Please choose one of: ESTIMATION, MAKE_DATASET, PCA, NULL_SIMULATION, REALISTIC_SIMULATION."
+        error "Unknown WORKFLOW: ${params.WORKFLOW}. Please choose one of: ESTIMATION, MAKE_DATASET, PCA, LOCO_PCA, NULL_SIMULATION, REALISTIC_SIMULATION."
     }
 }
