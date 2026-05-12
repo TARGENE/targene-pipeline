@@ -4,8 +4,10 @@ This workflow computes the number of specified principal components (`NB_PCS`) u
 
 ## Example Run Command
 
+To run this workflow, you should set the `WORKFLOW` parameter to `PCA`, for example:
+
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r TAG -entry PCA -profile P -resume
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r TAG --WORKFLOW PCA -profile P -resume
 ```
 
 ## List Of Workflow Arguments

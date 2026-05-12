@@ -84,6 +84,8 @@ workflow  {
 
     if (params.WORKFLOW == "MAKE_DATASET") {
         MAKE_DATASET()
+    else if (params.WORKFLOW == "PCA") {
+        PCA()
     }
     else if (params.WORKFLOW == "NULL_SIMULATION") {
         NULL_SIMULATION()
@@ -100,6 +102,6 @@ workflow  {
         }
     }
     else {
-        error "Unknown WORKFLOW: ${params.WORKFLOW}. Please choose one of: ESTIMATION, MAKE_DATASET, NULL_SIMULATION, REALISTIC_SIMULATION."
+        error "Unknown WORKFLOW: ${params.WORKFLOW}. Please choose one of: ESTIMATION, MAKE_DATASET, PCA, NULL_SIMULATION, REALISTIC_SIMULATION."
     }
 }

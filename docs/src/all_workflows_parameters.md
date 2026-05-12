@@ -15,6 +15,7 @@ These must be provided, or the workflow will not run.
 
 These are optional but important as they can have a significant impact on the workflow (speed, estimates, ...).
 
+- `WORKFLOW (default: ESTIMATION)`: One of `ESTIMATION`, `MAKE_DATASET`, `PCA`, `REALISTIC_SIMULATION` or `NULL_SIMULATION`. Defines the running workflow (see the simulation and secondary workflows for more information).
 - `ESTIMATORS_CONFIG (default: wtmle-ose--tunedxgboost)`: Estimator name or Julia file containing the description of the Targeted Estimators to use. To be consistent it should match the argument provided to the previous TarGene run.
 - `BATCH_SIZE (default: 50)`: The set of estimands to be estimated is batched and the Targeted Learning processes will run in parallel across batches. This is the main driver of computational speed on High Performance Computing Platforms.
 - `COHORT (default: UKB)`: Current default for this is UKB. If set to a value other than UKB, this will not run UKB-specific trait extraction.

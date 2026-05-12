@@ -20,10 +20,10 @@ The second requirement for the simulation to be realistic is that the density es
 
 ## Running the Workflow
 
-To run the null simulation, the `REALISTIC_SIMULATION` entry should be added to the Nextflow command-line as follows
+To run the realistic simulation, you should set the `WORKFLOW` parameter to `REALISTIC_SIMULATION`, for example:
 
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.13.0 -entry REALISTIC_SIMULATION
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r v0.13.0 --WORKFLOW REALISTIC_SIMULATION
 ```
 
 ## Output

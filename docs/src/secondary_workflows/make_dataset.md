@@ -6,8 +6,11 @@ This workflow extracts an aggregated dataset containing traits (`TRAITS_DATASET`
 
 ## Example Run Command
 
+
+To run this workflow, you should set the `WORKFLOW` parameter to `MAKE_DATASET`, for example:
+
 ```bash
-nextflow run https://github.com/TARGENE/targene-pipeline/ -r TAG -entry MAKE_DATASET -profile P -resume
+nextflow run https://github.com/TARGENE/targene-pipeline/ -r TAG --WORKFLOW MAKE_DATASET -profile P -resume
 ```
 
 ## List Of Workflow Arguments
