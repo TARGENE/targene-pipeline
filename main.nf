@@ -3,6 +3,7 @@ nextflow.enable.dsl = 2
 
 // Misc Parameters
 params.VERBOSITY = 0
+params.WORKFLOW = "ESTIMATION"
 params.TRAITS_DATASET = "You need to provide a Traits dataset."
 params.UKB_ENCODING_FILE = "NO_UKB_ENCODING_FILE"
 params.CALL_THRESHOLD = 0.9
@@ -80,11 +81,25 @@ workflow  {
     """.stripIndent()
 
     log.info msg
-    
-    if (isGWAS()) {
-        GWAS()
+
+    if (params.WORKFLOW == "MAKE_DATASET") {
+        MAKE_DATASET()
+    }
+    else if (params.WORKFLOW == "NULL_SIMULATION") {
+        NULL_SIMULATION()
+    }
+    else if (params.WORKFLOW == "REALISTIC_SIMULATION") {
+        REALISTIC_SIMULATION()
+    }
+    else if (params.WORKFLOW == "ESTIMATION") {
+        if (isGWAS()) {
+            GWAS()
+        }
+        else {
+            TARGENE()
+        }
     }
     else {
-        TARGENE()
+        error "Unknown WORKFLOW: ${params.WORKFLOW}. Please choose one of: ESTIMATION, MAKE_DATASET, NULL_SIMULATION, REALISTIC_SIMULATION."
     }
 }
