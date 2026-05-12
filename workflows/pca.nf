@@ -1,4 +1,5 @@
-include { IIDGenotypes; LOCOGenotypes; FlashPCA } from '../subworkflows/confounders.nf'
+include { IIDGenotypes; LOCOGenotypes } from '../subworkflows/confounders.nf'
+include { FlashPCA } from '../modules/confounders.nf'
 include { ExtractTraits } from '../subworkflows/extract_traits.nf'
 
 workflow PCA {
