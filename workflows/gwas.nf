@@ -2,6 +2,7 @@ include { LocoPCA } from './pca.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { SVPWorkflow } from '../subworkflows/svp.nf'
+include { IIDGenotypes } from '../subworkflows/confounders.nf'
 include { subsetBED; denseBED } from '../modules/extract_variants.nf'
 
 workflow GWAS {
