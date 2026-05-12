@@ -84,6 +84,7 @@ workflow  {
 
     if (params.WORKFLOW == "MAKE_DATASET") {
         MAKE_DATASET()
+    }
     else if (params.WORKFLOW == "PCA") {
         PCA()
     }
