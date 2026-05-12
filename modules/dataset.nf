@@ -1,5 +1,3 @@
-include { longest_prefix } from './utils.nf'
-
 process MakeDataset {
     label 'targenecore_image'
     publishDir "${params.OUTDIR}", mode: 'symlink'
@@ -15,7 +13,7 @@ process MakeDataset {
         path "dataset.arrow"
     
     script:
-        bgenprefix = longest_prefix(bgenfiles)
+        bgenprefix = LongestPrefix.compute(bgenfiles)
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)

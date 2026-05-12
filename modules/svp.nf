@@ -1,5 +1,3 @@
-include { longest_prefix } from './utils.nf'
-
 process GRMPart {
     label "bigmem"
     label "multithreaded"
@@ -15,7 +13,7 @@ process GRMPart {
     
     script:
         // Remove the last "." from the prefix otherwise gcta will not find the files
-        input_prefix = longest_prefix(bedfiles)[0..-2]
+        input_prefix = LongestPrefix.compute(bedfiles)[0..-2]
         "gcta64 --bfile ${input_prefix} --make-grm-part ${nparts} ${part_id} --thread-num ${task.cpus} --out GRM"
 }
 
@@ -49,7 +47,7 @@ process SVP {
         path "svp.hdf5"
     
     script:
-        hdf5_prefix = longest_prefix(hdf5_results)
+        hdf5_prefix = LongestPrefix.compute(hdf5_results)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no --sysimage=/TargeneCore.jl/TargeneCoreSysimage.so /TargeneCore.jl/targenecore.jl svp \

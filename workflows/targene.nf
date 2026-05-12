@@ -1,4 +1,3 @@
-include { CreateEstimatorsConfigChannel } from '../modules/utils.nf'
 include { PCA } from './pca.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
@@ -8,7 +7,7 @@ workflow TARGENE {
     // Define Parameters
     bgen_files = Channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect().toList()
     estimands_file = Channel.value(file("$params.ESTIMANDS_CONFIG"))
-    estimator_config = CreateEstimatorsConfigChannel(params.ESTIMATORS_CONFIG)
+    estimator_config = channel.fromList(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
 
     // PCA
     PCA()

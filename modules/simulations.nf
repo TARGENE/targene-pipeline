@@ -1,5 +1,3 @@
-include { longest_prefix } from './utils'
-
 process NullSimulationEstimation {
     label 'simulation_image'
     publishDir "${params.OUTDIR}/null_simulation_results", mode: 'symlink'
@@ -61,7 +59,7 @@ process RealisticSimulationEstimation {
         path out
 
     script:
-        density_estimate_prefix = longest_prefix(density_estimates)
+        density_estimate_prefix = LongestPrefix.compute(density_estimates)
         out = "results__${rng}__${sample_size}__${estimands.getBaseName()}__${estimators.getBaseName()}.hdf5"
         sample_size_option = sample_size != -1 ? "--sample-size=${sample_size}" : ""
         """
@@ -94,7 +92,7 @@ process AggregateRealisticSimulationResults {
         path "realistic_simulation_results.hdf5"
 
     script:
-        density_estimates_prefix = longest_prefix(density_estimates)
+        density_estimates_prefix = LongestPrefix.compute(density_estimates)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/opt/Simulations --startup-file=no --sysimage=/opt/Simulations/Simulations.so /opt/Simulations/targene-simulation.jl \
@@ -125,8 +123,8 @@ process RealisticSimulationInputs {
         path "ga_sim_input.estimand*", emit: estimands
 
     script:
-        estimands_prefix = longest_prefix(estimands)
-        bgen_prefix = longest_prefix(genotypes)
+        estimands_prefix = LongestPrefix.compute(estimands)
+        bgen_prefix = LongestPrefix.compute(genotypes)
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
         TEMPD=\$(mktemp -d)

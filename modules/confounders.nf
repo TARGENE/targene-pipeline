@@ -1,5 +1,3 @@
-include { longest_prefix } from './utils'
-
 process filterBED {
     label 'bigmem'
     label 'targenecore_image'
@@ -63,7 +61,7 @@ process mergeBEDS{
 
     script:
         output_prefix = "${genotypes_id}.merged"
-        input_prefix = longest_prefix(bed_files)
+        input_prefix = LongestPrefix.compute(bed_files)
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TargeneCore.jl --startup-file=no /TargeneCore.jl/targenecore.jl \

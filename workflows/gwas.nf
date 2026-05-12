@@ -1,4 +1,3 @@
-include { CreateEstimatorsConfigChannel } from '../modules/utils.nf'
 include { LocoPCA } from './pca.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
@@ -9,7 +8,7 @@ workflow GWAS {
     // Define Parameters
     bed_files = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
     estimands_file = Channel.value(file("$params.ESTIMANDS_CONFIG"))
-    estimator_config = CreateEstimatorsConfigChannel(params.ESTIMATORS_CONFIG)
+    estimator_config = channel.fromList(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
 
     // Loco PCA
     LocoPCA()

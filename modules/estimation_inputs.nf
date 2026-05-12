@@ -1,5 +1,3 @@
-include { longest_prefix } from './utils.nf'
-
 process EstimationInputs {
     publishDir "$params.OUTDIR/estimands/", mode: 'symlink', pattern: "*.jls"
     publishDir "$params.OUTDIR/datasets/", mode: 'symlink', pattern: "*.arrow"
@@ -17,7 +15,7 @@ process EstimationInputs {
         tuple path("${genotypes_id}.data.arrow"), path("${genotypes_id}.*.jls")
 
     script:
-        genotypes_prefix = longest_prefix(genotypes)
+        genotypes_prefix = LongestPrefix.compute(genotypes)
         batch_size = params.BATCH_SIZE == 0 ? "" :  "--batchsize ${params.BATCH_SIZE}"
         call_threshold = params.CALL_THRESHOLD == null ? "" : "--call-threshold ${params.CALL_THRESHOLD}"
         """
