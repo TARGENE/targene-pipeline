@@ -8,7 +8,7 @@ workflow GWAS {
     // Define Parameters
     bed_files = channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
     estimands_file = channel.value(file("$params.ESTIMANDS_CONFIG"))
-    estimator_config = channel.fromList(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
+    estimator_config = channel.fromPath(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
 
     // Loco PCA
     LocoPCA()

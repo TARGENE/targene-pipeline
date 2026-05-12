@@ -7,7 +7,7 @@ workflow TARGENE {
     // Define Parameters
     bgen_files = channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect().toList()
     estimands_file = channel.value(file("$params.ESTIMANDS_CONFIG"))
-    estimator_config = channel.fromList(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
+    estimator_config = channel.fromPath(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
 
     // PCA
     PCA()
