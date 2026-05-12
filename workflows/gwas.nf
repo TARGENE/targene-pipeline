@@ -6,8 +6,8 @@ include { IIDGenotypes } from '../subworkflows/confounders.nf'
 
 workflow GWAS {
     // Define Parameters
-    bed_files = Channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
-    estimands_file = Channel.value(file("$params.ESTIMANDS_CONFIG"))
+    bed_files = channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
+    estimands_file = channel.value(file("$params.ESTIMANDS_CONFIG"))
     estimator_config = channel.fromList(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
 
     // Loco PCA
@@ -33,9 +33,9 @@ workflow GWAS {
             error "SVP is not compatible with a set PREVALENCE parameter."
         }
         // IID Genotypes for SVP (needs all chromosomes merged)
-        qc_file = Channel.value(file("$params.QC_FILE", checkIfExists: true))
-        flashpca_excl_reg = Channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS", checkIfExists: true))
-        ld_blocks = Channel.value(file("$params.LD_BLOCKS", checkIfExists: true))
+        qc_file = channel.value(file("$params.QC_FILE", checkIfExists: true))
+        flashpca_excl_reg = channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS", checkIfExists: true))
+        ld_blocks = channel.value(file("$params.LD_BLOCKS", checkIfExists: true))
         IIDGenotypes(
             flashpca_excl_reg,
             ld_blocks,

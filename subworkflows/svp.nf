@@ -6,7 +6,7 @@ workflow SVPWorkflow {
         iid_genotypes
     
     main:
-        grm_parts = Channel.from( 1..params.GRM_NSPLITS )
+        grm_parts = channel.from( 1..params.GRM_NSPLITS )
         GRMPart(iid_genotypes, params.GRM_NSPLITS, grm_parts)
         AggregateGRM(GRMPart.out.collect())
         // Sieve estimation

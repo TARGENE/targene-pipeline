@@ -14,7 +14,7 @@ workflow ExtractTraits {
                 decrypted_dataset = UKBConv(
                     UKBFieldsList.out, 
                     traits_dataset, 
-                    Channel.value(file("${ukb_encoding_file}", checkIfExists: true))
+                    channel.value(file("${ukb_encoding_file}", checkIfExists: true))
                 )
             }
             else {
