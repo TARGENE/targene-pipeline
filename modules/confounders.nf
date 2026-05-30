@@ -102,7 +102,7 @@ process FlashPCA {
         tuple val(genotypes_id), path("meansd.${genotypes_id}.txt"), emit: meansd, optional: true
     
     script:
-        projection_flags = params.PROJECTION_DATASET != "NO_PROJECTION_DATASET" ? "--outload --outmeansd" : ""
+        projection_flags = params.PROJECTION_DATASET != "NO_PROJECTION_DATASET" ? "--outload loadings.${genotypes_id}.txt --outmeansd meansd.${genotypes_id}.txt" : ""
         input_prefix = bedfiles[0].toString().minus('.bed')
         "/home/flashpca-user/flashpca/flashpca --bfile ${input_prefix} --ndim ${params.NB_PCS} --numthreads ${task.cpus} ${projection_flags} --suffix .${genotypes_id}.txt"
 }
@@ -120,5 +120,5 @@ process ProjectPCA {
 
     script:
         input_prefix = bedfiles[0].toString().minus('.bed')
-        "/home/flashpca-user/flashpca/flashpca --bfile ${input_prefix} --project --inmeansd ${meansd} --inload ${loadings} --numthreads ${task.cpus} --outproj --suffix .${genotypes_id}.txt -v"
+        "/home/flashpca-user/flashpca/flashpca --bfile ${input_prefix} --project --inmeansd ${meansd} --inload ${loadings} --numthreads ${task.cpus} --outproj projected_pcs.${genotypes_id}.txt -v"
 }
