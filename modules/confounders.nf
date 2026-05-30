@@ -98,8 +98,29 @@ process FlashPCA {
     output:
         tuple val(genotypes_id), path("pcs.${genotypes_id}.txt"), emit: pcs
         tuple val(genotypes_id), path("pve.${genotypes_id}.txt")
+        tuple val(genotypes_id), path("loadings.${genotypes_id}.txt"), emit: loadings, optional: true
+        tuple val(genotypes_id), path("meansd.${genotypes_id}.txt"), emit: meansd, optional: true
     
     script:
+        projection_flags = params.PROJECTION_DATASET != "NO_PROJECTION_DATASET" ? "--outload --outmeansd" : ""
         input_prefix = bedfiles[0].toString().minus('.bed')
-        "/home/flashpca-user/flashpca/flashpca --bfile ${input_prefix} --ndim ${params.NB_PCS} --numthreads ${task.cpus} --suffix .${genotypes_id}.txt"
+        "/home/flashpca-user/flashpca/flashpca --bfile ${input_prefix} --ndim ${params.NB_PCS} --numthreads ${task.cpus} ${projection_flags} --suffix .${genotypes_id}.txt"
+}
+
+process ProjectPCA {
+    label "multithreaded"
+    label 'pca_image'
+    publishDir "${params.OUTDIR}/projected_pcs", mode: 'symlink'
+
+    input:
+        tuple val(genotypes_id), path(bedfiles)
+        tuple val(genotypes_id), path(loadings)
+        tuple val(genotypes_id), path(meansd)
+
+    output:
+        tuple val(genotypes_id), path("projected_pcs.${genotypes_id}.txt")
+
+    script:
+        input_prefix = bedfiles[0].toString().minus('.bed')
+        "/home/flashpca-user/flashpca/flashpca --bfile ${input_prefix} --project --inmeansd ${meansd} --inload ${loadings} --numthreads ${task.cpus} --outproj --suffix .${genotypes_id}.txt -v"
 }

@@ -8,12 +8,13 @@ workflow IIDGenotypes{
         bed_files
         qc_file
         traits
+        genotypes_id
 
     main:
         filtered_bedfiles = filterBED(bed_files, qc_file, ld_blocks, traits)
         ld_pruned = thinByLD(flashpca_excl_reg, filtered_bedfiles)
         bedfiles_to_be_merged = ld_pruned.collect()
-            .map{it -> ["all_genotypes", it]}
+            .map{it -> [genotypes_id, it]}
         mergeBEDS(bedfiles_to_be_merged)
         SampleQCFilter(mergeBEDS.out.collect())
 

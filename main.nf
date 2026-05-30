@@ -5,6 +5,7 @@ nextflow.enable.dsl = 2
 params.VERBOSITY = 0
 params.WORKFLOW = "ESTIMATION"
 params.TRAITS_DATASET = "You need to provide a Traits dataset."
+params.PROJECTION_DATASET = "NO_PROJECTION_DATASET"
 params.UKB_ENCODING_FILE = "NO_UKB_ENCODING_FILE"
 params.CALL_THRESHOLD = 0.9
 params.POSITIVITY_CONSTRAINT = 0.01
