@@ -62,9 +62,11 @@ workflow PCA {
             )
 
             // PCA Projection
+            // Remap loadings/meansd keys from "all_genotypes" → "projection_genotypes"
+            // so the join finds a match
             projection_input = IIDGenotypesProjection.out
-                .join(FlashPCA.out.loadings)
-                .join(FlashPCA.out.meansd)
+                .join(FlashPCA.out.loadings.map { id, f -> ["projection_genotypes", f] })
+                .join(FlashPCA.out.meansd.map  { id, f -> ["projection_genotypes", f] })
             ProjectPCA(projection_input)
             projected_pcs = ProjectPCA.out
         } else {
