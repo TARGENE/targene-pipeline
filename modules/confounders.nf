@@ -113,9 +113,7 @@ process ProjectPCA {
     publishDir "${params.OUTDIR}/projected_pcs", mode: 'symlink'
 
     input:
-        tuple val(genotypes_id), path(bedfiles)
-        tuple val(genotypes_id), path(loadings)
-        tuple val(genotypes_id), path(meansd)
+        tuple val(genotypes_id), path(bedfiles), path(loadings), path(meansd)
 
     output:
         tuple val(genotypes_id), path("projected_pcs.${genotypes_id}.txt")

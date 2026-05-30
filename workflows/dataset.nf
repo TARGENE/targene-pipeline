@@ -34,7 +34,7 @@ workflow MAKE_DATASET {
         bed_files,
         qc_file,
         ExtractTraits.out,
-        all_genotypes,
+        "all_genotypes",
     )
 
     // Genetic confounders

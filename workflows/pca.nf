@@ -62,11 +62,10 @@ workflow PCA {
             )
 
             // PCA Projection
-            ProjectPCA(
-                IIDGenotypesProjection.out,
-                FlashPCA.out.loadings,
-                FlashPCA.out.meansd,
-            )
+            projection_input = IIDGenotypesProjection.out
+                .join(FlashPCA.out.loadings)
+                .join(FlashPCA.out.meansd)
+            ProjectPCA(projection_input)
             projected_pcs = ProjectPCA.out
         } else {
             projected_pcs = Channel.empty()

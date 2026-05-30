@@ -42,6 +42,7 @@ workflow GWAS {
             bed_files,
             qc_file,
             LocoPCA.out.traits,
+            "all_genotypes"
         )
         genotypes = IIDGenotypes.out.map{genotypes_id, genotypes -> genotypes}.collect()
         sieve_results = SVPWorkflow(
