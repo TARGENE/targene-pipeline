@@ -90,6 +90,7 @@ process SampleQCFilter {
 process FlashPCA {
     label "multithreaded"
     label 'pca_image'
+    publishDir "${params.OUTDIR}/pcs", mode: 'symlink', pattern: "*pcs*"
     publishDir "${params.OUTDIR}/pve", mode: 'symlink', pattern: "*pve*"
 
     input:
