@@ -28,8 +28,18 @@ workflow TARGENE {
     )
 
     // TarGWAS Report (HTML + per-estimator summary CSVs)
+    // TARGENE uses BGEN inputs, so no BED can be piped in. Phenotype is
+    // optional: piped in only when REPORT_OUTCOME_COL is set.
     if (params.REPORT == true) {
-        ReportWorkflow(EstimationWorkflow.out.merged_hdf5)
+        report_bed = channel.value(file("${projectDir}/assets/NO_BED_PREFIX"))
+        report_pheno = params.REPORT_OUTCOME_COL != "NO_REPORT_OUTCOME_COL" ?
+            PCA.out.traits :
+            channel.value(file("${projectDir}/assets/NO_PHENO"))
+        ReportWorkflow(
+            EstimationWorkflow.out.merged_hdf5,
+            report_bed,
+            report_pheno,
+        )
     }
 
     // Generate sieve variance plateau estimates
