@@ -25,15 +25,10 @@ process TarGenevizReport {
         pheno_arg  = has_pheno ? "--pheno=${pheno} --sample-id-col=${params.REPORT_SAMPLE_ID_COL} --outcome-col=${params.REPORT_OUTCOME_COL}" : ''
         """
         TEMPD=\$(mktemp -d)
-        # The container's precompile cache lives in /opt, which Singularity
-        # mounts read-only. Julia tries to lock cachefiles next to the .ji
-        # files; that lock creation fails on the RO filesystem. Workaround:
-        # build a symlink farm of /opt/compiled inside the writable TEMPD
-        # depot so the .ji files are reachable via a writable path.
-        if [ -d /opt/compiled ]; then
-            mkdir -p "\$TEMPD"
-            cp -rs /opt/compiled "\$TEMPD/compiled"
-        fi
+        # /opt is the precompiled depot; it is made world-writable in the
+        # image build so Julia can create cachefile locks at load time.
+        # Prepend a per-task scratch depot so any just-in-time compilation
+        # output is written there rather than mutating the shared depot.
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --project=/TarGWAS --startup-file=no \
             /TarGWAS/bin/targeneviz.jl report \
             ${hdf5} \
