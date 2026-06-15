@@ -14,4 +14,5 @@ workflow EstimationWorkflow {
 
     emit:
         hdf5_result = tmle_results
+        merged_hdf5 = GenerateOutputs.out.hdf5_results
 }

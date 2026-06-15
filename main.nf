@@ -45,6 +45,14 @@ params.PVAL_THRESHOLD = 0.05
 params.TL_SAVE_EVERY = params.BATCH_SIZE
 params.ESTIMATORS_CONFIG = "wtmle-ose--tunedxgboost"
 
+// Report (TarGWAS) Parameters
+params.REPORT = true
+params.REPORT_FOREST_TOP = 50
+params.REPORT_LD_TOP = 500
+params.REPORT_LD_WINDOW_BP = 500000
+params.REPORT_SAMPLE_ID_COL = "eid"
+params.REPORT_OUTCOME_COL = "NO_REPORT_OUTCOME_COL"
+
 // Simulations
 params.TRAIN_RATIO = 6
 params.SAMPLE_GA_HITS = true
