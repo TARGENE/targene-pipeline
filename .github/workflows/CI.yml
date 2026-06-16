@@ -18,6 +18,7 @@ jobs:
           - "ukb_gwas.jl"
           - "ukb_gwas_dense.jl"
           - "ukb_gwas_subset.jl"
+          - "ukb_gwas_report_binary.jl"
           - "ukb_estimands_file.jl"
           - "custom_cohort_flat_config.jl"
           - "ukb_interactions_group_config.jl"
