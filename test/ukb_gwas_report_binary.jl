@@ -12,12 +12,10 @@ using YAML
 
 args = length(ARGS) > 0 ? ARGS : ["-profile", "local", "-resume"]
 
-"""
-Exercises the TarGWAS report on a 2-SNP GWAS of a binary UKB trait
-(ICD-10 I10, essential hypertension). Beyond the usual estimation checks,
-this asserts the report artefacts: the HTML page, the enriched per-estimator
-CSVs (carrying genotype counts + BIM-corrected chrom/pos) and the LD matrix.
-"""
+# Exercises the TarGWAS report on a 2-SNP GWAS of a binary UKB trait
+# (ICD-10 I10, essential hypertension). Beyond the usual estimation checks,
+# this asserts the report artefacts: the HTML page, the enriched per-estimator
+# CSVs (carrying genotype counts + BIM-corrected chrom/pos) and the LD matrix.
 @testset "Test ukb_gwas_report_binary.config" begin
     cmd = `nextflow run main.nf -c test/configs/ukb_gwas_report_binary.config $args`
     @info string("The following command will be run:\n", cmd)
