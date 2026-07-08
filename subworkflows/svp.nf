@@ -15,4 +15,8 @@ workflow SVPWorkflow {
             AggregateGRM.out.grm_ids, 
             AggregateGRM.out.grm_matrix,
         )
+
+    emit:
+        hdf5_result = hdf5_result
+        svp_hdf5 = SVP.out
 }

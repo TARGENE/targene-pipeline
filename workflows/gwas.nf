@@ -4,6 +4,7 @@ include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { SVPWorkflow } from '../subworkflows/svp.nf'
 include { IIDGenotypes } from '../subworkflows/confounders.nf'
 include { mergeBEDS } from '../modules/confounders.nf'
+include { GenerateOutputs } from '../modules/estimation.nf'
 include { ReportWorkflow } from '../subworkflows/report.nf'
 include { subsetBED; denseBED } from '../modules/extract_variants.nf'
 
@@ -47,6 +48,35 @@ workflow GWAS {
         EstimationInputs.out.transpose(), estimator_config
     )
 
+    // Generate sieve variance plateau estimates (updates TMLE outputs)
+    if (params.SVP == true) {
+        if (params.PREVALENCE != "NO_SET_PREVALENCE") {
+            error "SVP is not compatible with a set PREVALENCE parameter."
+        }
+        // IID Genotypes for SVP (needs all chromosomes merged)
+        qc_file = channel.value(file("$params.QC_FILE", checkIfExists: true))
+        flashpca_excl_reg = channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS", checkIfExists: true))
+        ld_blocks = channel.value(file("$params.LD_BLOCKS", checkIfExists: true))
+        IIDGenotypes(
+            flashpca_excl_reg,
+            ld_blocks,
+            bed_files,
+            qc_file,
+            LocoPCA.out.traits,
+        )
+        genotypes = IIDGenotypes.out.map{genotypes_id, genotypes -> genotypes}.collect()
+        svp_results = SVPWorkflow(
+            EstimationWorkflow.out.hdf5_result.collect(), 
+            genotypes,
+        )
+        hdf5_input_for_outputs = svp_results.hdf5_result
+    } else {
+        hdf5_input_for_outputs = EstimationWorkflow.out.hdf5_result
+    }
+
+    // Generate merged outputs (HDF5 + summary YAML + QQ plot)
+    GenerateOutputs(hdf5_input_for_outputs)
+
     // TarGWAS Report (HTML + per-estimator summary CSVs)
     if (params.REPORT == true) {
         // Collect all per-chromosome analysis BED triplets, merging when
@@ -70,32 +100,9 @@ workflow GWAS {
             channel.value(file("${projectDir}/assets/NO_PHENO"))
 
         ReportWorkflow(
-            EstimationWorkflow.out.merged_hdf5,
+            GenerateOutputs.out.hdf5_results,
             report_bed,
             report_pheno,
-        )
-    }
-
-    // Generate sieve variance plateau estimates
-    if (params.SVP == true) {
-        if (params.PREVALENCE != "NO_SET_PREVALENCE") {
-            error "SVP is not compatible with a set PREVALENCE parameter."
-        }
-        // IID Genotypes for SVP (needs all chromosomes merged)
-        qc_file = channel.value(file("$params.QC_FILE", checkIfExists: true))
-        flashpca_excl_reg = channel.value(file("$params.FLASHPCA_EXCLUSION_REGIONS", checkIfExists: true))
-        ld_blocks = channel.value(file("$params.LD_BLOCKS", checkIfExists: true))
-        IIDGenotypes(
-            flashpca_excl_reg,
-            ld_blocks,
-            bed_files,
-            qc_file,
-            LocoPCA.out.traits,
-        )
-        genotypes = IIDGenotypes.out.map{genotypes_id, genotypes -> genotypes}.collect()
-        sieve_results = SVPWorkflow(
-            EstimationWorkflow.out.hdf5_result.collect(), 
-            genotypes,
         )
     }
 }

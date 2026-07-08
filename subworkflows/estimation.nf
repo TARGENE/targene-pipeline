@@ -1,4 +1,4 @@
-include { TMLE; GenerateOutputs } from '../modules/estimation.nf'
+include { TMLE } from '../modules/estimation.nf'
 
 workflow EstimationWorkflow {
     take:
@@ -9,10 +9,6 @@ workflow EstimationWorkflow {
         // Run the estimation process for each estimands configuration
         tmle_results = TMLE(dataset_and_estimands.combine(estimators_config)).collect()
 
-        // Generate TarGene Outputs
-        GenerateOutputs(tmle_results)
-
     emit:
         hdf5_result = tmle_results
-        merged_hdf5 = GenerateOutputs.out.hdf5_results
 }

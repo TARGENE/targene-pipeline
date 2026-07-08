@@ -2,6 +2,7 @@ include { PCA } from './pca.nf'
 include { EstimationInputs } from '../modules/estimation_inputs.nf'
 include { EstimationWorkflow } from '../subworkflows/estimation.nf'
 include { SVPWorkflow } from '../subworkflows/svp.nf'
+include { GenerateOutputs } from '../modules/estimation.nf'
 include { ReportWorkflow } from '../subworkflows/report.nf'
 
 workflow TARGENE {
@@ -27,6 +28,21 @@ workflow TARGENE {
         estimator_config,
     )
 
+    // Generate sieve variance plateau estimates (updates TMLE outputs)
+    genotypes = PCA.out.iid_genotypes.map{genotypes_id, genotypes -> genotypes}.collect()
+    if (params.SVP == true){
+        svp_results = SVPWorkflow(
+            EstimationWorkflow.out.hdf5_result.collect(), 
+            genotypes,
+        )
+        hdf5_input_for_outputs = svp_results.hdf5_result
+    } else {
+        hdf5_input_for_outputs = EstimationWorkflow.out.hdf5_result
+    }
+
+    // Generate merged outputs (HDF5 + summary YAML + QQ plot)
+    GenerateOutputs(hdf5_input_for_outputs)
+
     // TarGWAS Report (HTML + per-estimator summary CSVs)
     // TARGENE uses BGEN inputs, so no BED can be piped in. Phenotype is
     // optional: piped in only when REPORT_OUTCOME_COL is set.
@@ -36,18 +52,9 @@ workflow TARGENE {
             PCA.out.traits :
             channel.value(file("${projectDir}/assets/NO_PHENO"))
         ReportWorkflow(
-            EstimationWorkflow.out.merged_hdf5,
+            GenerateOutputs.out.hdf5_results,
             report_bed,
             report_pheno,
-        )
-    }
-
-    // Generate sieve variance plateau estimates
-    genotypes = PCA.out.iid_genotypes.map{genotypes_id, genotypes -> genotypes}.collect()
-    if (params.SVP == true){
-        sieve_results = SVPWorkflow(
-            EstimationWorkflow.out.hdf5_result.collect(), 
-            genotypes,
         )
     }
 }
