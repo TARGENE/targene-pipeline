@@ -18,6 +18,7 @@ process TarGenevizReport {
         ld_window  = params.REPORT_LD_WINDOW_BP
         correction = params.REPORT_CORRECTION
         min_case   = params.REPORT_MIN_CASE_GENOTYPE_COUNT
+        ld_enabled = params.REPORT_LD
         bed_list   = bed_files instanceof List ? bed_files : [bed_files]
         has_bed    = !(bed_list.size() == 1 && bed_list[0].getName() == 'NO_BED_PREFIX')
         has_pheno  = pheno.getName() != 'NO_PHENO'
@@ -26,6 +27,7 @@ process TarGenevizReport {
         bed_arg    = has_bed   ? "--bed=${bed_prefix}" : ''
         pheno_arg  = has_pheno ? "--pheno=${pheno} --sample-id-col='${params.REPORT_SAMPLE_ID_COL}' --outcome-col='${params.REPORT_OUTCOME_COL}'" : ''
         min_case_arg = (min_case != null && "${min_case}" != "null") ? "--min-case-genotype-count=${min_case}" : ''
+        ld_arg     = (ld_enabled == false) ? "--ld=false" : "--ld=true"
         forest_arg = (forest_top != null && "${forest_top}" != "null") ? "--forest-top=${forest_top}" : "--forest-top=all"
         table_arg  = (table_top != null && "${table_top}" != "null") ? "--table-top=${table_top}" : ''
         """
@@ -42,6 +44,7 @@ process TarGenevizReport {
             ${pheno_arg} \
             ${min_case_arg} \
             --correction=${correction} \
+            ${ld_arg} \
             --ld-window-bp=${ld_window} \
             ${forest_arg} \
             ${table_arg}

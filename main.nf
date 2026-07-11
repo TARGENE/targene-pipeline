@@ -50,6 +50,7 @@ params.REPORT = true
 params.REPORT_FOREST_TOP = null
 params.REPORT_TABLE_TOP = null
 params.REPORT_LD_WINDOW_BP = 500000
+params.REPORT_LD = false
 params.REPORT_MIN_CASE_GENOTYPE_COUNT = null
 params.REPORT_CORRECTION = "fdr"
 params.REPORT_SAMPLE_ID_COL = "eid"
