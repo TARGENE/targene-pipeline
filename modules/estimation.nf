@@ -4,6 +4,7 @@ process TMLE {
 
     input:
         tuple path(dataset), path(estimands_file), path(estimator_file)
+        path prevalence_file
     
     output:
         path "${hdf5out}"
@@ -13,7 +14,7 @@ process TMLE {
         hdf5out = basename + ".hdf5"
         pvalue_threhsold = params.KEEP_IC == true ? "--pvalue-threshold=${params.PVAL_THRESHOLD}" : ""
         save_sample_ids = params.SVP == true ? "--save-sample-ids" : ""
-        prevalence = params.PREVALENCE != "NO_SET_PREVALENCE" ? "--prevalence=${params.PREVALENCE}" : ""
+        prevalence_file_opt = prevalence_file.getName() != 'NO_PREVALENCE_FILE' ? " --prevalence-file ${prevalence_file}" : ''
         """
         TEMPD=\$(mktemp -d)
         JULIA_DEPOT_PATH=\$TEMPD:/opt julia --sysimage=/TMLECLI.jl/TMLESysimage.so --project=/TMLECLI.jl --threads=${task.cpus} --startup-file=no /TMLECLI.jl/tmle.jl tmle \
@@ -24,7 +25,7 @@ process TMLE {
         ${pvalue_threhsold} \
         ${save_sample_ids} \
         --chunksize=${params.TL_SAVE_EVERY} \
-        ${prevalence}
+        --prevalence-mode=${params.PREVALENCE_MODE}${prevalence_file_opt}
         """
 }
 
