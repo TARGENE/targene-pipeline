@@ -8,6 +8,7 @@ workflow TARGENE {
     bgen_files = channel.fromPath("$params.BGEN_FILES", checkIfExists: true).collect().toList()
     estimands_file = channel.value(file("$params.ESTIMANDS_CONFIG"))
     estimator_config = channel.fromPath(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
+    prevalence_file = file(params.PREVALENCE_FILE, checkIfExists: true)
 
     // PCA
     PCA()
@@ -24,6 +25,7 @@ workflow TARGENE {
     EstimationWorkflow(
         EstimationInputs.out.transpose(),
         estimator_config,
+        prevalence_file
     )
 
     // Generate sieve variance plateau estimates

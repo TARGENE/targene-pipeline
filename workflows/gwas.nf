@@ -9,6 +9,7 @@ workflow GWAS {
     bed_files = channel.fromFilePairs("$params.BED_FILES", size: 3, checkIfExists: true){ file -> file.baseName }
     estimands_file = channel.value(file("$params.ESTIMANDS_CONFIG"))
     estimator_config = channel.fromPath(EstimatorsConfig.create(params.ESTIMATORS_CONFIG, params.OUTDIR))
+    prevalence_file = file(params.PREVALENCE_FILE, checkIfExists: true)
 
     // Loco PCA
     LocoPCA()
@@ -24,7 +25,7 @@ workflow GWAS {
 
     // Estimation
     EstimationWorkflow(
-        EstimationInputs.out.transpose(), estimator_config
+        EstimationInputs.out.transpose(), estimator_config, prevalence_file
     )
 
     // Generate sieve variance plateau estimates
