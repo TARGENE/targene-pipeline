@@ -1,6 +1,6 @@
 process TMLE {
     publishDir "$params.OUTDIR/tmle_outputs/", mode: 'symlink', pattern: "*.hdf5"
-    publishDir "$params.OUTDIR"/downsampled_datasets/", mode: 'symlink', pattern: "*tsv"
+    publishDir "$params.OUTDIR/downsampled_datasets/", mode: 'symlink', pattern: "*tsv"
     label 'tmle_image'
 
     input:
